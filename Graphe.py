@@ -27,4 +27,4 @@ figure.show()
 
 
 # Solution, travail avec Guillaume
-#topomesh = edge_topomesh(edges, points)
+topomesh = edge_topomesh(edges, points)

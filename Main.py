@@ -13,6 +13,8 @@ import math as math
 # Outils matrices creuses
 import scipy.sparse as spmat
 
+from vplants.cellcomplex.property_topomesh.property_topomesh_creation import edge_topomesh, vertex_topomesh
+
 # Ouverture et stockage du nuage de points
 pcd = op.read_point_cloud("arabi_ascii_segm.ply")
 print(pcd)
@@ -41,6 +43,36 @@ disimatrix = None
 # Fonction seuil pour avoir une matrice creuse et éliminer les côtés peu pondérés
 simatrix[simatrix < 700] = 0
 print(simatrix)
+
+def drawGraphCC(pcdtab, simatrix):
+    s,t = np.meshgrid(np.arange(len(pcdtab)),np.arange(len(pcdtab)))
+    sources = s[simatrix>0]
+    targets = t[simatrix>0]
+    sources, targets = sources[sources<targets], targets[sources<targets]
+
+    topomesh = edge_topomesh(np.transpose([sources,targets]),dict(zip(np.arange(len(pcdtab)),pcdtab)))
+
+    from vplants.cellcomplex.property_topomesh.property_topomesh_visualization.vtk_actor_topomesh import VtkActorTopomesh
+    from vplants.cellcomplex.property_topomesh.property_topomesh_visualization.vtk_tools import vtk_display_actor, vtk_display_actors
+    from vplants.cellcomplex.property_topomesh.property_topomesh_analysis import compute_topomesh_property
+
+    compute_topomesh_property(topomesh,'length',1)
+
+    edge_actor = VtkActorTopomesh()
+    edge_actor.set_topomesh(topomesh,1,property_name='length')
+    edge_actor.line_glyph = 'line'
+    edge_actor.update(colormap="cool")
+
+    vertex_actor = VtkActorTopomesh()
+    vertex_actor.set_topomesh(topomesh,0)
+    #vertex_actor.point_glyph = 'point'
+    vertex_actor.point_glyph = 'sphere'
+    vertex_actor.glyph_scale = 0.0001
+    vertex_actor.update(colormap="Reds")
+
+    vtk_display_actors([vertex_actor.actor,edge_actor.actor],background=(1,1,1))
+
+drawGraphCC(pcdtab, simatrix)
 
 # Calcul de la densité de la matrice
 sparsity = 1.0 - (np.count_nonzero(simatrix) / float(simatrix.size))

@@ -37,6 +37,8 @@ disimatrix = sps.distance_matrix(pcdtab, pcdtab, p=2, threshold=100000)
 disimatrix[disimatrix == 0] = -1
 simatrix = 1/disimatrix
 simatrix[simatrix < 0] = 0
+# simatrix[simatrix > 700] = 1
+
 
 disimatrix = None
 
@@ -44,6 +46,7 @@ disimatrix = None
 simatrix[simatrix < 700] = 0
 print(simatrix)
 
+"""
 def drawGraphCC(pcdtab, simatrix):
     s,t = np.meshgrid(np.arange(len(pcdtab)),np.arange(len(pcdtab)))
     sources = s[simatrix>0]
@@ -72,7 +75,7 @@ def drawGraphCC(pcdtab, simatrix):
 
     vtk_display_actors([vertex_actor.actor,edge_actor.actor],background=(1,1,1))
 
-drawGraphCC(pcdtab, simatrix)
+drawGraphCC(pcdtab, simatrix)"""
 
 # Calcul de la densité de la matrice
 sparsity = 1.0 - (np.count_nonzero(simatrix) / float(simatrix.size))

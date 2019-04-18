@@ -16,12 +16,12 @@ import scipy.sparse as spmat
 from vplants.cellcomplex.property_topomesh.property_topomesh_creation import edge_topomesh, vertex_topomesh
 
 # Ouverture et stockage du nuage de points
-pcd = op.read_point_cloud("arabi_ascii_segm.ply")
+pcd = op.read_point_cloud("arabi_ascii_segm_double.ply")
 print(pcd)
 
 # op.draw_geometries([pcd])
 
-# Permet de lire le nuage de point comme un tableau
+# Permet de lire le nuage de points comme un tableau
 pcdtab = np.asarray(pcd.points)
 
 # print(pcdtab)
@@ -37,7 +37,7 @@ disimatrix = sps.distance_matrix(pcdtab, pcdtab, p=2, threshold=100000)
 disimatrix[disimatrix == 0] = -1
 simatrix = 1/disimatrix
 simatrix[simatrix < 0] = 0
-# simatrix[simatrix > 700] = 1
+#simatrix[simatrix > 700] = 1 #ligne ajoutée pour avoir une matrice non pondérée pour tests
 
 
 disimatrix = None
@@ -45,6 +45,7 @@ disimatrix = None
 # Fonction seuil pour avoir une matrice creuse et éliminer les côtés peu pondérés
 simatrix[simatrix < 700] = 0
 print(simatrix)
+drawGraphCC(pcdtab, simatrix)
 
 """
 def drawGraphCC(pcdtab, simatrix):
@@ -99,6 +100,8 @@ print(degremat)
 
 # Calcul matrice Laplacienne L = D - W
 L = degremat - simatrix
+
+
 print(L)
 
 
@@ -111,7 +114,7 @@ degre = None
 # eigh pour les matrices réelles symétriques
 
 # k nombre de partitions que l'on souhaite obtenir
-k = 25
+k = 2
 # On garde les k premières valeurs propres
 eigenval, eigenvec = np.linalg.eigh(L)
 keigenvec = eigenvec[:,:k]

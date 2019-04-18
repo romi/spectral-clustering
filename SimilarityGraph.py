@@ -9,25 +9,31 @@ import scipy.cluster.vq as vq
 # p est le nuage de points pcd, r_nn le seuil pour la détermination des connections
 # fonction permettant la création d'un graphe grâce à la librairie networkx
 def genGraph(p, r_nn):
-    N=len(p.points)
+    N = len(p.points)
     # défintion d'un arbre KD contenant tous les points
-    tree=open3d.KDTreeFlann(p)
+    tree = open3d.KDTreeFlann(p)
     # Prise des points sous forme de tableau ndarray
-    pts=np.array(p.points)
+    pts = np.array(p.points)
 
     # Déclaration d'un graph networkx
-    G=nx.Graph()
+    G = nx.Graph()
     # On insère chaque point du nuage de points dans le graphe avec un numéro et le trio de coordonnées (pos) en attributs
-    for i in range(N): G.add_node(i, pos=pts[i])
+    for i in range(N): G.add_node(i, pos = pts[i])
 
     # Construction des edges du graphe à partir d'un seuil
     # On part de la structure de nuage de points en KDTree
     # Cette structure dans open3d dispose de fonctions pour seuil, KNN, RKNN
     for i in range(N):
-       #[k, idxs, _] = tree.search_radius_vector_3d(pts[i], r_nn)
-       [k, idxs, _] = tree.search_knn_vector_3d(pts[i], r_nn)
-       elist = [(i, idx) for idx in idxs]
-       G.add_edges_from(elist)
+        #[k, idxs, _] = tree.search_radius_vector_3d(pts[i], r_nn)
+        [k, idxs, _] = tree.search_knn_vector_3d(pts[i], r_nn)
+        for idx in idxs:
+            d = np.sqrt(np.square(pts[i][0] - pts[idx][0]) + np.square(pts[i][1] - pts[idx][1]) + np.square(
+                pts[i][2] - pts[idx][2]))
+            if d != 0:
+                w = 1 / d
+                G.add_edge(i, idx, weight=w)
+
+
     return G
 
 # affichage via open3D
@@ -40,7 +46,6 @@ def drawGraphO3D(p, G):
 
 # affichage du graphe via CellComplex
 # en entrée : la matrice d'adjacence (matrice de similarité) et le nuage de points importé/lu via open3D
-
 def drawGraphCC(pcd, simatrix):
     pcdtab = np.asarray(pcd.points)
     s, t = np.meshgrid(np.arange(len(pcdtab)), np.arange(len(pcdtab)))

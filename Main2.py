@@ -20,7 +20,7 @@ r = 8
 
 # p_light=open3d.voxel_down_sample(pcd,r)
 G = SGk.genGraph(pcd, r)
-SGk.drawGraphO3D(pcd, G)
+# SGk.drawGraphO3D(pcd, G)
 
 # A = nx.adjacency_matrix(G)
 # np.ravel permet de passer de [[1,2,3],[4,5,6]] à [1 2 3 4 5 6]
@@ -51,7 +51,7 @@ Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 
 
 # k nombre de partitions que l'on souhaite obtenir
-k = 30
+k = 35
 # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
 # Les valeurs propres sont bien classées par ordre croissant
 #Ldense = Lcsr.todense()
@@ -69,9 +69,14 @@ k = 30
 # print(end - start)
 
 start2 = time.time()
-eigenval, eigenvec = np.linalg.eigh(Lcsr.todense())
-keigenvec = eigenvec[:,:k]
-end2= time.time()
+#eigenval, eigenvec = np.linalg.eigh(Lcsr.todense())
+keigenval, keigenvec = spsp.linalg.eigsh(Lcsr,k=k,sigma=0, which='LM')
+
+#keigenvec = eigenvec[:,:k]
+end2 = time.time()
+all_zeros = np.all(keigenvec == 0)
+print(all_zeros)
+print(type(keigenvec))
 
 print(keigenvec)
 print(keigenvec.shape)
@@ -81,13 +86,16 @@ print(end2-start2)
 
 # means,labels = vq.kmeans2(evec, k, minit='points', missing='warn')
 # labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
+k = 0
+SGk.VisuEigenvecPts(pcd, keigenvec, k, 1)
+SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
 
 
-"""
 k = 2
-means,labels = vq.kmeans2(evec, k, minit='points', missing='warn')
+means,labels = vq.kmeans2(keigenvec, k, minit='points', missing='warn')
 labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
 
+"""
 b = DBSCdAN(eps=.03, min_samples=10).fit(evec[:,1:10])
 labels=db.labels_
 
@@ -97,11 +105,23 @@ pcd.colors = open3d.Vector3dVector(colors[labels])
 
 open3d.draw_geometries([pcd])
 """
-"""
-pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)
+print('coucou')
+print(keigenval[0])
+print(keigenval[1])
+print(keigenval[2])
+print(keigenval[3])
+print(keigenval[4])
+print(keigenval[5])
+print(keigenval[6])
+print(keigenval[7])
+print(keigenval[8])
+print(keigenval[9])
+print(keigenval[10])
+print(keigenval[11])
 
-np.savetxt('Centroides.txt', means, delimiter= ',')
-np.savetxt('labels.txt', labels, delimiter= ",")
-np.savetxt('pcdclassifkmeans.txt', pcdtabclassif, delimiter = ",")
 
-"""
+#pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)
+
+#np.savetxt('Centroides.txt', means, delimiter= ',')
+#np.savetxt('labels.txt', labels, delimiter= ",")
+#np.savetxt('pcdclassifkmeans.txt', pcdtabclassif, delimiter = ",")

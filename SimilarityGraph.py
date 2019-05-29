@@ -31,7 +31,7 @@ def genGraph(p, r_nn):
                 pts[i][2] - pts[idx][2]))
             if d != 0:
                 w = 1 / d
-                G.add_edge(i, idx, weight=w)
+                G.add_edge(i, idx, weight = w)
 
 
     return G
@@ -75,3 +75,18 @@ def drawGraphCC(pcd, simatrix):
     vertex_actor.update(colormap="Reds")
 
     vtk_display_actors([vertex_actor.actor, edge_actor.actor], background=(1, 1, 1))
+
+def VisuEigenvecPts(pcd, keigenvec, k, facteur):
+    # Le facteur multiplicatif est présent uniquement pour pouvoir mieux afficher les couleurs/poids dans CloudCompare
+    #
+    label = keigenvec[:, k]
+    size = label.shape[0]
+    label = np.asarray(label.reshape(size, 1), dtype=np.float64)
+    pcd = np.array(pcd.points)
+    pcdtabvecteurpropre = np.concatenate([pcd, label*facteur], axis=1)
+    np.savetxt('vecteurproprecol.txt', pcdtabvecteurpropre, delimiter=',')
+
+def VisuEspaceSpecDim3(keigenvec, facteur, vec1, vec2, vec3):
+    pts = keigenvec[:,[vec1, vec2, vec3]]*facteur
+    pts = pts.reshape(keigenvec.shape[0], 3)
+    np.savetxt('espacespec.txt', pts, delimiter=',')

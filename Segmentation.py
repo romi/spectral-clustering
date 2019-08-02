@@ -19,6 +19,8 @@ r = 8
 G = SGk.genGraph(pcd, r)
 #SGk.drawGraphO3D(pcd, G)
 
+
+
 Lcsr = nx.laplacian_matrix(G, weight='weight')
 Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 
@@ -44,10 +46,11 @@ for t in range(nbe_arcs):
     pt1 = arcs[t][0]
     pt2 = arcs[t][1]
     Somme = 0
-    for j in range(k):
+    for j in range(1,k):
         Somme = Somme + (pow(keigenvec[pt1, j] - keigenvec[pt2, j], 2)/eigenval[j])
     CommuteDist = np.sqrt(Somme)
     G[pt1][pt2]['weight'] = CommuteDist
+
 
 # initialisation du premier segment
 # Choix d'un point aléatoire dans le graphe
@@ -73,7 +76,7 @@ segmentdict = {}
 segmentdict[i] = segmsource
 
 # Début boucle permettant de décrire l'ensemble du graphe via des chemins sur ce dernier
-while i < c :
+while i < c:
     chemintot = []
     # Concaténation des chemins pour obtenir une seule liste utilisable par les fonctions nx dijkstra Segment(1..i)
     for Seg, chemin in segmentdict.items():
@@ -105,11 +108,12 @@ while i < c :
     # Fin boucle, incrémentation i
     i = i + 2
 
+
 # Tentative d'affichage du résultat intermédiare, c'est-à-dire des segments.
 Gaffichage = nx.Graph()
 pts = np.array(pcd.points)
 N = len(pcd.points)
-for i in range(N): G.add_node(i, pos = pts[i])
+for i in range(N): Gaffichage.add_node(i, pos = pts[i])
 for i in range(1, c):
     Gaffichage.add_path(segmentdict[i])
 edgelist = Gaffichage.edges
@@ -122,24 +126,32 @@ open3d.draw_geometries([graph, pcd])
 
 
 label = []
+for Seg, chemin in segmentdict.items():
+    chemintot = chemintot + chemin
+# Transformation de la liste obtenue en set
+setsegments = set(chemintot)
+length, path = nx.multi_source_dijkstra(G, setsegments, weight='weight')
 for p in range(N):
-    for Seg, chemin in segmentdict.items():
-        chemintot = chemintot + chemin
-    # Transformation de la liste obtenue en set
-    setsegments = set(chemintot)
-    path = nx.multi_source_dijkstra_path_length(G, setsegments, weight='weight')
-    # Sélection du chemin qui concerne le point d'intérêt
-    j = 1
-    ind = -1
-    parrive = path[p][0]
-    while ind == -1 and j <= i:
-        try :
-            ind = segmentdict[j].index(parrive)
-        except ValueError:
-            ind = -1
-        j = j + 1
-    j = j - 1
-    label = label + [j]
+    if p in length:
+        # Sélection du chemin qui concerne le point d'intérêt
+        j = 1
+        ind = -1
+        if length[p]==0:
+            parrive = p
+        else:
+            parrive = path[p][0]
+        while ind == -1 and j < c:
+            try:
+                ind = segmentdict[j].index(parrive)
+            except ValueError:
+                ind = -1
+            j = j + 1
+        j = j - 1
+        label = label + [j]
+    else:
+        label = label + [c]
 
-pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)
-np.savetxt('pcdclassifdijkstra.txt', pcdtabclassif, delimiter = ",")
+label = np.asarray(label)
+label = np.asarray(label.reshape(np.asarray(pcd.points).shape[0], 1), dtype= np.float64)
+pcdtabclassif = np.concatenate([np.asarray(pcd.points), label], axis = 1)
+np.savetxt('pcdclassifdijkstra2.txt', pcdtabclassif, delimiter = ",")

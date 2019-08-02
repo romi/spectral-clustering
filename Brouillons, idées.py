@@ -65,3 +65,15 @@ Col = keigenvec.shape[1]
 
 # Prise des points sous forme de tableau ndarray
 keigenvec = np.array(keigenvec)
+
+
+"""
+b = DBSCdAN(eps=.03, min_samples=10).fit(evec[:,1:10])
+labels=db.labels_
+
+colors = np.random.uniform(0,1,[k,3])
+
+pcd.colors = open3d.Vector3dVector(colors[labels])
+
+open3d.draw_geometries([pcd])
+"""

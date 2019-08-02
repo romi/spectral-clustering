@@ -7,6 +7,7 @@ import time
 # from mayavi import mlab
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
+import matplotlib.pyplot as plt
 
 import sys
 from types import ModuleType, FunctionType
@@ -15,13 +16,16 @@ from gc import get_referents
 #start = time.time()
 
 #pcd = open3d.read_point_cloud("data/arabette.ply")
-pcd = open3d.read_point_cloud("arabi_dense.ply")
+pcd = open3d.read_point_cloud("arabi_densep_clean.ply")
 r = 8
 
 # p_light=open3d.voxel_down_sample(pcd,r)
 G = SGk.genGraph(pcd, r)
-# SGk.drawGraphO3D(pcd, G)
+SGk.drawGraphO3D(pcd, G)
 
+#Connect = nx.number_connected_components(G)
+#print("Nombre d'éléments connectés")
+#print(Connect)
 # A = nx.adjacency_matrix(G)
 # np.ravel permet de passer de [[1,2,3],[4,5,6]] à [1 2 3 4 5 6]
 # D = spsp.csr_matrix(np.diag(np.ravel(np.sum(A, axis=1))), dtype = 'float')
@@ -31,8 +35,8 @@ G = SGk.genGraph(pcd, r)
 
 # fonction condensée plus efficace en quantité de nuages :
 Lcsr = nx.laplacian_matrix(G, weight='weight')
-print(type(Lcsr))
-print(Lcsr.shape[0])
+#print(type(Lcsr))
+#print(Lcsr.shape[0])
 Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 
 #end = time.time()
@@ -51,7 +55,7 @@ Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 
 
 # k nombre de partitions que l'on souhaite obtenir
-k = 35
+k = 50
 # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
 # Les valeurs propres sont bien classées par ordre croissant
 #Ldense = Lcsr.todense()
@@ -74,50 +78,65 @@ keigenval, keigenvec = spsp.linalg.eigsh(Lcsr,k=k,sigma=0, which='LM')
 
 #keigenvec = eigenvec[:,:k]
 end2 = time.time()
-all_zeros = np.all(keigenvec == 0)
-print(all_zeros)
-print(type(keigenvec))
+# test pour vérifier que la matrice keigenvec est non nulle
+#all_zeros = np.all(keigenvec == 0)
+#print(all_zeros)
+#print(type(keigenvec))
 
-print(keigenvec)
-print(keigenvec.shape)
+#print(keigenvec)
+#print(keigenvec.shape)
 
-print(end2-start2)
+#print(end2-start2)
 
 
 # means,labels = vq.kmeans2(evec, k, minit='points', missing='warn')
 # labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
-k = 0
-SGk.VisuEigenvecPts(pcd, keigenvec, k, 1)
-SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
+k = 49
+#SGk.VisuEigenvecPts(pcd, keigenvec, k, 1)
+#SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
 
 
-k = 2
-means,labels = vq.kmeans2(keigenvec, k, minit='points', missing='warn')
-labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
+#k = 2
+#means,labels = vq.kmeans2(keigenvec, k, minit='points', missing='warn')
+#labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
 
+
+# Code pour les courbes représentant les différents vecteurs propres en chaque point du nuage
 """
-b = DBSCdAN(eps=.03, min_samples=10).fit(evec[:,1:10])
-labels=db.labels_
+figure = plt.figure(0)
+figure.clf()
 
-colors = np.random.uniform(0,1,[k,3])
+sortkeigenvec = keigenvec[keigenvec[:,1].argsort()]
+for i_vec, vec in enumerate(np.transpose(np.around(sortkeigenvec,10))):
+    figure.add_subplot(5,10,i_vec+1)
+    figure.gca().set_title("Eigenvector "+str(i_vec+1))
+    figure.gca().plot(range(len(vec)),vec,color='blue')
 
-pcd.colors = open3d.Vector3dVector(colors[labels])
+figure.set_size_inches(20,10)
+figure.subplots_adjust(wspace=0,hspace=0)
+figure.tight_layout()
+figure.savefig("eigenvectors.png")
 
-open3d.draw_geometries([pcd])
+# Extraction du premier vecteur propre pour comprendre ce qu'il se passe.
+fielder = keigenvec[:,0]
+fielder = fielder[fielder.argsort()]
+figurefielder = plt.figure(0)
+figurefielder.clf()
+figurefielder.gca().plot(range(len(np.transpose(fielder))),np.transpose(fielder), color='red')
+figurefielder.set_size_inches(20,10)
+figurefielder.subplots_adjust(wspace=0,hspace=0)
+figurefielder.tight_layout()
+figure.savefig("fielder.png")
 """
-print('coucou')
-print(keigenval[0])
-print(keigenval[1])
-print(keigenval[2])
-print(keigenval[3])
-print(keigenval[4])
-print(keigenval[5])
-print(keigenval[6])
-print(keigenval[7])
-print(keigenval[8])
-print(keigenval[9])
-print(keigenval[10])
-print(keigenval[11])
+
+# Graphique contenant les valeurs propres des 50 premiers vecteurs propres
+figureval = plt.figure(0)
+figureval.clf()
+figureval.gca().plot(range(len(np.transpose(keigenval))),np.transpose(keigenval), 'bo')
+figureval.set_size_inches(20,10)
+figureval.subplots_adjust(wspace=0,hspace=0)
+figureval.tight_layout()
+figureval.savefig("ValeursPropres.png")
 
 
 #pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)

@@ -77,7 +77,7 @@ def drawGraphCC(pcd, simatrix):
     vtk_display_actors([vertex_actor.actor, edge_actor.actor], background=(1, 1, 1))
 
 def VisuEigenvecPts(pcd, keigenvec, k, facteur):
-    # Le facteur multiplicatif est présent uniquement pour pouvoir mieux afficher les couleurs/poids dans CloudCompare
+    # Le facteur multiplicatif est présent uniquement pour pouvoir éventuellement mieux afficher les couleurs/poids dans CloudCompare
     #
     label = keigenvec[:, k]
     size = label.shape[0]

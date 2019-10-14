@@ -1,7 +1,7 @@
 # Librairie contenant les méthodes de segmentation non supervisées appliquées à l'espace spectral.
 
 # En travaux
-
+import time
 
 import open3d as open3d
 import networkx as nx
@@ -13,7 +13,7 @@ import operator # permet d'obtenir la clé dans un dictionnaire
 from random import choice
 
 
-pcd = open3d.read_point_cloud("arabi_ascii_segm.ply")
+pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
 r = 8
 
 G = SGk.genGraph(pcd, r)
@@ -25,18 +25,16 @@ Lcsr = nx.laplacian_matrix(G, weight='weight')
 Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 
 
-# k nombre de partitions que l'on souhaite obtenir
-k = 90
+# k nombre de vecteurs propres que l'on veut calculer
+k = 20
 
-eigenval, eigenvec = np.linalg.eigh(Lcsr.todense())
-keigenvec = eigenvec[:,:k]
-print(keigenvec)
-eigenval = eigenval.reshape(eigenval.shape[0], 1)
+keigenval, keigenvec = spsp.linalg.eigsh(Lcsr,k=k,sigma=0, which='LM')
 
-# Visualisation vecteurs propres sur nuage
-# En entrée : la ndarray de nuages de points, la matrice des k vecteurs propres, k le nombre de vecteurs propres que
-# l'on veut visualiser
+eigenval = keigenval.reshape(keigenval.shape[0], 1)
 
+
+"""
+start0 = time.time()
 # Actualisation du graphe pour obtenir les poids en fonction de la commute-time distance
 arcs = G.edges
 arcs = iter(arcs)
@@ -50,6 +48,11 @@ for t in range(nbe_arcs):
         Somme = Somme + (pow(keigenvec[pt1, j] - keigenvec[pt2, j], 2)/eigenval[j])
     CommuteDist = np.sqrt(Somme)
     G[pt1][pt2]['weight'] = CommuteDist
+
+end0 = time.time()
+print(end0-start0)
+"""
+start1 = time.time()
 
 
 # initialisation du premier segment
@@ -68,13 +71,17 @@ ptarrivee = max(dict.items(), key=operator.itemgetter(1))[0]
 # Obtention du chemin entre le point source et le point d'arrivée finaux
 segmsource = nx.dijkstra_path(G, ptsource, ptarrivee, weight='weight')
 # Nombre de clusters voulus
-c = 80
+c = 12
 # Itérateur
 i = 1
 # initialisation dictionnaire de segments/chemins
 segmentdict = {}
 segmentdict[i] = segmsource
+end1 = time.time()
 
+print(end1 - start1)
+
+start2 = time.time()
 # Début boucle permettant de décrire l'ensemble du graphe via des chemins sur ce dernier
 while i < c:
     chemintot = []
@@ -107,9 +114,13 @@ while i < c:
     segmentdict[j] = segmentdict[j][indexp:]
     # Fin boucle, incrémentation i
     i = i + 2
+end2 = time.time()
+
+print(end2 - start2)
 
 
-# Tentative d'affichage du résultat intermédiare, c'est-à-dire des segments.
+start3 = time.time()
+# Tentative d'affichage du résultat intermédiaire, c'est-à-dire des segments.
 Gaffichage = nx.Graph()
 pts = np.array(pcd.points)
 N = len(pcd.points)
@@ -119,12 +130,17 @@ for i in range(1, c):
 edgelist = Gaffichage.edges
 print(Gaffichage.edges)
 
+cloption = open3d.visualization.RenderOption()
+
 graph = open3d.geometry.LineSet()
 graph.points = open3d.Vector3dVector(pts)
 graph.lines = open3d.Vector2iVector(edgelist)
 open3d.draw_geometries([graph, pcd])
+end3 = time.time()
 
+print(end3-start3)
 
+start4 = time.time()
 label = []
 for Seg, chemin in segmentdict.items():
     chemintot = chemintot + chemin
@@ -151,7 +167,11 @@ for p in range(N):
     else:
         label = label + [c]
 
+end4 = time.time()
+print(end4 - start4)
+
 label = np.asarray(label)
 label = np.asarray(label.reshape(np.asarray(pcd.points).shape[0], 1), dtype= np.float64)
 pcdtabclassif = np.concatenate([np.asarray(pcd.points), label], axis = 1)
 np.savetxt('pcdclassifdijkstra2.txt', pcdtabclassif, delimiter = ",")
+

@@ -48,7 +48,7 @@ k = 30
 
 
 # Calcul des k premiers vecteurs et valeurs propres
-keigenval, keigenvec = spsp.linalg.eigsh(Lcsr,k=k,sigma=0, which='LM')
+keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
 
 
 # Nombre de clusters attendus

@@ -1,6 +1,7 @@
-# Segmentation via Dijkstra uniquement/ pas d'apport spectral
+# Méthode de segmentation telle qu'expliquée dans l'article
+# Hétroy-Wheeler, Casella, and Boltcheva, “Segmentation of Tree Seedling Point Clouds into Elementary Units.”
 
-########################## IMPORTS
+##################### IMPORTS
 import time
 
 import open3d as open3d
@@ -8,13 +9,36 @@ import networkx as nx
 import numpy as np
 import scipy.sparse as spsp
 import SimilarityGraph as SGk
-import operator  # permet d'obtenir la clé dans un dictionnaire
+import operator # permet d'obtenir la clé dans un dictionnaire
 
 from random import choice
 
-########################## FONCTIONS
 
-def initdijkstra(G):
+##################### FONCTIONS
+
+def actugraph(G):
+    Lcsr = nx.laplacian_matrix(G, weight='weight')
+    Lcsr = spsp.csr_matrix.asfptype(Lcsr)
+    # k nombre de vecteurs propres que l'on veut calculer
+    k = 20
+    keigenval, keigenvec = spsp.linalg.eigsh(Lcsr,k=k,sigma=0, which='LM')
+    eigenval = keigenval.reshape(keigenval.shape[0], 1)
+    # Actualisation du graphe pour obtenir les poids en fonction de la commute-time distance
+    arcs = G.edges
+    arcs = iter(arcs)
+    arcs = tuple(arcs)
+    nbe_arcs = G.number_of_edges()
+    for t in range(nbe_arcs):
+        pt1 = arcs[t][0]
+        pt2 = arcs[t][1]
+        Somme = 0
+        for j in range(1,k):
+            Somme = Somme + (pow(keigenvec[pt1, j] - keigenvec[pt2, j], 2)/eigenval[j])
+        CommuteDist = np.sqrt(Somme)
+        G[pt1][pt2]['weight'] = CommuteDist
+    return G
+
+def initdijkstralitt(G):
     # initialisation du premier segment
     # Choix d'un point aléatoire dans le graphe
     random_node = choice(list(G.nodes))
@@ -30,46 +54,17 @@ def initdijkstra(G):
     ptarrivee = max(dict.items(), key=operator.itemgetter(1))[0]
     # Obtention du chemin entre le point source et le point d'arrivée finaux
     segmsource = nx.dijkstra_path(G, ptsource, ptarrivee, weight='weight')
-    return segmsource, ptsource, ptarrivee
-
-# Densification du nombre de chemins définissant la tige.
-# Ici, on densifie sur le même point d'arrivée et le même point source
-# On pourrait envisager de l'effectuer sur des points extrêmes différents. Gain ?
-# pathsupp est le nombre de chemins que l'on ajoute, il est lié au nombre r de k plus proches voisins crées pour le graphe
-# On pourrait mettre un nombre en lien avec r, le nombre de plus proches voisins pour automatiser.
-def densiftige(G, segmsource, ptsource, ptarrivee, pathsupp = 5):
-    # L'objectif ici est de densifier le segment 1, de la tige en ajoutant d'autres plus courts chemins dans cette tige.
-    # L'erreur du nombre de points considérés en branches alors qu'ils sont dans la tige devrait être diminuée.
-    # Il faudra peut-être considérer le même processus pour les branches, à voir.
-    i = 1
-    Gdel = G.__class__()
-    Gdel.add_nodes_from(G)
-    Gdel.add_edges_from(G.edges)
-
-    Gdel.remove_nodes_from(segmsource[1:len(segmsource)-1])
-    while i < pathsupp:
-        segmsupp = nx.dijkstra_path(Gdel, ptsource, ptarrivee, weight='weight')
-        segmsource = segmsource + segmsupp[1:len(segmsupp)-1]
-        print(segmsupp)
-        print(ptarrivee)
-        print(ptsource)
-        Gdel.remove_nodes_from(segmsupp[1:len(segmsupp)-1])
-        i = i + 1
-        print(i)
     return segmsource
 
-# Itérations pour obtenir tous les segments, dans chacune des branches.
-# Prop définit la distance à la tige à partir de laquelle on arrête de compter les branches.
-# En retour : dictionnaire contenant tous les segments.
-def segmdijkstra(G, segmsource, prop = 0.25):
+# c nombre de clusters voulus
+def segmdijkstralitt(G, segmsource, c):
     # Itérateur
     i = 1
-    longueur = True
     # initialisation dictionnaire de segments/chemins
     segmentdict = {}
     segmentdict[i] = segmsource
     # Début boucle permettant de décrire l'ensemble du graphe via des chemins sur ce dernier
-    while longueur == True:
+    while i < c:
         chemintot = []
         # Concaténation des chemins pour obtenir une seule liste utilisable par les fonctions nx dijkstra Segment(1..i)
         for Seg, chemin in segmentdict.items():
@@ -82,22 +77,27 @@ def segmdijkstra(G, segmsource, prop = 0.25):
         ptarrivee = max(dict.items(), key=operator.itemgetter(1))[0]
         # Obtention du chemin le plus long. Prise du point source, stockage.
         length, path = nx.multi_source_dijkstra(G, setsegments, ptarrivee)
-        print(length)
-        if i == 1:
-            ref = length
-        if length < prop*ref:
-            longueur = False
-            c = i
-        else:
-            segmentdict[i + 1] = path
-            p = path[0]
-            # Fin boucle, incrémentation i
-            i = i + 1
-    return segmentdict, c
+        segmentdict[i + 1] = path
+        p = path[0]
+        # retrouver le segment auquel p appartient
+        j = 1
+        ind = -1
+        while ind == -1 and j <= i:
+            try :
+                ind = segmentdict[j].index(p)
+            except ValueError:
+                ind = -1
+            j = j + 1
+        j = j - 1
+        # Enlève tous les points successifs du Segment[j] de p à l'un des bouts et les ajoute au segment[i+2]
+        indexp = segmentdict[j].index(p)
+        segmentdict[i + 2] = segmentdict[j][:indexp]
+        segmentdict[j] = segmentdict[j][indexp:]
+        # Fin boucle, incrémentation i
+        i = i + 2
+    return segmentdict
 
-# c nombre de clusters obtenus
-def affichesegm(pcd, segmentdict, c):
-    # affichage du résultat intermédiaire, c'est-à-dire des segments.
+def affichesegmlitt(pcd, G, segmentdict, c):
     Gaffichage = nx.Graph()
     pts = np.array(pcd.points)
     N = len(pcd.points)
@@ -112,7 +112,7 @@ def affichesegm(pcd, segmentdict, c):
     graph.lines = open3d.Vector2iVector(edgelist)
     open3d.draw_geometries([graph, pcd])
 
-def sortienuagesegm(pcd, G, segmentdict, c):
+def sortienuagelitt(pcd, G, segmentdict):
     label = []
     chemintot = []
     N = len(pcd.points)
@@ -140,20 +140,21 @@ def sortienuagesegm(pcd, G, segmentdict, c):
             label = label + [j]
         else:
             label = label + [c]
-
     label = np.asarray(label)
     label = np.asarray(label.reshape(np.asarray(pcd.points).shape[0], 1), dtype= np.float64)
     pcdtabclassif = np.concatenate([np.asarray(pcd.points), label], axis = 1)
-    np.savetxt('pcdclassifdijkstra3.txt', pcdtabclassif, delimiter = ",")
+    np.savetxt('pcdclassifdijkstra2.txt', pcdtabclassif, delimiter = ",")
 
-############################### Corps
 
-pcd = open3d.read_point_cloud("Data/impr3D_pcd.ply")
+##################### MAIN
+
+pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
 r = 8
 G = SGk.genGraph(pcd, r)
 #SGk.drawGraphO3D(pcd, G)
-segmsource, ptsource, ptarrivee = initdijkstra(G)
-segmsource = densiftige(G, segmsource, ptsource, ptarrivee)
-segmdict, c = segmdijkstra(G, segmsource)
-affichesegm(pcd, segmdict, c)
-sortienuagesegm(pcd, G, segmdict, c)
+G = actugraph(G)
+segmsource = initdijkstralitt(G)
+c = 13
+segmentdict = segmdijkstralitt(G, segmsource, c)
+affichesegmlitt(pcd, G, segmentdict, c)
+sortienuagelitt(pcd, G, segmentdict)

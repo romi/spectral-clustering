@@ -8,6 +8,7 @@ import time
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
 import matplotlib.pyplot as plt
+import Tests_chaines as TCk
 
 import sys
 from types import ModuleType, FunctionType
@@ -15,7 +16,7 @@ from gc import get_referents
 
 
 #pcd = open3d.read_point_cloud("data/arabette.ply")
-pcd = open3d.read_point_cloud("Data/arabi_densep_clean.ply")
+pcd = open3d.read_point_cloud("Data/impr3D_brancheunique.ply")
 r = 8
 
 # p_light=open3d.voxel_down_sample(pcd,r)
@@ -42,23 +43,25 @@ Lcsr = spsp.csr_matrix.asfptype(Lcsr)
 #c = nx.number_of_edges(G)
 
 
-k = 30
+k = 50
 # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
 # Les valeurs propres sont bien classées par ordre croissant
+
+
 
 
 # Calcul des k premiers vecteurs et valeurs propres
 keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
 
-
+TCk.ploteigenvec(keigenvec)
 # Nombre de clusters attendus
 c = 2
-means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
-labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
+#means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
+#labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
 
 # Fonctions d'export
 
-#SGk.VisuEigenvecPts(pcd, keigenvec, k, 1)
+SGk.VisuEigenvecPts(pcd, keigenvec, 1, 1)
 #SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
 
 pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)

@@ -151,7 +151,7 @@ def sortienuagesegm(pcd, G, segmentdict, c):
 pcd = open3d.read_point_cloud("Data/impr3D_pcd.ply")
 r = 8
 G = SGk.genGraph(pcd, r)
-#SGk.drawGraphO3D(pcd, G)
+SGk.drawGraphO3D(pcd, G)
 segmsource, ptsource, ptarrivee = initdijkstra(G)
 segmsource = densiftige(G, segmsource, ptsource, ptarrivee)
 segmdict, c = segmdijkstra(G, segmsource)

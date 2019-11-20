@@ -16,8 +16,8 @@ from gc import get_referents
 
 
 #pcd = open3d.read_point_cloud("data/arabette.ply")
-pcd = open3d.read_point_cloud("Data/impr3D_brancheunique.ply")
-r = 8
+pcd = open3d.read_point_cloud("Data/arabi_densep_branche2.ply")
+r = 0.6
 
 # p_light=open3d.voxel_down_sample(pcd,r)
 G = SGk.genGraph(pcd, r)
@@ -48,19 +48,16 @@ k = 50
 # Les valeurs propres sont bien classées par ordre croissant
 
 
-
-
 # Calcul des k premiers vecteurs et valeurs propres
 keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
 
 TCk.ploteigenvec(keigenvec)
 # Nombre de clusters attendus
 c = 2
-#means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
-#labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
+means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
+labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
 
 # Fonctions d'export
-
 SGk.VisuEigenvecPts(pcd, keigenvec, 1, 1)
 #SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
 

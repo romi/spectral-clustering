@@ -24,8 +24,8 @@ def genGraph(p, r_nn):
     # On part de la structure de nuage de points en KDTree
     # Cette structure dans open3d dispose de fonctions pour seuil, KNN, RKNN
     for i in range(N):
-        #[k, idxs, _] = tree.search_radius_vector_3d(pts[i], r_nn)
-        [k, idxs, _] = tree.search_knn_vector_3d(pts[i], r_nn)
+        [k, idxs, _] = tree.search_radius_vector_3d(pts[i], r_nn)
+        #[k, idxs, _] = tree.search_knn_vector_3d(pts[i], r_nn)
         for idx in idxs:
             d = np.sqrt(np.square(pts[i][0] - pts[idx][0]) + np.square(pts[i][1] - pts[idx][1]) + np.square(
                 pts[i][2] - pts[idx][2]))

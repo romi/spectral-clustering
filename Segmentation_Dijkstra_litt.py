@@ -147,14 +147,14 @@ def sortienuagelitt(pcd, G, segmentdict):
 
 
 ##################### MAIN
-
-pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
-r = 8
-G = SGk.genGraph(pcd, r)
-#SGk.drawGraphO3D(pcd, G)
-G = actugraph(G)
-segmsource = initdijkstralitt(G)
-c = 13
-segmentdict = segmdijkstralitt(G, segmsource, c)
-affichesegmlitt(pcd, G, segmentdict, c)
-sortienuagelitt(pcd, G, segmentdict)
+if __name__ == '__main__':
+    pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
+    r = 8
+    G = SGk.genGraph(pcd, r)
+    #SGk.drawGraphO3D(pcd, G)
+    G = actugraph(G)
+    segmsource = initdijkstralitt(G)
+    c = 13
+    segmentdict = segmdijkstralitt(G, segmsource, c)
+    affichesegmlitt(pcd, G, segmentdict, c)
+    sortienuagelitt(pcd, G, segmentdict)

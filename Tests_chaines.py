@@ -138,26 +138,64 @@ def Convert(lst):
 [G, C] = initige(100)
 [G, C] = ajoutbranche(G, C, 20, 25)
 [G, C] = ajoutbranche(G, C, 10, 50)
-#[G, C] = ajoutbranche(G, C, 5, 60, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 10, 60, 10000, -1)
-#[G, C] = ajoutbranche(G, C, 25, 35, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 15, 40, 1000, -1)
-#[G, C] = ajoutbranche(G, C, 8, 47, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 20, 50, 1000, -1)
-#[G, C] = ajoutbranche(G, C, 25, 55, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 15, 62, 1000, -1)
-#[G, C] = ajoutbranche(G, C, 20, 63, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 3, 70, 1000, -1)
-#[G, C] = ajoutbranche(G, C, 18, 75, 1000, 1)
-#[G, C] = ajoutbranche(G, C, 20, 79, 1000, -1)
+[G, C] = ajoutbranche(G, C, 15, 60, 1000, 1)
+[G, C] = ajoutbranche(G, C, 10, 60, 10000, -1)
+[G, C] = ajoutbranche(G, C, 25, 35, 1000, 1)
+[G, C] = ajoutbranche(G, C, 15, 40, 1000, -1)
+[G, C] = ajoutbranche(G, C, 8, 47, 1000, 1)
+[G, C] = ajoutbranche(G, C, 20, 50, 1000, -1)
+[G, C] = ajoutbranche(G, C, 25, 55, 1000, 1)
+[G, C] = ajoutbranche(G, C, 15, 62, 1000, -1)
+[G, C] = ajoutbranche(G, C, 20, 63, 1000, 1)
+[G, C] = ajoutbranche(G, C, 3, 70, 1000, -1)
+[G, C] = ajoutbranche(G, C, 18, 75, 1000, 1)
+[G, C] = ajoutbranche(G, C, 20, 79, 1000, -1)
 
 keigenvec, keigenval = calculvp(G)
 #print(type(keigenvec))
-vp2 = dict(enumerate(np.transpose(keigenvec[:,1])))
+#vp2 = dict(enumerate(np.transpose(keigenvec[:,1])))
+vp2 = dict(zip(G.nodes(),np.transpose(keigenvec[:,1])))
 #print(vp2)
-#nx.set_node_attributes(G, vp2, 'valp2')
-#print(G[1]['valp2'])
+nx.set_node_attributes(G, vp2, 'vecp2')
+#print(G.nodes[1]['valp2'])
 #nx.write_graphml(G, "graphetestattributs")
+
+
+figure = plt.figure(0)
+figure.clf()
+
+figure.add_subplot(1,2,1)
+nx.drawing.nx_pylab.draw_networkx(G,
+                                  ax=figure.gca(),
+                                  pos=nx.kamada_kawai_layout(G),
+                                  with_labels=False,
+                                  node_size=10,
+                                  node_color=[G.nodes[i]['vecp2'] for i in G.nodes()],
+                                  cmap=plt.get_cmap('plasma'))
+branch_relative_valp2 = {}
+for i in G.nodes:
+    branch_id = i//1000
+    branch_nodes = [j for j in G.nodes() if j//1000 == branch_id]
+
+    branch_min_valp2 = np.min([G.nodes[j]['vecp2'] for j in branch_nodes])
+    branch_max_valp2 = np.max([G.nodes[j]['vecp2'] for j in branch_nodes])
+    branch_relative_valp2[i] = (G.nodes[i]['vecp2']-branch_min_valp2)/(branch_max_valp2-branch_min_valp2)
+nx.set_node_attributes(G, branch_relative_valp2, 'branch_relative_vecp2')
+
+figure.add_subplot(1,2,2)
+nx.drawing.nx_pylab.draw_networkx(G,
+                                  ax=figure.gca(),
+                                  pos=nx.kamada_kawai_layout(G),
+                                  with_labels=False,
+                                  node_size=10,
+                                  node_color=[G.nodes[i]['branch_relative_vecp2'] for i in G.nodes()],
+                                  cmap=plt.get_cmap('plasma'))
+
+figure = plt.figure(1)
+figure.clf()
+
+figure.gca().scatter([i%1000 + i//1000 for i in G.nodes],[G.nodes[i]['vecp2'] for i in G.nodes()],s=10)
+figure.gca().set_xlim(0,100)
 
 #ploteigenval(keigenval)
 #ploteigenvectopo(keigenvec)

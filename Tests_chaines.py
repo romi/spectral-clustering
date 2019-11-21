@@ -242,7 +242,7 @@ class BranchingGraph(nx.Graph):
             np.savetxt(path + "/" + filename + '.txt', pcdtabclassif, delimiter=",")
 
 
-def save_eigenval_plot(G,filename="ValeursPropres.png"):
+def save_eigenval_plot(G, filename="ValeursPropres.png"):
     if G.keigenval is None:
         G.compute_graph_eigenvectors()
     figureval = plt.figure(0)
@@ -254,29 +254,14 @@ def save_eigenval_plot(G,filename="ValeursPropres.png"):
     figureval.savefig(filename)
 
 
-def save_eigenvec_plot(G,filename="eigenvectors.png"):
+def save_eigenvec_plot(G, sort_values=True, filename="eigenvectors.png"):
     if G.keigenvec is None:
         G.compute_graph_eigenvectors()
     figure = plt.figure(0)
     figure.clf()
     keigenvec = G.keigenvec[:,:50]
-    sortkeigenvec = keigenvec[keigenvec[:,1].argsort()]
-    for i_vec, vec in enumerate(np.transpose(np.around(sortkeigenvec,10))):
-        figure.add_subplot(5,10,i_vec+1)
-        figure.gca().set_title("Eigenvector "+str(i_vec+1))
-        figure.gca().plot(range(len(vec)),vec,color='blue')
-    figure.set_size_inches(20,10)
-    figure.subplots_adjust(wspace=0,hspace=0)
-    figure.tight_layout()
-    figure.savefig(filename)
-
-
-def save_eigenvec_topo_plot(G,filename="eigenvectorstopo.png"):
-    if G.keigenvec is None:
-        G.compute_graph_eigenvectors()
-    figure = plt.figure(0)
-    figure.clf()
-    keigenvec = G.keigenvec[:,:50]
+    if sort_values:
+        keigenvec = keigenvec[keigenvec[:,1].argsort()]
     for i_vec, vec in enumerate(np.transpose(np.around(keigenvec,10))):
         figure.add_subplot(5,10,i_vec+1)
         figure.gca().set_title("Eigenvector "+str(i_vec+1))
@@ -287,7 +272,28 @@ def save_eigenvec_topo_plot(G,filename="eigenvectorstopo.png"):
     figure.savefig(filename)
 
 
-def save_eigenvector_value_along_stem_plot(G,k=2,filename="eigenvector_along_stem.png"):
+def save_single_eigenvec_plot(G, k=2, sort_values=True, filename=None):
+    if G.keigenvec is None:
+        G.compute_graph_eigenvectors()
+    figure = plt.figure(0)
+    figure.clf()
+    vec = G.keigenvec[:,k-1]
+    branches = np.array([G.nodes[i]['branch_id'] for i in G.nodes])
+    if sort_values:
+        vec = vec[G.keigenvec[:,1].argsort()]
+        branches = branches[G.keigenvec[:,1].argsort()]
+    figure.gca().set_title("Eigenvector "+str(k))
+    # figure.gca().plot(range(len(vec)),vec,color='blue')
+    figure.gca().scatter(range(len(vec)),vec,c=branches,cmap='jet')
+    figure.set_size_inches(10,10)
+    figure.subplots_adjust(wspace=0,hspace=0)
+    figure.tight_layout()
+    if filename is None:
+        filename = "eigenvector_"+str(k)+".png"
+    figure.savefig(filename)
+
+
+def save_eigenvector_value_along_stem_plot(G, k=2, filename="eigenvector_along_stem.png"):
     if not 'eigenvector_'+str(k) in G.nodes[0]:
         G.add_eigenvector_value_as_attribute(k)
 
@@ -305,6 +311,11 @@ def save_eigenvector_value_along_stem_plot(G,k=2,filename="eigenvector_along_ste
 
         branch_node_y = [G.nodes[i]['eigenvector_'+str(k)] for i in G.branch_nodes[branch_id]]
 
+        zero_nodes = np.array(G.branch_nodes[branch_id])[:-1][np.array(branch_node_y)[:-1]*np.array(branch_node_y)[1:]<0]
+
+        for i in zero_nodes:
+            figure.gca().scatter(np.mean(branch_node_x[i:i+2]),np.mean(branch_node_y[i:i+2]),color='k')
+
         branch_order = G.branch_order[branch_id]
         figure.gca().plot(branch_node_x,branch_node_y,color=order_colors[branch_order])
 
@@ -315,7 +326,7 @@ def save_eigenvector_value_along_stem_plot(G,k=2,filename="eigenvector_along_ste
     figure.savefig(filename)
 
 
-def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, filename="graph.png"):
+def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, attribute_as_size=False, plot_zeros=True, filename="graph.png"):
 
     figure = plt.figure(0)
     figure.clf()
@@ -328,16 +339,28 @@ def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, 
 
         if attribute_name is None or attribute_name not in G.nodes[0]:
             node_color = [0 for _ in G.nodes()]
+            node_sizes = node_size
         else:
             node_color = [G.nodes[i][attribute_name] for i in G.nodes()]
+            if attribute_as_size:
+                node_sizes = [node_size*(np.abs(G.nodes[i][attribute_name])/np.max([np.abs(G.nodes[j][attribute_name]) for j in G.nodes()])) for i in G.nodes()]
+            else:
+                node_sizes = node_size
 
         nx.drawing.nx_pylab.draw_networkx(G,
                                           ax=figure.gca(),
                                           pos=graph_layout,
                                           with_labels=False,
-                                          node_size=node_size,
+                                          node_size=node_sizes,
                                           node_color=node_color,
                                           cmap=plt.get_cmap(colormap))
+
+        if attribute_name.startswith('eigenvector_') and plot_zeros:
+            zero_edges = np.array(G.edges())[np.prod([[G.nodes[i][attribute_name] for i in e] for e in np.array(G.edges)], axis=1) < 0]
+
+            for e in zero_edges:
+                edge_points = np.array([graph_layout[i] for i in e])
+                figure.gca().scatter(np.mean(edge_points[:,0]),np.mean(edge_points[:,1]),color='k')
 
         figure.gca().set_title(attribute_name,size=24)
 
@@ -378,11 +401,17 @@ if __name__ == '__main__':
 
     G.compute_graph_eigenvectors()
     G.add_eigenvector_value_as_attribute(2)
+    G.add_eigenvector_value_as_attribute(3)
+    save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2', 'eigenvector_3'], filename='graph_first_eigenvectors.png')
 
-    save_graph_plot(G,attribute_names=['eigenvector_2','branch_relative_eigenvector_2','branch_order'])
+    for k in range (11):
+        G.add_eigenvector_value_as_attribute(len(G)-k)
+    save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(11)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
+
     save_eigenvector_value_along_stem_plot(G,k=2)
 
     save_eigenval_plot(G)
-    save_eigenvec_topo_plot(G)
+    save_single_eigenvec_plot(G,len(G))
     save_eigenvec_plot(G)
+    save_eigenvec_plot(G,sort_values=False,filename="eigenvectorstopo.png")
     G.export_eigenvectors_on_pointcloud(k=2)

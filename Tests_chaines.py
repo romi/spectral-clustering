@@ -11,10 +11,21 @@ import open3d
 
 class BranchingGraph(nx.Graph):
     """
-    A graph structure that allows adding branches.
+    A graph structure that allows adding branches to a main stem. The resulting
+    graph is formed by chains of nodes linked together at branching points.
+    Each branch is characterized by an order relatively to the main stem.
     """
 
     def __init__(self, stem_size=100):
+        """Initialize the graph with a main stem.
+
+        The graph is created with a single stem of length stem_size.
+
+        Parameters
+        ----------
+        stem_size : int
+            The number of nodes of the main stem.
+        """
         super().__init__(self)
 
         self.node_coords = None
@@ -30,9 +41,10 @@ class BranchingGraph(nx.Graph):
     # Création de la tige principale
     # n , Taille de la chaîne principale
     def init_stem(self, stem_size=100):
-        """Initialize the graph with a main stem.
+        """Initialize the main stem of the graph.
 
-        The graph is created with a single stem of length stem_size.
+        Nodes are added and connected together by edges to form the main stem
+        of the graph.
 
         Parameters
         ----------
@@ -134,7 +146,7 @@ class BranchingGraph(nx.Graph):
     # Calcul des vecteurs propres du graphe
     # G le graphe
     def compute_graph_eigenvectors(self, is_sparse=False, k=50):
-        """
+        """TODO
 
         Parameters
         ----------
@@ -282,7 +294,7 @@ def save_eigenvector_value_along_stem_plot(G,k=2,filename="eigenvector_along_ste
     figure = plt.figure(0)
     figure.clf()
 
-    order_colors = {0: 'darkred', 1: 'darkcyan', 2: 'chartreuse'}
+    order_colors = {0: 'darkred', 1: 'darkgoldenrod', 2: 'chartreuse', 3:'darkcyan'}
 
     node_x = {}
     for branch_id in np.sort(list(G.branch_order.keys())):
@@ -344,13 +356,14 @@ def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, 
 
 if __name__ == '__main__':
 
-
     G = BranchingGraph(100)
     G.add_branch(branch_size=20,linking_node=25)
     G.add_branch(branch_size=20,linking_node=110)
     # G.add_branch(branch_size=100,linking_node=0)
     # G.add_branch(branch_size=10,linking_node=50)
-    G.add_branch(branch_size=15,linking_node=60)
+    G.add_branch(branch_size=20,linking_node=60)
+    G.add_branch(branch_size=15,linking_node=150)
+    G.add_branch(branch_size=5,linking_node=165)
     G.add_branch(branch_size=10,linking_node=60,y_orientation=-1)
     G.add_branch(branch_size=25,linking_node=35)
     # G.add_branch(branch_size=15,linking_node=40,y_orientation=-1)

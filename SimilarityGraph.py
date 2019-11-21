@@ -44,6 +44,7 @@ def drawGraphO3D(p, G):
     graph.lines = open3d.Vector2iVector(G.edges)
     open3d.draw_geometries([graph])
 
+
 # affichage du graphe via CellComplex
 # en entrée : la matrice d'adjacence (matrice de similarité) et le nuage de points importé/lu via open3D
 def drawGraphCC(pcd, simatrix):
@@ -53,12 +54,12 @@ def drawGraphCC(pcd, simatrix):
     targets = t[simatrix > 0]
     sources, targets = sources[sources < targets], targets[sources < targets]
 
-    topomesh = edge_topomesh(np.transpose([sources, targets]), dict(zip(np.arange(len(pcdtab)), pcdtab)))
+    from cellcomplex.property_topomesh.creation import edge_topomesh
+    from cellcomplex.property_topomesh.visualization.vtk_actor_topomesh import VtkActorTopomesh
+    from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actor, vtk_display_actors
+    from cellcomplex.property_topomesh.analysis import compute_topomesh_property
 
-    from vplants.cellcomplex.property_topomesh.property_topomesh_visualization.vtk_actor_topomesh import VtkActorTopomesh
-    from vplants.cellcomplex.property_topomesh.property_topomesh_visualization.vtk_tools import vtk_display_actor, \
-       vtk_display_actors
-    from vplants.cellcomplex.property_topomesh.property_topomesh_analysis import compute_topomesh_property
+    topomesh = edge_topomesh(np.transpose([sources, targets]), dict(zip(np.arange(len(pcdtab)), pcdtab)))
 
     compute_topomesh_property(topomesh, 'length', 1)
 
@@ -76,6 +77,7 @@ def drawGraphCC(pcd, simatrix):
 
     vtk_display_actors([vertex_actor.actor, edge_actor.actor], background=(1, 1, 1))
 
+
 def VisuEigenvecPts(pcd, keigenvec, k, facteur):
     # Le facteur multiplicatif est présent uniquement pour pouvoir éventuellement mieux afficher les couleurs/poids dans CloudCompare
     #
@@ -85,6 +87,7 @@ def VisuEigenvecPts(pcd, keigenvec, k, facteur):
     pcd = np.array(pcd.points)
     pcdtabvecteurpropre = np.concatenate([pcd, label*facteur], axis=1)
     np.savetxt('vecteurproprecol.txt', pcdtabvecteurpropre, delimiter=',')
+
 
 def VisuEspaceSpecDim3(keigenvec, facteur, vec1, vec2, vec3):
     pts = keigenvec[:,[vec1, vec2, vec3]]*facteur

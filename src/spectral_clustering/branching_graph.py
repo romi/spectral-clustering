@@ -5,8 +5,8 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as spsp
-import SimilarityGraph as SGk
-import open3d
+
+
 ########### Définitions Fonctions
 
 class BranchingGraph(nx.Graph):

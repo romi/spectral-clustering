@@ -1,0 +1,159 @@
+import open3d
+import networkx as nx
+import numpy as np
+import scipy.sparse as spsp
+# from mayavi import mlab
+import scipy.cluster.vq as vq
+# from sklearn.cluster import DBSCAN
+
+from spectral_clustering.utils.sparse import sparsity
+
+# p est le nuage de points pcd, r_nn le seuil pour la détermination des connections
+# fonction permettant la création d'un graphe grâce à la librairie networkx
+def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
+    """Generate a similarity graph from a point cloud.
+
+    Parameters
+    ----------
+    p : open3d.open3d.geometry.PointCloud
+        Point cloud on which to compute the similarity graph
+    method : str
+        Search method : 'knn' or 'radius'
+    nearest_neighbors : int
+        Number of nearest neighbors for the 'knn' method
+    radius : float
+        Radius for the 'radius' method
+
+    Returns
+    -------
+    nx.Graph
+        Similarity graph computed on the point cloud
+
+    """
+    N = len(pcd.points)
+    # défintion d'un arbre KD contenant tous les points
+    tree = open3d.KDTreeFlann(pcd)
+    # Prise des points sous forme de tableau ndarray
+    pts = np.array(pcd.points)
+
+    # Déclaration d'un graph networkx
+    G = nx.Graph()
+    # On insère chaque point du nuage de points dans le graphe avec un numéro et le trio de coordonnées (pos) en attributs
+    for i in range(N):
+        G.add_node(i, pos=pts[i])
+
+    # Construction des edges du graphe à partir d'un seuil
+    # On part de la structure de nuage de points en KDTree
+    # Cette structure dans open3d dispose de fonctions pour seuil, KNN, RKNN
+    for i in range(N):
+        if method == 'radius':
+            [k, idxs, _] = tree.search_radius_vector_3d(pts[i], radius)
+        elif method == 'knn':
+            [k, idxs, _] = tree.search_knn_vector_3d(pts[i], nearest_neighbors)
+        for idx in idxs:
+            d = np.sqrt(np.square(pts[i][0] - pts[idx][0]) + np.square(pts[i][1] - pts[idx][1]) + np.square(
+                pts[i][2] - pts[idx][2]))
+            if d != 0:
+                w = 1 / d
+                G.add_edge(i, idx, weight = w)
+
+    return G
+
+def graph_spectrum(G, sparse=True, k=50, smallest_first=True):
+    """
+
+    Parameters
+    ----------
+    G : nx.Graph
+
+    sparse
+    k
+
+    Returns
+    -------
+
+    """
+    # fonction condensée plus efficace en quantité de points :
+    L = nx.laplacian_matrix(G, weight='weight')
+
+
+    if sparse:
+        Lcsr = spsp.csr_matrix.asfptype(L)
+
+        # k = 50
+        # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
+        # Les valeurs propres sont bien classées par ordre croissant
+
+        # Calcul des k premiers vecteurs et valeurs propres
+        if smallest_first:
+            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
+        else:
+            #TODO check if ordering is ok
+            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, which='LM')
+
+    else:
+        keigenval, keigenvec = np.linalg.eigh(L)
+        if not smallest_first:
+            keigenvec = keigenvec[np.argsort(-np.abs(keigenval))]
+            keigenval = keigenval[np.argsort(-np.abs(keigenval))]
+
+    return keigenval, keigenvec
+
+
+# affichage via open3D
+# En entrée : p nuage de points
+def draw_graph_open3d(pcd, G):
+    graph = open3d.LineSet()
+    graph.points = pcd.points
+    graph.lines = open3d.Vector2iVector(G.edges)
+    open3d.draw_geometries([graph])
+
+
+# affichage du graphe via CellComplex
+# en entrée : la matrice d'adjacence (matrice de similarité) et le nuage de points importé/lu via open3D
+def draw_graph_cellcomplex(pcd, G):
+    pcdtab = np.asarray(pcd.points)
+    # s, t = np.meshgrid(np.arange(len(pcdtab)), np.arange(len(pcdtab)))
+    # sources = s[simatrix > 0]
+    # targets = t[simatrix > 0]
+    # sources, targets = sources[sources < targets], targets[sources < targets]
+
+    from cellcomplex.property_topomesh.creation import edge_topomesh
+    from cellcomplex.property_topomesh.visualization.vtk_actor_topomesh import VtkActorTopomesh
+    from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actors
+    from cellcomplex.property_topomesh.analysis import compute_topomesh_property
+
+    topomesh = edge_topomesh(np.array(G.edges), dict(zip(np.arange(len(pcdtab)), pcdtab)))
+
+    compute_topomesh_property(topomesh, 'length', 1)
+
+    edge_actor = VtkActorTopomesh()
+    edge_actor.set_topomesh(topomesh, 1, property_name='length')
+    edge_actor.line_glyph = 'line'
+    edge_actor.update(colormap="cool")
+
+    vertex_actor = VtkActorTopomesh()
+    vertex_actor.set_topomesh(topomesh, 0)
+    # vertex_actor.point_glyph = 'point'
+    vertex_actor.point_glyph = 'sphere'
+    vertex_actor.glyph_scale = 0.0001
+    vertex_actor.update(colormap="Reds")
+
+    vtk_display_actors([vertex_actor.actor, edge_actor.actor], background=(1, 1, 1))
+
+
+def export_eigenvectors_on_pointcloud(pcd, keigenvec, k, filename='vecteurproprecol.txt'):
+    # Le facteur multiplicatif est présent uniquement pour pouvoir éventuellement mieux afficher les couleurs/poids dans CloudCompare
+    #
+    label = keigenvec[:, k]
+    size = label.shape[0]
+    label = np.asarray(label.reshape(size, 1), dtype=np.float64)
+    pcd = np.array(pcd.points)
+    pcdtabvecteurpropre = np.concatenate([pcd, label], axis=1)
+    np.savetxt(filename, pcdtabvecteurpropre, delimiter=',')
+
+
+def export_pointcloud_on_eigenvectors_3d(keigenvec, vec1, vec2, vec3, filename='espacespec.txt'):
+    pts = keigenvec[:,[vec1, vec2, vec3]]
+    pts = pts.reshape(keigenvec.shape[0], 3)
+    np.savetxt(filename, pts, delimiter=',')

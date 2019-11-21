@@ -1,0 +1,42 @@
+{
+  ".gitignore": {},
+  "AUTHORS.rst": {
+    "doc.authors": "Agptx69K+uR5vBooCwjCwzNZ5emssqPcKhatpjv4/2Rj5wQ5nm1f83JhqYnpFRRiY9xE5co3EtciFIZNneqcmw==",
+    "doc.contributors": "zltL6t40ruU03JX3hMGX02809QSBAtR5cI6B3+oxpLoUcKELaJcOEHv59YxknmE7p2ilwpPLwVup4sT483hhUg=="
+  },
+  "CONTRIBUTING.rst": {},
+  "HISTORY.rst": {},
+  "LICENSE": {
+    "license": "RbGRVVjgGPhWaPWhqwtq7HHev/U1DkppBYjGN39HbDZ2BDejFc2exfwAH1MiY2HHn+3TgxlvBkg/s/x9hs3aOA=="
+  },
+  "MANIFEST.in": {
+    "pysetup": "QBTxrbnTPnSyPIglrsQeSDIvf1picOaHnfrMV3WnXX2VDXPeT6GW5bo+/IDn5WaI2B7R6n+xYNKo0S9rJ6yEcA=="
+  },
+  "README.rst": {
+    "doc": "vmiIOMqGhuXJBom/KrWFzvETfJmbSMcLkvZ6XDTcFWl7XRHJgu1tcb4eHn97TgcziEqpfD96M5qO0DV3z3S+CQ=="
+  },
+  "doc/_static/nonempty.txt": {},
+  "requirements.txt": {
+    "pysetup": "8ufx92sxgAI19fc2fwPG7U/rzze15B1a2J7Qpa/u3OxBonuY78gOwDEQNI54BMnYHvTLhWyojfu8lwYBhsqR5w=="
+  },
+  "requirements_minimal.txt": {
+    "pysetup": "vmiIOMqGhuXJBom/KrWFzvETfJmbSMcLkvZ6XDTcFWl7XRHJgu1tcb4eHn97TgcziEqpfD96M5qO0DV3z3S+CQ=="
+  },
+  "setup.cfg": {
+    "pysetup.flake8": "r2h1GtEZqmKegYJLgGqsjgRTHp/KQUy3BgQGcLMBmIuIJt+59ZTWG6fCSwAgYu2Kkez18r3TTELYDPr9IE1RTg==",
+    "pysetup.nose": "YWh8S+GNMo54r8GbTRnBC+bT/Mpd44/UJ4cfe3xZewIGAU64yJ75rUMFVJlZ0/LCMm11pYJN8h+uf2Yhj1e3sg==",
+    "pysetup.pytest": "r2h1GtEZqmKegYJLgGqsjgRTHp/KQUy3BgQGcLMBmIuIJt+59ZTWG6fCSwAgYu2Kkez18r3TTELYDPr9IE1RTg==",
+    "pysetup.sphinx": "r2h1GtEZqmKegYJLgGqsjgRTHp/KQUy3BgQGcLMBmIuIJt+59ZTWG6fCSwAgYu2Kkez18r3TTELYDPr9IE1RTg==",
+    "pysetup.wheel": "LgxSyd3sncQciXfy8nS0rfnddQKT8V//d32w1hTs0wKjdU/bsGMtBkvNIdujnhoM34k9C14TSfJlMFU09s8jpg=="
+  },
+  "setup.py": {
+    "pysetup.call": "t30iIuCMd/sWxStR2XNYb8bCBgwanhKt8YYn2VKACyAqL5cKFRUWpVRIpAR+uxXUZ9PYYy2csMmECcONnRZE8w==",
+    "pysetup.kwds": "0Cz8A9i5HV6FdaE7SZ2GAZkDN7NASY+kYgkz2OV6kKfQ1n3TQSu24ucdDl9VPYW/g7XnqTY4acVfVyzJnJmxNQ=="
+  },
+  "src/spectral_clustering/__init__.py": {
+    "base": "+GVGxVjJGifAp8dAR9V2W3aVPe7/D53bN7r0O5VxO9OUqG4vnGTZvnORu1objjjIwm86DgemQd7ax/IJpRa8Wg=="
+  },
+  "src/spectral_clustering/version.py": {
+    "version": "Poz1/alXrqr57G/XrSNy7m8tCwJL45bDimFzgZVkWfxClQS4Zyhbm4zL+pAc9GupqQXyNiDqprfJrt6kcuPeMg=="
+  }
+}

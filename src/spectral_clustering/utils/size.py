@@ -1,3 +1,7 @@
+import sys
+from gc import get_referents
+from types import ModuleType, FunctionType
+
 def getsize(obj):
     """sum size of object & members."""
     if isinstance(obj, (type, ModuleType, FunctionType)):
@@ -14,11 +18,3 @@ def getsize(obj):
                 need_referents.append(obj)
         objects = get_referents(*need_referents)
     return size
-
-
-# Densité d'une matrice
-
-sparsity = 1.0 - (np.count_nonzero(simatrix) / float(simatrix.size))
-density = 1 - sparsity
-print(sparsity)
-print(density)

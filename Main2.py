@@ -2,25 +2,19 @@ import open3d
 import networkx as nx
 import numpy as np
 import scipy.sparse as spsp
-import SimilarityGraph as SGk
-import time
 # from mayavi import mlab
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
-import matplotlib.pyplot as plt
-import Tests_chaines as TCk
 
-import sys
-from types import ModuleType, FunctionType
-from gc import get_referents
-
+import spectral_clustering.similarity_graph as SGk
+# import spectral_clustering.branching_graph as TCk
 
 #pcd = open3d.read_point_cloud("data/arabette.ply")
 pcd = open3d.read_point_cloud("Data/arabi_densep_branche2.ply")
 r = 0.6
 
 # p_light=open3d.voxel_down_sample(pcd,r)
-G = SGk.genGraph(pcd, r)
+G = SGk.gen_graph(pcd, method='radius', radius=r)
 # SGk.drawGraphO3D(pcd, G)
 
 #Connect = nx.number_connected_components(G)
@@ -33,33 +27,23 @@ G = SGk.genGraph(pcd, r)
 # D = None
 # A = None
 
-# fonction condensée plus efficace en quantité de points :
-Lcsr = nx.laplacian_matrix(G, weight='weight')
-Lcsr = spsp.csr_matrix.asfptype(Lcsr)
-
-
-#sparsity = 1.0 - (Lcsr.count_nonzero() / float(Lcsr.shape[0] * Lcsr.shape[0]))
-#density = 1 - sparsity
-#c = nx.number_of_edges(G)
-
 
 k = 50
 # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
 # Les valeurs propres sont bien classées par ordre croissant
 
-
 # Calcul des k premiers vecteurs et valeurs propres
-keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
+keigenval, keigenvec = SGk.graph_spectrum(G,k=k)
 
-TCk.ploteigenvec(keigenvec)
+# TCk.ploteigenvec(keigenvec)
 # Nombre de clusters attendus
 c = 2
 means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
-labels = np.asarray(labels.reshape(Lcsr.shape[0], 1), dtype= np.float64)
+labels = np.asarray(labels.reshape(len(G), 1), dtype= np.float64)
 
 # Fonctions d'export
-SGk.VisuEigenvecPts(pcd, keigenvec, 1, 1)
-#SGk.VisuEspaceSpecDim3(keigenvec, 1, 1, 2, 3)
+SGk.export_eigenvectors_on_pointcloud(pcd, keigenvec, k=1)
+#SGk.export_pointcloud_on_eigenvectors_3d(keigenvec, 1, 2, 3)
 
 pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)
 

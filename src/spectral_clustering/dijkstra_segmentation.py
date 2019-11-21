@@ -3,6 +3,7 @@
 import open3d as open3d
 import networkx as nx
 import numpy as np
+import scipy.sparse as spsp
 import spectral_clustering.similarity_graph as SGk
 import operator  # permet d'obtenir la clé dans un dictionnaire
 
@@ -230,12 +231,12 @@ def sortienuagesegm(pcd, G, segmentdict, c):
 ############################### Corps
 
 if __name__ == '__main__':
-    pcd = open3d.read_point_cloud("Data/impr3D_pcd.ply")
+    pcd = open3d.read_point_cloud("../../Data/impr3D_pcd.ply")
     r = 8
     G = SGk.gen_graph(pcd, method='knn', nearest_neighbors=r)
-    SGk.drawGraphO3D(pcd, G)
+    SGk.draw_graph_open3d(pcd, G)
 
-    method = 'litt'
+    method = 'k'
 
     if method == 'litt':
         G = actugraph(G)

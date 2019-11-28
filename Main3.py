@@ -113,9 +113,20 @@ eigenval = keigenval.reshape(keigenval.shape[0], 1)
 
 A = nx.adjacency_matrix(G)
 vp2 = np.asarray(keigenvec[:, 1])
-vp2_matrix = np.tile(vp2, (len(G), 1))
-vp2_matrix[A.todense() == 0] = np.nan
-vp2grad = (np.nanmax(vp2_matrix, axis=1) - np.nanmin(vp2_matrix, axis=1)) / 2.
+
+vp2_matrix = A.copy()
+vp2_matrix[A.nonzero()] = vp2[A.nonzero()[1]]
+node_neighbor_max_vp2 = np.array([vp2_matrix[node].data.max() for node in range(A.shape[0])])
+node_neighbor_min_vp2 = np.array([vp2_matrix[node].data.min() for node in range(A.shape[0])])
+
+# node_neighbor_max_vp2 = np.array([vp2[A[node].nonzero()[1]].max() for node in range(A.shape[0])])
+# node_neighbor_min_vp2 = np.array([vp2[A[node].nonzero()[1]].min() for node in range(A.shape[0])])
+vp2grad = node_neighbor_max_vp2 - node_neighbor_min_vp2
+
+# vp2_matrix = np.tile(vp2, (len(G), 1))
+# vp2_matrix[A.todense() == 0] = np.nan
+# vp2grad = (np.nanmax(vp2_matrix, axis=1) - np.nanmin(vp2_matrix, axis=1)) / 2.
+
 node_vp2grad_values = dict(zip(G.nodes(), vp2grad))
 
 clustering = sk.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward', n_clusters=30).fit(vp2grad[:, np.newaxis])

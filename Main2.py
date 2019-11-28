@@ -5,13 +5,15 @@ import scipy.sparse as spsp
 # from mayavi import mlab
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
+import matplotlib.pyplot as plt
 
 import spectral_clustering.similarity_graph as SGk
+
 # import spectral_clustering.branching_graph as TCk
 
 #pcd = open3d.read_point_cloud("data/arabette.ply")
-pcd = open3d.read_point_cloud("Data/arabi_densep_branche2.ply")
-r = 0.6
+pcd = open3d.read_point_cloud("Data/as_cylinders.ply")
+r = 4.5
 
 # p_light=open3d.voxel_down_sample(pcd,r)
 G = SGk.gen_graph(pcd, method='radius', radius=r)
@@ -28,28 +30,31 @@ G = SGk.gen_graph(pcd, method='radius', radius=r)
 # A = None
 
 
-k = 50
+k = 10
 # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
 # Les valeurs propres sont bien classées par ordre croissant
 
 # Calcul des k premiers vecteurs et valeurs propres
-keigenval, keigenvec = SGk.graph_spectrum(G,k=k)
+keigenval, keigenvec = SGk.graph_spectrum(G, k=k, smallest_first=False)
 
 # TCk.ploteigenvec(keigenvec)
 # Nombre de clusters attendus
-c = 2
-means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
-labels = np.asarray(labels.reshape(len(G), 1), dtype= np.float64)
+#c = 2
+#means,labels = vq.kmeans2(keigenvec, c, minit='points', missing='warn')
+#labels = np.asarray(labels.reshape(len(G), 1), dtype= np.float64)
 
 # Fonctions d'export
-SGk.export_eigenvectors_on_pointcloud(pcd, keigenvec, k=1)
+SGk.export_eigenvectors_on_pointcloud(pcd, keigenvec, k=9, filename='vp9last')
 #SGk.export_pointcloud_on_eigenvectors_3d(keigenvec, 1, 2, 3)
 
-pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis = 1)
+
+
+
+#pcdtabclassif = np.concatenate([np.asarray(pcd.points), labels], axis=1)
 
 #np.savetxt('Centroides.txt', means, delimiter= ',')
 #np.savetxt('labels.txt', labels, delimiter= ",")
-np.savetxt('pcdclassifkmeans.txt', pcdtabclassif, delimiter = ",")
+#np.savetxt('pcdclassifkmeans.txt', pcdtabclassif, delimiter=",")
 
 
 

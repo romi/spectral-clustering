@@ -8,7 +8,7 @@ import scipy.cluster.vq as vq
 
 from spectral_clustering.utils.sparse import sparsity
 
-# p est le nuage de points pcd, r_nn le seuil pour la détermination des connections
+# p est le nuage de points pcd, r_nn le seuil pour la détermination des connexions
 # fonction permettant la création d'un graphe grâce à la librairie networkx
 def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
     """Generate a similarity graph from a point cloud.
@@ -31,7 +31,7 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
 
     """
     N = len(pcd.points)
-    # défintion d'un arbre KD contenant tous les points
+    # définition d'un arbre KD contenant tous les points
     tree = open3d.KDTreeFlann(pcd)
     # Prise des points sous forme de tableau ndarray
     pts = np.array(pcd.points)

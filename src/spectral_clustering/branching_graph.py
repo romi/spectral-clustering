@@ -5,7 +5,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as spsp
-
+import sklearn.cluster as sk
 
 ########### Définitions Fonctions
 
@@ -160,6 +160,7 @@ class BranchingGraph(nx.Graph):
         # Appli Laplacien
         L = nx.laplacian_matrix(self, weight='weight')
         L = L.toarray()
+        print(L.shape)
 
         # if isinstance(L, np.ndarray):
         if not is_sparse:
@@ -241,13 +242,42 @@ class BranchingGraph(nx.Graph):
             print(filename)
             np.savetxt(path + "/" + filename + '.txt', pcdtabclassif, delimiter=",")
 
+    def clustering_by_fiedler_and_agglomerative(self, number_of_clusters=2):
 
-def save_eigenval_plot(G, filename="ValeursPropres.png"):
+        self.compute_graph_eigenvectors()
+        self.add_eigenvector_value_as_attribute(k=2)
+
+        A = nx.adjacency_matrix(self)
+        vp2 = np.asarray(self.keigenvec[:, 1])
+
+        vp2_matrix = np.tile(vp2, (len(self), 1))
+        vp2_matrix[A.todense() == 0] = np.nan
+        vp2grad = (np.nanmax(vp2_matrix, axis=1) - np.nanmin(vp2_matrix, axis=1)) / 2.
+        node_vp2grad_values = dict(zip(self.nodes(), vp2grad))
+        nx.set_node_attributes(self, node_vp2grad_values, 'gradient_vp2')
+
+        clustering = sk.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='single',
+                                                n_clusters=number_of_clusters).fit(vp2grad[:, np.newaxis])
+
+        node_clustering_label = dict(zip(self.nodes(), np.transpose(clustering.labels_)))
+        nx.set_node_attributes(self, node_clustering_label, 'clustering_label')
+
+
+def save_eigenval_plot_G(G, filename="ValeursPropres.png"):
     if G.keigenval is None:
         G.compute_graph_eigenvectors()
     figureval = plt.figure(0)
     figureval.clf()
     figureval.gca().plot(range(len(np.transpose(G.keigenval))),np.transpose(G.keigenval), 'bo')
+    figureval.set_size_inches(20,10)
+    figureval.subplots_adjust(wspace=0,hspace=0)
+    figureval.tight_layout()
+    figureval.savefig(filename)
+
+def save_eigenval_plot(eigenval, filename = "ValeursPropres.png"):
+    figureval = plt.figure(0)
+    figureval.clf()
+    figureval.gca().plot(range(len(np.transpose(eigenval))),np.transpose(eigenval), 'bo')
     figureval.set_size_inches(20,10)
     figureval.subplots_adjust(wspace=0,hspace=0)
     figureval.tight_layout()
@@ -326,7 +356,7 @@ def save_eigenvector_value_along_stem_plot(G, k=2, filename="eigenvector_along_s
     figure.savefig(filename)
 
 
-def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, attribute_as_size=False, plot_zeros=True, filename="graph.png"):
+def save_graph_plot(G, attribute_names=[None], colormap='jet', node_size=10, attribute_as_size=False, plot_zeros=True, filename="graph.png"):
 
     figure = plt.figure(0)
     figure.clf()
@@ -371,6 +401,8 @@ def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, 
 
 
 
+
+
 # def Convert(lst):
 #     res_dct = {i : v for i,v in enumerate(lst)}
 #     return res_dct
@@ -379,39 +411,46 @@ def save_graph_plot(G, attribute_names=[None], colormap='plasma', node_size=10, 
 
 if __name__ == '__main__':
 
-    G = BranchingGraph(100)
-    G.add_branch(branch_size=20,linking_node=25)
-    G.add_branch(branch_size=20,linking_node=110)
-    # G.add_branch(branch_size=100,linking_node=0)
-    # G.add_branch(branch_size=10,linking_node=50)
-    G.add_branch(branch_size=20,linking_node=60)
-    G.add_branch(branch_size=15,linking_node=150)
-    G.add_branch(branch_size=5,linking_node=165)
-    G.add_branch(branch_size=10,linking_node=60,y_orientation=-1)
-    G.add_branch(branch_size=25,linking_node=35)
-    # G.add_branch(branch_size=15,linking_node=40,y_orientation=-1)
-    # G.add_branch(branch_size=8,linking_node=47)
-    # G.add_branch(branch_size=20,linking_node=50,y_orientation=-1)
-    G.add_branch(branch_size=25,linking_node=55)
-    # G.add_branch(branch_size=15,linking_node=62,y_orientation=-1)
-    # G.add_branch(branch_size=20,linking_node=63)
-    G.add_branch(branch_size=3,linking_node=70,y_orientation=-1)
-    # G.add_branch(branch_size=18,linking_node=75)
-    G.add_branch(branch_size=20,linking_node=79,y_orientation=-1)
+    G = BranchingGraph(500)
+    G.add_branch(branch_size=100, linking_node=200)
+    G.add_branch(branch_size=20, linking_node=530)
+    G.add_branch(branch_size=10, linking_node=610)
+
+    G.add_branch(branch_size=100, linking_node=350)
+    G.add_branch(branch_size=20, linking_node=665)
+    G.add_branch(branch_size=10, linking_node=745)
+    #G.add_branch(branch_size=20, linking_node=50)
+    #G.add_branch(branch_size=20, linking_node=55)
+    #G.add_branch(branch_size=20, linking_node=60)
+    #G.add_branch(branch_size=20, linking_node=65)
+    #G.add_branch(branch_size=20, linking_node=70)
+    #G.add_branch(branch_size=20, linking_node=75)
+
+    #G.add_branch(branch_size=10, linking_node=105)
+    #G.add_branch(branch_size=8,linking_node=47)
+    #G.add_branch(branch_size=20,linking_node=50,y_orientation=-1)
+    #G.add_branch(branch_size=25,linking_node=55)
+    #G.add_branch(branch_size=15,linking_node=62,y_orientation=-1)
+    #G.add_branch(branch_size=20,linking_node=63)
+    #G.add_branch(branch_size=3,linking_node=70,y_orientation=-1)
+    #G.add_branch(branch_size=18,linking_node=75)
+    #G.add_branch(branch_size=20,linking_node=79,y_orientation=-1)
 
     G.compute_graph_eigenvectors()
     G.add_eigenvector_value_as_attribute(2)
-    G.add_eigenvector_value_as_attribute(3)
-    save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2', 'eigenvector_3'], filename='graph_first_eigenvectors.png')
+    #G.add_eigenvector_value_as_attribute(3)
+    #save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2', 'eigenvector_3'], filename='graph_first_eigenvectors.png')
+    save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2'],
+                   filename='../../Data/Tests/eigenvector2.png')
 
-    for k in range (11):
-        G.add_eigenvector_value_as_attribute(len(G)-k)
-    save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(11)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
+    #for k in range (12):
+    #    G.add_eigenvector_value_as_attribute(len(G)-k)
+    #save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(12)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
 
     save_eigenvector_value_along_stem_plot(G,k=2)
 
     save_eigenval_plot(G)
-    save_single_eigenvec_plot(G,len(G))
+    #save_single_eigenvec_plot(G,len(G))
     save_eigenvec_plot(G)
-    save_eigenvec_plot(G,sort_values=False,filename="eigenvectorstopo.png")
-    G.export_eigenvectors_on_pointcloud(k=2)
+    save_eigenvec_plot(G, sort_values=False, filename="../../Data/Tests/eigenvectorstopo.png")
+    #G.export_eigenvectors_on_pointcloud(k=2)

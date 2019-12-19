@@ -38,6 +38,8 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
 
     # Déclaration d'un graph networkx
     G = nx.Graph()
+
+
     # On insère chaque point du nuage de points dans le graphe avec un numéro et le trio de coordonnées (pos) en attributs
     for i in range(N):
         G.add_node(i, pos=pts[i])
@@ -59,7 +61,16 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
 
     return G
 
-def graph_spectrum(G, sparse=True, k=50, smallest_first=True):
+def graph_laplacian(G, laplacian_type='classical'):
+    if laplacian_type == 'classical':
+        L = nx.laplacian_matrix(G, weight='weight')
+    if laplacian_type == 'simple_normalized':
+        L_normalized_numpyformat = nx.normalized_laplacian_matrix(G, weight='weight')
+        L = spsp.csr_matrix(L_normalized_numpyformat)
+
+    return L
+
+def graph_spectrum(G, sparse=True, k=50, smallest_first=True, laplacian_type='classical'):
     """
 
     Parameters
@@ -74,7 +85,7 @@ def graph_spectrum(G, sparse=True, k=50, smallest_first=True):
 
     """
     # fonction condensée plus efficace en quantité de points :
-    L = nx.laplacian_matrix(G, weight='weight')
+    L = graph_laplacian(G, laplacian_type=laplacian_type)
 
 
     if sparse:

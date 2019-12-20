@@ -71,6 +71,7 @@ class PointCloudGraph(nx.Graph):
         node_eigenvector_values = dict(zip(self.nodes(), np.transpose(self.keigenvec[:,k-1])))
         nx.set_node_attributes(self, node_eigenvector_values, 'eigenvector_'+str(k))
 
+
     def compute_gradient_of_Fiedler_vector(self, method = 'simple'):
 
         A = nx.adjacency_matrix(G)
@@ -133,6 +134,45 @@ class PointCloudGraph(nx.Graph):
         node_gradient_Fiedler_values = dict(zip(self.nodes(), np.transpose(self.gradient_on_Fiedler)))
         nx.set_node_attributes(self, node_gradient_Fiedler_values, 'gradient_of_Fiedler_vector')
 
+def export_gradient_of_Fiedler_vector_on_pointcloud(G, filename="pcd_vp2_grad.txt"):
+    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    np.savetxt(filename, pcd_vp2_grad, delimiter=",")
+    print("Export du nuage avec gradient du vecteur propre 2")
+
+def export_figure_graph_of_Fiedler_vector(G, filename="Fiedler_vector"):
+    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2_grad, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 4].argsort()]
+    figure = plt.figure(0)
+    figure.clf()
+    figure.gca().set_title("Fiedler vector")
+    # figure.gca().plot(range(len(vec)),vec,color='blue')
+    figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, 4], color='blue')
+    figure.set_size_inches(10, 10)
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
+    figure.savefig(filename)
+    print("Export du vecteur propre 2")
+
+def export_figure_graph_of_gradient_of_Fiedler_vector_on_pointcloud(G, filename="Gradient_of_Fiedler_vector", sorted_by_fiedler_vector=True):
+    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2_grad, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 4].argsort()]
+
+    figure = plt.figure(1)
+    figure.clf()
+    figure.gca().set_title("Gradient of Fiedler vector")
+    # figure.gca().plot(range(len(vec)),vec,color='blue')
+    if sorted_by_fiedler_vector:
+        figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, 3], color='blue')
+    if sorted_by_fiedler_vector is False:
+        figure.gca().scatter(range(len(pcd_vp2_grad)), pcd_vp2_grad[:, 3], color='blue')
+
+    figure.set_size_inches(10, 10)
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
+    figure.savefig("Gradient_of_Fiedler_vector")
+    print("Export du gradient")
 
 ######### Main
 

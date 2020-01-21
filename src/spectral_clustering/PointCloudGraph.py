@@ -50,9 +50,9 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, nodes_coordinates_Z, 'Z_coordinate')
 
     def compute_graph_Laplacian(self, laplacian_type='classical'):
-        if laplacian_type=='classical':
+        if laplacian_type == 'classical':
             L = nx.laplacian_matrix(self, weight='weight')
-        if laplacian_type=='simple_normalized':
+        if laplacian_type == 'simple_normalized':
             L_normalized_numpyformat = nx.normalized_laplacian_matrix(self, weight='weight')
             L = spsp.csr_matrix(L_normalized_numpyformat)
 
@@ -61,6 +61,7 @@ class PointCloudGraph(nx.Graph):
     def compute_graph_eigenvectors(self, is_sparse=True, k=50, smallest_first=True, laplacian_type='classical'):
         keigenval, keigenvec = sgk.graph_spectrum(self, sparse=is_sparse, k=k, smallest_first=smallest_first,
                                                   laplacian_type=laplacian_type)
+        self.compute_graph_Laplacian(laplacian_type=laplacian_type)
         self.keigenvec = keigenvec
         self.keigenval = keigenval
 
@@ -123,10 +124,31 @@ class PointCloudGraph(nx.Graph):
             vp2grad = np.divide(vp2_max_min, grad_weight)
 
 
-        #if method == 'simple_divided_by_weight_along_edges':
+        if method == 'by_incidence_matrix_on_Fiedler_signal':
+            vp2grad = self.Laplacian.dot(vp2)
 
 
-        #if method == '':
+        if method == 'by_weight':
+            node_neighbor_max_vp2_node = np.array([np.argmax(vp2_matrix[node].data) for node in range(A.shape[0])])
+            node_neighbor_max_vp2 = np.array([vp2_matrix[node].data[neighbor_max_node] for node, neighbor_max_node in
+                                              zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
+
+            node_neighbor_min_vp2_node = np.array([np.argmin(vp2_matrix[node].data) for node in range(A.shape[0])])
+            node_neighbor_min_vp2 = np.array([vp2_matrix[node].data[neighbor_min_node] for node, neighbor_min_node in
+                                              zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
+
+            wmax = np.zeros(node_neighbor_min_vp2.shape)
+            wmin = np.zeros(node_neighbor_max_vp2.shape)
+
+            for i in range(node_neighbor_min_vp2_node.shape[0]):
+                print(i)
+                wmax[i] = self.edges[node_neighbor_max_vp2_node[i], i]['weight']
+                print(wmax[i])
+                wmin[i] = self.edges[i, node_neighbor_min_vp2_node[i]]['weight']
+                print(wmin[i])
+
+            vp2grad = np.divide((wmin*node_neighbor_max_vp2[i] - wmax*node_neighbor_min_vp2[i]), wmax+wmin)
+
 
         self.gradient_on_Fiedler = vp2grad
 
@@ -154,7 +176,7 @@ def export_figure_graph_of_Fiedler_vector(G, filename="Fiedler_vector"):
     figure.savefig(filename)
     print("Export du vecteur propre 2")
 
-def export_figure_graph_of_gradient_of_Fiedler_vector_on_pointcloud(G, filename="Gradient_of_Fiedler_vector", sorted_by_fiedler_vector=True):
+def export_figure_graph_of_gradient_of_Fiedler_vector(G, filename="Gradient_of_Fiedler_vector", sorted_by_fiedler_vector=True):
     pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
     pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2_grad, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
     pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 4].argsort()]
@@ -178,8 +200,40 @@ def export_figure_graph_of_gradient_of_Fiedler_vector_on_pointcloud(G, filename=
 
 if __name__ == '__main__':
 
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/arabi_densep_clean_segm.ply")
-    r = 8
-    G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
-    G.compute_graph_eigenvectors(k=2)
-    G.compute_gradient_of_Fiedler_vector()
+    #pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/arabi_densep_clean_segm.ply")
+    #r = 8
+    #G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    #G.compute_graph_eigenvectors(k=2)
+    #G.compute_gradient_of_Fiedler_vector(method='by_weight')
+    #export_gradient_of_Fiedler_vector_on_pointcloud(G)
+    #export_figure_graph_of_gradient_of_Fiedler_vector(G)
+    #export_figure_graph_of_Fiedler_vector(G)
+
+    G = nx.Graph()
+    G.add_nodes_from([1,2,3,4,5])
+    G.add_weighted_edges_from([(1,2,10),(1,3,30),(1,4,40),(1,5,50),(2,3,20),(2,4,40),(2,5,60)])
+    L = nx.laplacian_matrix(G, weight='weight')
+    keigenval, keigenvec = sgk.graph_spectrum(G, k=2)
+
+    A = nx.adjacency_matrix(G)
+    vp2 = np.asarray(keigenvec[:, 1])
+    vp2_matrix = A.copy()
+    vp2_matrix[A.nonzero()] = vp2[A.nonzero()[1]]
+
+    node_neighbor_max_vp2_node = np.array([np.argmax(vp2_matrix[node].data) for node in range(A.shape[0])])
+    node_neighbor_max_vp2 = np.array([vp2_matrix[node].data[neighbor_max_node] for node, neighbor_max_node in
+                                      zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
+
+    node_neighbor_min_vp2_node = np.array([np.argmin(vp2_matrix[node].data) for node in range(A.shape[0])])
+    node_neighbor_min_vp2 = np.array([vp2_matrix[node].data[neighbor_min_node] for node, neighbor_min_node in
+                                      zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
+
+    wmax = np.zeros(node_neighbor_min_vp2.shape)
+    wmin = np.zeros(node_neighbor_max_vp2.shape)
+
+    for i in range(node_neighbor_min_vp2_node.shape[0]):
+        print(i)
+        wmax[i] = G.edges[node_neighbor_max_vp2_node[i], i]['weight']
+        print(wmax[i])
+        wmin[i] = G.edges[i, node_neighbor_min_vp2_node[i]]['weight']
+        print(wmin[i])

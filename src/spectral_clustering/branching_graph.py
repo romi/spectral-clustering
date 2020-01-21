@@ -126,8 +126,8 @@ class BranchingGraph(nx.Graph):
         self.branch_linking_node[branch_id] = linking_node
         self.branch_order[branch_id] = linking_branch_order+1
 
-        nx.set_node_attributes(self, dict(zip(list_nodes,[branch_id for _ in list_nodes])), 'branch_id')
-        nx.set_node_attributes(self, dict(zip(list_nodes,[self.branch_order[branch_id] for _ in list_nodes])), 'branch_order')
+        nx.set_node_attributes(self, dict(zip(list_nodes, [branch_id for _ in list_nodes])), 'branch_id')
+        nx.set_node_attributes(self, dict(zip(list_nodes, [self.branch_order[branch_id] for _ in list_nodes])), 'branch_order')
 
         list_edge = [(starting_node+i, starting_node+i+1) for i in range(branch_size-1)]
         self.add_edges_from(list_edge)
@@ -135,7 +135,7 @@ class BranchingGraph(nx.Graph):
         # On relie la branche au point d'insertion
         self.add_edge(linking_node, starting_node)
         # Ajout de coordonnées pour représentation graphique
-        branch_node_coords = np.array([[x_offset, y_orientation*(i+1), self.node_coords[linking_node,2]] for i in range(branch_size)])
+        branch_node_coords = np.array([[x_offset, y_orientation*(i+1), self.node_coords[linking_node, 2]] for i in range(branch_size)])
         # branch_node_coords = branch_node_coords.reshape(branch_size, 3)
         #print(np.shape(Cbranche))
         self.node_coords = np.concatenate((self.node_coords, branch_node_coords), axis=0)
@@ -255,9 +255,9 @@ class BranchingGraph(nx.Graph):
         vp2grad = (np.nanmax(vp2_matrix, axis=1) - np.nanmin(vp2_matrix, axis=1)) / 2.
         node_vp2grad_values = dict(zip(self.nodes(), vp2grad))
         nx.set_node_attributes(self, node_vp2grad_values, 'gradient_vp2')
-
-        clustering = sk.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='single',
-                                                n_clusters=number_of_clusters).fit(vp2grad[:, np.newaxis])
+        X = np.concatenate((self.node_coords, vp2grad[:, np.newaxis]), axis=1)
+        clustering = sk.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward',
+                                                n_clusters=number_of_clusters).fit(X)
 
         node_clustering_label = dict(zip(self.nodes(), np.transpose(clustering.labels_)))
         nx.set_node_attributes(self, node_clustering_label, 'clustering_label')
@@ -292,10 +292,10 @@ def save_eigenvec_plot(G, sort_values=True, filename="eigenvectors.png"):
     keigenvec = G.keigenvec[:,:50]
     if sort_values:
         keigenvec = keigenvec[keigenvec[:,1].argsort()]
-    for i_vec, vec in enumerate(np.transpose(np.around(keigenvec,10))):
-        figure.add_subplot(5,10,i_vec+1)
+    for i_vec, vec in enumerate(np.transpose(np.around(keigenvec, 10))):
+        figure.add_subplot(5, 10, i_vec+1)
         figure.gca().set_title("Eigenvector "+str(i_vec+1))
-        figure.gca().plot(range(len(vec)),vec,color='blue')
+        figure.gca().plot(range(len(vec)), vec, color='blue')
     figure.set_size_inches(20,10)
     figure.subplots_adjust(wspace=0,hspace=0)
     figure.tight_layout()
@@ -411,14 +411,21 @@ def save_graph_plot(G, attribute_names=[None], colormap='jet', node_size=10, att
 
 if __name__ == '__main__':
 
-    G = BranchingGraph(500)
-    G.add_branch(branch_size=100, linking_node=200)
-    G.add_branch(branch_size=20, linking_node=530)
-    G.add_branch(branch_size=10, linking_node=610)
+    G = BranchingGraph(100)
+    G.add_branch(branch_size=20, linking_node=30)
+    G.add_branch(branch_size=20, linking_node=35)
+    G.add_branch(branch_size=20, linking_node=40)
+    G.add_branch(branch_size=20, linking_node=47)
+    G.add_branch(branch_size=20, linking_node=50)
+    G.add_branch(branch_size=20, linking_node=55)
+    G.add_branch(branch_size=20, linking_node=62)
+    G.add_branch(branch_size=20, linking_node=63)
+    G.add_branch(branch_size=20, linking_node=70)
 
-    G.add_branch(branch_size=100, linking_node=350)
-    G.add_branch(branch_size=20, linking_node=665)
-    G.add_branch(branch_size=10, linking_node=745)
+
+    #G.add_branch(branch_size=100, linking_node=350)
+    #G.add_branch(branch_size=20, linking_node=665)
+    #G.add_branch(branch_size=10, linking_node=745)
     #G.add_branch(branch_size=20, linking_node=50)
     #G.add_branch(branch_size=20, linking_node=55)
     #G.add_branch(branch_size=20, linking_node=60)
@@ -447,7 +454,10 @@ if __name__ == '__main__':
     #    G.add_eigenvector_value_as_attribute(len(G)-k)
     #save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(12)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
 
-    save_eigenvector_value_along_stem_plot(G,k=2)
+    G.clustering_by_fiedler_and_agglomerative(number_of_clusters=10)
+    save_graph_plot(G, attribute_names=['clustering_label'])
+
+    save_eigenvector_value_along_stem_plot(G, k=2)
 
     save_eigenval_plot(G)
     #save_single_eigenvec_plot(G,len(G))

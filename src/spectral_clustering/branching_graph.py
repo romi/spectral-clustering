@@ -5,7 +5,8 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as spsp
-import sklearn.cluster as sk
+import sklearn.cluster as skc
+import sklearn as sk
 
 ########### Définitions Fonctions
 
@@ -242,7 +243,7 @@ class BranchingGraph(nx.Graph):
             print(filename)
             np.savetxt(path + "/" + filename + '.txt', pcdtabclassif, delimiter=",")
 
-    def clustering_by_fiedler_and_agglomerative(self, number_of_clusters=2):
+    def clustering_by_fiedler_and_agglomerative(self, number_of_clusters=2, with_coordinates=False):
 
         self.compute_graph_eigenvectors()
         self.add_eigenvector_value_as_attribute(k=2)
@@ -255,9 +256,18 @@ class BranchingGraph(nx.Graph):
         vp2grad = (np.nanmax(vp2_matrix, axis=1) - np.nanmin(vp2_matrix, axis=1)) / 2.
         node_vp2grad_values = dict(zip(self.nodes(), vp2grad))
         nx.set_node_attributes(self, node_vp2grad_values, 'gradient_vp2')
-        X = np.concatenate((self.node_coords, vp2grad[:, np.newaxis]), axis=1)
-        clustering = sk.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward',
-                                                n_clusters=number_of_clusters).fit(X)
+
+
+        if with_coordinates == False:
+            X = vp2grad[:, np.newaxis]
+            clustering = skc.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward',
+                                                     n_clusters=number_of_clusters).fit(X)
+
+        if with_coordinates == True:
+            X = np.concatenate((self.node_coords, vp2grad[:, np.newaxis]), axis=1)
+            Xscaled = sk.preprocessing.MinMaxScaler().fit_transform(X)
+            clustering = skc.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward',
+                                                     n_clusters=number_of_clusters).fit(Xscaled)
 
         node_clustering_label = dict(zip(self.nodes(), np.transpose(clustering.labels_)))
         nx.set_node_attributes(self, node_clustering_label, 'clustering_label')
@@ -454,7 +464,7 @@ if __name__ == '__main__':
     #    G.add_eigenvector_value_as_attribute(len(G)-k)
     #save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(12)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
 
-    G.clustering_by_fiedler_and_agglomerative(number_of_clusters=10)
+    G.clustering_by_fiedler_and_agglomerative(number_of_clusters=11, with_coordinates=True)
     save_graph_plot(G, attribute_names=['clustering_label'])
 
     save_eigenvector_value_along_stem_plot(G, k=2)

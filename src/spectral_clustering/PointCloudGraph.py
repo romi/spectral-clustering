@@ -128,7 +128,8 @@ class PointCloudGraph(nx.Graph):
 
             grad_weight = np.zeros(node_neighbor_min_vp2_node.shape[0])
             for i in range(node_neighbor_min_vp2_node.shape[0]):
-                grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
+                grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[i].reshape(1, 3)) + \
+                                 sp.spatial.distance.euclidean(pcdtab[i].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
 
             vp2grad = np.divide(vp2_max_min, grad_weight)
 

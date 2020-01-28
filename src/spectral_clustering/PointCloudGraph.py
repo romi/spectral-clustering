@@ -133,7 +133,7 @@ class PointCloudGraph(nx.Graph):
             vp2grad = np.divide(vp2_max_min, grad_weight)
 
 
-        if method == 'by_incidence_matrix_on_Fiedler_signal':
+        if method == 'by_Laplacian_matrix_on_Fiedler_signal':
             vp2grad = self.Laplacian.dot(vp2)
 
 
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     r = 8
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors(k=2)
-    G.compute_gradient_of_Fiedler_vector(method='simple_divided_by_distance')
+    G.compute_gradient_of_Fiedler_vector(method='simple_divided_by_distance_along_edges')
     export_gradient_of_Fiedler_vector_on_pointcloud(G)
     export_figure_graph_of_gradient_of_Fiedler_vector(G)
     export_figure_graph_of_Fiedler_vector(G)

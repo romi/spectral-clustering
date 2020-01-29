@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as spsp
 import scipy as sp
-import sklearn.cluster as sk
+import sklearn.cluster as skc
+import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
 import open3d as open3d
 
@@ -40,6 +41,7 @@ class PointCloudGraph(nx.Graph):
         self.keigenvec = None
         self.keigenval = None
         self.gradient_on_Fiedler = None
+        self.direction_gradient_on_Fiedler_scaled = None
 
     def add_coordinates_as_attribute_for_each_node(self):
         nodes_coordinates_X = dict(zip(self.nodes(), self.nodes_coords[:, 0]))
@@ -83,6 +85,11 @@ class PointCloudGraph(nx.Graph):
         vp2_matrix[A.nonzero()] = vp2[A.nonzero()[1]]
 
         if method == 'simple':
+            node_neighbor_max_vp2_node = np.array(
+                [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
+            node_neighbor_min_vp2_node = np.array(
+                [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
+
             # Second method fo gradient, just obtain the max and min value in the neighborhood.
             node_neighbor_max_vp2 = np.array([vp2_matrix[node].data.max() for node in range(A.shape[0])])
             node_neighbor_min_vp2 = np.array([vp2_matrix[node].data.min() for node in range(A.shape[0])])
@@ -162,16 +169,59 @@ class PointCloudGraph(nx.Graph):
             vp2grad = np.divide((wmin*node_neighbor_max_vp2[i] - wmax*node_neighbor_min_vp2[i]), wmax+wmin)
 
 
-        self.gradient_on_Fiedler = vp2grad
+        self.gradient_on_Fiedler = vp2grad[:, np.newaxis]
+        self.direction_gradient_on_Fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
+
 
     def add_gradient_of_Fiedler_vector_as_attribute(self):
         node_gradient_Fiedler_values = dict(zip(self.nodes(), np.transpose(self.gradient_on_Fiedler)))
         nx.set_node_attributes(self, node_gradient_Fiedler_values, 'gradient_of_Fiedler_vector')
 
+def create_normalized_vector_field(list_of_max_nodes, list_of_min_nodes, pcd_coordinates):
+    vectors = pcd_coordinates[list_of_max_nodes]-pcd_coordinates[list_of_min_nodes]
+    # Normalization of the directions
+    vectors_scaled = sk.preprocessing.MinMaxScaler().fit_transform(vectors)
+
+    return vectors_scaled
+
+def display_gradient_vector_field(G, normalized=True, scale= 1.):
+    from cellcomplex.property_topomesh.creation import vertex_topomesh
+    from cellcomplex.property_topomesh.visualization.vtk_actor_topomesh import VtkActorTopomesh
+    from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actors
+
+    n_points = G.nodes_coords.shape[0]
+
+    topomesh = vertex_topomesh(dict(zip(range(n_points), G.nodes_coords)))
+
+    if normalized:
+        vectors = G.direction_gradient_on_Fiedler_scaled
+    if normalized is False:
+        vectors = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
+
+    topomesh.update_wisp_property('vector', 0, dict(zip(range(n_points), vectors)))
+
+    actors = []
+
+    vector_actor = VtkActorTopomesh(topomesh, degree=0, property_name='vector')
+    vector_actor.vector_glyph = 'arrow'
+    vector_actor.glyph_scale = scale
+    vector_actor.update(colormap='Reds', value_range=(0,0))
+    actors += [vector_actor.actor]
+
+    vtk_display_actors(actors)
+
+
+
 def export_gradient_of_Fiedler_vector_on_pointcloud(G, filename="pcd_vp2_grad.txt"):
-    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler], axis=1)
     np.savetxt(filename, pcd_vp2_grad, delimiter=",")
     print("Export du nuage avec gradient du vecteur propre 2")
+
+def export_Fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
+    vp2 = G.keigenvec[:, 1]
+    pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
+    np.savetxt(filename, pcd_vp2, delimiter=",")
+    print("Export du nuage avec le vecteur propre 2")
 
 def export_figure_graph_of_Fiedler_vector(G, filename="Fiedler_vector", sorted_by_fiedler_vector=True):
     vp2 = G.keigenvec[:, 1]
@@ -194,7 +244,7 @@ def export_figure_graph_of_Fiedler_vector(G, filename="Fiedler_vector", sorted_b
 def export_figure_graph_of_gradient_of_Fiedler_vector(G, filename="Gradient_of_Fiedler_vector", sorted_by_fiedler_vector=True):
     vp2 = G.keigenvec[:, 1]
     pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2, G.gradient_on_Fiedler[:, np.newaxis]], axis=1)
+    pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2, G.gradient_on_Fiedler], axis=1)
     pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 3].argsort()]
 
     figure = plt.figure(1)
@@ -250,7 +300,8 @@ if __name__ == '__main__':
     r = 8
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors(k=2)
-    G.compute_gradient_of_Fiedler_vector(method='simple_divided_by_distance_along_edges')
+    G.compute_gradient_of_Fiedler_vector(method='simple')
     export_gradient_of_Fiedler_vector_on_pointcloud(G)
     export_figure_graph_of_gradient_of_Fiedler_vector(G)
     export_figure_graph_of_Fiedler_vector(G)
+    display_gradient_vector_field(G, normalized=False, scale=100)

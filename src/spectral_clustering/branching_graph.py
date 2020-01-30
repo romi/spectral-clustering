@@ -421,16 +421,16 @@ def save_graph_plot(G, attribute_names=[None], colormap='jet', node_size=10, att
 
 if __name__ == '__main__':
 
-    G = BranchingGraph(100)
-    G.add_branch(branch_size=20, linking_node=30)
-    G.add_branch(branch_size=20, linking_node=35)
-    G.add_branch(branch_size=20, linking_node=40)
-    G.add_branch(branch_size=20, linking_node=47)
-    G.add_branch(branch_size=20, linking_node=50)
-    G.add_branch(branch_size=20, linking_node=55)
-    G.add_branch(branch_size=20, linking_node=62)
-    G.add_branch(branch_size=20, linking_node=63)
-    G.add_branch(branch_size=20, linking_node=70)
+    G = BranchingGraph(10000)
+    G.add_branch(branch_size=1000, linking_node=4000)
+    #G.add_branch(branch_size=20, linking_node=35)
+    #G.add_branch(branch_size=20, linking_node=40)
+    #G.add_branch(branch_size=20, linking_node=47)
+    #G.add_branch(branch_size=20, linking_node=50)
+    #G.add_branch(branch_size=20, linking_node=55)
+    #G.add_branch(branch_size=20, linking_node=62)
+    #G.add_branch(branch_size=20, linking_node=63)
+    #G.add_branch(branch_size=20, linking_node=70)
 
 
     #G.add_branch(branch_size=100, linking_node=350)
@@ -453,24 +453,28 @@ if __name__ == '__main__':
     #G.add_branch(branch_size=18,linking_node=75)
     #G.add_branch(branch_size=20,linking_node=79,y_orientation=-1)
 
-    G.compute_graph_eigenvectors()
-    G.add_eigenvector_value_as_attribute(2)
+    #G.compute_graph_eigenvectors()
+    #G.add_eigenvector_value_as_attribute(2)
     #G.add_eigenvector_value_as_attribute(3)
     #save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2', 'eigenvector_3'], filename='graph_first_eigenvectors.png')
-    save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2'],
-                   filename='../../Data/Tests/eigenvector2.png')
+    #save_graph_plot(G, attribute_names=['eigenvector_2', 'branch_relative_eigenvector_2'],
+    #               filename='../../Data/Tests/eigenvector2.png')
 
     #for k in range (12):
     #    G.add_eigenvector_value_as_attribute(len(G)-k)
     #save_graph_plot(G,attribute_names=['eigenvector_'+str(len(G)-k) for k in range(12)],plot_zeros=False,attribute_as_size=True,node_size=50,filename='graph_last_eigenvectors.png')
 
-    G.clustering_by_fiedler_and_agglomerative(number_of_clusters=11, with_coordinates=True)
-    save_graph_plot(G, attribute_names=['clustering_label'])
+    #G.clustering_by_fiedler_and_agglomerative(number_of_clusters=11, with_coordinates=True)
+    #save_graph_plot(G, attribute_names=['clustering_label'])
 
-    save_eigenvector_value_along_stem_plot(G, k=2)
+    #save_eigenvector_value_along_stem_plot(G, k=2)
 
-    save_eigenval_plot(G)
+    #save_eigenval_plot(G)
     #save_single_eigenvec_plot(G,len(G))
-    save_eigenvec_plot(G)
-    save_eigenvec_plot(G, sort_values=False, filename="../../Data/Tests/eigenvectorstopo.png")
+    #save_eigenvec_plot(G)
+    #save_eigenvec_plot(G, sort_values=False, filename="../../Data/Tests/eigenvectorstopo.png")
     #G.export_eigenvectors_on_pointcloud(k=2)
+
+    pcdtabclassif = G.node_coords
+    # Sortie de tous les nuages
+    np.savetxt('pcdbranchinggraph', pcdtabclassif, delimiter=",")

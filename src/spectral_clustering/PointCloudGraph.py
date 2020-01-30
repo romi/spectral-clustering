@@ -178,9 +178,9 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, node_gradient_Fiedler_values, 'gradient_of_Fiedler_vector')
 
 def create_normalized_vector_field(list_of_max_nodes, list_of_min_nodes, pcd_coordinates):
-    vectors = pcd_coordinates[list_of_max_nodes]-pcd_coordinates[list_of_min_nodes]
+    vectors = pcd_coordinates[list_of_max_nodes] - pcd_coordinates[list_of_min_nodes]
     # Normalization of the directions
-    vectors_scaled = sk.preprocessing.MinMaxScaler().fit_transform(vectors)
+    vectors_scaled = sk.preprocessing.normalize(vectors, norm='l2')
 
     return vectors_scaled
 
@@ -207,6 +207,9 @@ def display_gradient_vector_field(G, normalized=True, scale= 1.):
     vector_actor.glyph_scale = scale
     vector_actor.update(colormap='Reds', value_range=(0,0))
     actors += [vector_actor.actor]
+
+    # Change of background
+    vtk_display_actors(actors, background=(0.9, 0.9, 0.9))
 
     vtk_display_actors(actors)
 
@@ -297,11 +300,11 @@ def simple_graph_to_test_methods():
 if __name__ == '__main__':
 
     pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/cylindres/cylindre_temoin_unebranche60.ply")
-    r = 8
+    r = 18
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
-    G.compute_graph_eigenvectors(k=2)
+    G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='simple')
-    export_gradient_of_Fiedler_vector_on_pointcloud(G)
-    export_figure_graph_of_gradient_of_Fiedler_vector(G)
-    export_figure_graph_of_Fiedler_vector(G)
-    display_gradient_vector_field(G, normalized=False, scale=100)
+    #export_gradient_of_Fiedler_vector_on_pointcloud(G)
+    #export_figure_graph_of_gradient_of_Fiedler_vector(G)
+    #export_figure_graph_of_Fiedler_vector(G)
+    display_gradient_vector_field(G)

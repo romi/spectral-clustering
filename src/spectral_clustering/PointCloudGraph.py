@@ -44,6 +44,7 @@ class PointCloudGraph(nx.Graph):
         self.direction_gradient_on_Fiedler_scaled = None
         self.clustering_labels = None
         self.clusters_leaves = None
+        self.kmeans_labels_gradient = None
         self.minimum_local = None
 
     def add_coordinates_as_attribute_for_each_node(self):
@@ -85,7 +86,7 @@ class PointCloudGraph(nx.Graph):
 
     def compute_gradient_of_Fiedler_vector(self, method = 'simple'):
 
-        A = nx.adjacency_matrix(G).astype(float)
+        A = nx.adjacency_matrix(self).astype(float)
         vp2 = np.asarray(self.keigenvec[:, 1])
 
         vp2_matrix = A.copy()
@@ -194,6 +195,17 @@ class PointCloudGraph(nx.Graph):
         node_clustering_label = dict(zip(self.nodes(), np.transpose(clustering.labels_)))
         nx.set_node_attributes(self, node_clustering_label, 'clustering_labels')
         self.clustering_labels = clustering.labels_[:, np.newaxis]
+
+
+    def clustering_by_kmeans_in_four_clusters_using_gradient_norm(self, export_in_labeled_point_cloud=False):
+        kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
+            self.gradient_on_Fiedler)
+
+        if export_in_labeled_point_cloud is True:
+            export_anything_on_point_cloud(self, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
+
+        kmeans_labels = kmeans.labels_[:, np.newaxis]
+        self.kmeans_labels_gradient = kmeans_labels
 
 
     def find_local_minimum_of_gradient_norm(self):
@@ -310,7 +322,7 @@ def export_figure_graph_of_gradient_of_Fiedler_vector(G, filename="Gradient_of_F
     figure.set_size_inches(10, 10)
     figure.subplots_adjust(wspace=0, hspace=0)
     figure.tight_layout()
-    figure.savefig("Gradient_of_Fiedler_vector")
+    figure.savefig(filename)
     print("Export du gradient")
 
 def simple_graph_to_test_methods():

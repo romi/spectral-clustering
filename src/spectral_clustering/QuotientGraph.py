@@ -124,6 +124,54 @@ class QuotientGraph(nx.Graph):
         kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels)
 
 
+    def delete_small_clusters(self, min_number_of_element_in_a_quotient_node=50):
+        nodes_to_remove = []
+        for u in self.nodes:
+            if self.nodes[u]['intra_class_node_number'] < min_number_of_element_in_a_quotient_node:
+                adjacent_clusters = [n for n in self[u]]
+                max_number_of_nodes_in_adjacent_clusters = 0
+                for i in range(len(adjacent_clusters)):
+                    if self.nodes[adjacent_clusters[i]][
+                            'intra_class_node_number'] > max_number_of_nodes_in_adjacent_clusters:
+                        max_number_of_nodes_in_adjacent_clusters = self.nodes[adjacent_clusters[i]][
+                            'intra_class_node_number']
+                        new_cluster = adjacent_clusters[i]
+                # Opération de fusion du petit cluster avec son voisin le plus conséquent.
+                # Mise à jour des attributs de la grande classe et suppression de la petite classe
+                self.nodes[new_cluster]['intra_class_node_number'] += self.nodes[u]['intra_class_node_number']
+                self.nodes[new_cluster]['intra_class_edge_weight'] += (self.nodes[u]['intra_class_edge_weight']
+                                                                     + self.edges[new_cluster, u][
+                                                                         'inter_class_edge_weight'])
+                self.nodes[new_cluster]['intra_class_edge_number'] += (self.nodes[u]['intra_class_edge_number']
+                                                                     + self.edges[new_cluster, u][
+                                                                         'inter_class_edge_number'])
+
+                # Mise à jour du lien avec le PointCloudGraph d'origine
+                for v in G.nodes:
+                    if G.nodes[v]['quotient_graph_node'] == u:
+                        G.nodes[v]['quotient_graph_node'] = new_cluster
+
+                # Mise à jour des edges
+                for i in range(len(adjacent_clusters)):
+                    if self.has_edge(new_cluster, adjacent_clusters[i]) is False:
+                        self.add_edge(new_cluster, adjacent_clusters[i],
+                                      inter_class_edge_weight=self.edges[u, adjacent_clusters[i]]['inter_class_edge_weight'],
+                                      inter_class_edge_number=self.edges[u, adjacent_clusters[i]]['inter_class_edge_number'])
+                    elif self.has_edge(new_cluster, adjacent_clusters[i]) and new_cluster != adjacent_clusters[i]:
+                        self.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
+                            self.edges[u, adjacent_clusters[i]]['inter_class_edge_weight']
+                        self.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
+                            self.edges[u, adjacent_clusters[i]]['inter_class_edge_number']
+                nodes_to_remove.append(u)
+
+        self.remove_nodes_from(nodes_to_remove)
+
+def export_some_graph_attributes_on_point_cloud(graph, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
+    new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
+    new_classif = new_classif[:, np.newaxis]
+    kpcg.export_anything_on_point_cloud(G, attribute=new_classif, filename=filename)
+
+
 def display_and_export_quotient_graph_matplotlib(quotient_graph_manual, node_sizes=20, filename="quotient_graph_matplotlib"):
 
     figure = plt.figure(0)
@@ -162,52 +210,10 @@ if __name__ == '__main__':
 
     display_and_export_quotient_graph_matplotlib(QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_brut")
-
-    min_number_of_element_in_a_quotient_node = 50
-    nodes_to_remove = []
-    for u in QG.nodes:
-        if QG.nodes[u]['intra_class_node_number'] < min_number_of_element_in_a_quotient_node:
-            adjacent_clusters = [n for n in QG[u]]
-            max_number_of_nodes_in_adjacent_clusters = 0
-            for i in range(len(adjacent_clusters)):
-                if QG.nodes[adjacent_clusters[i]]['intra_class_node_number'] > max_number_of_nodes_in_adjacent_clusters:
-                    max_number_of_nodes_in_adjacent_clusters = QG.nodes[adjacent_clusters[i]]['intra_class_node_number']
-                    new_cluster = adjacent_clusters[i]
-            # Opération de fusion du petit cluster avec son voisin le plus conséquent.
-            # Mise à jour des attributs de la grande classe et suppression de la petite classe
-            QG.nodes[new_cluster]['intra_class_node_number'] += QG.nodes[u]['intra_class_node_number']
-            QG.nodes[new_cluster]['intra_class_edge_weight'] += (QG.nodes[u]['intra_class_edge_weight']
-                                                                 + QG.edges[new_cluster, u]['inter_class_edge_weight'])
-            QG.nodes[new_cluster]['intra_class_edge_number'] += (QG.nodes[u]['intra_class_edge_number']
-                                                                 + QG.edges[new_cluster, u]['inter_class_edge_number'])
-
-            # Mise à jour du lien avec le PointCloudGraph d'origine
-            for v in G.nodes:
-                if G.nodes[v]['quotient_graph_node'] == u:
-                    G.nodes[v]['quotient_graph_node'] = new_cluster
-
-            # Mise à jour des edges
-            for i in range(len(adjacent_clusters)):
-                if QG.has_edge(new_cluster, adjacent_clusters[i]) is False:
-                    QG.add_edge(new_cluster, adjacent_clusters[i],
-                                inter_class_edge_weight=QG.edges[u, adjacent_clusters[i]]['inter_class_edge_weight'],
-                                inter_class_edge_number=QG.edges[u, adjacent_clusters[i]]['inter_class_edge_number'])
-                elif QG.has_edge(new_cluster, adjacent_clusters[i]) and new_cluster != adjacent_clusters[i]:
-                    QG.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
-                        QG.edges[u, adjacent_clusters[i]]['inter_class_edge_weight']
-                    QG.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
-                        QG.edges[u, adjacent_clusters[i]]['inter_class_edge_number']
-            nodes_to_remove.append(u)
-
-    QG.remove_nodes_from(nodes_to_remove)
-
-
+    QG.delete_small_clusters()
     display_and_export_quotient_graph_matplotlib(QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_without_small_clusters")
-
-    new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
-    new_classif = new_classif[:, np.newaxis]
-    kpcg.export_anything_on_point_cloud(G, attribute=new_classif, filename='pcd_classif_without_small_clusters.txt')
+    export_some_graph_attributes_on_point_cloud(G)
 
 
 

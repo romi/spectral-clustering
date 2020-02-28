@@ -2,6 +2,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import scipy.sparse as spsp
 import scipy as sp
 import sklearn.cluster as skc
@@ -166,7 +167,7 @@ class QuotientGraph(nx.Graph):
 
         self.remove_nodes_from(nodes_to_remove)
 
-def export_some_graph_attributes_on_point_cloud(graph, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
+def export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
     new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
     new_classif = new_classif[:, np.newaxis]
     kpcg.export_anything_on_point_cloud(G, attribute=new_classif, filename=filename)
@@ -214,6 +215,51 @@ if __name__ == '__main__':
     display_and_export_quotient_graph_matplotlib(QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_without_small_clusters")
     export_some_graph_attributes_on_point_cloud(G)
+
+    # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
+    new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
+    new_classif = new_classif[:, np.newaxis]
+    pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
+    sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
+    nodes_coords_moy = np.zeros((len(QG), 3))
+    j = 0
+    for n in QG.nodes:
+        X = []
+        Y = []
+        Z = []
+        for i in range(pcd_attribute.shape[0]):
+            if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
+                X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
+                Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
+                Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
+        nodes_coords_moy[j, 0] = np.mean(X)
+        nodes_coords_moy[j, 1] = np.mean(Y)
+        nodes_coords_moy[j, 2] = np.mean(Z)
+        j += 1
+
+    #sgk.draw_graph_cellcomplex(pcd=nodes_coords_moy, G=QG)
+
+
+
+    with plt.style.context(('ggplot')):
+        fig = plt.figure(figsize=(10, 7))
+        ax = Axes3D(fig)
+        for i in range(nodes_coords_moy.shape[0]):
+            xi = nodes_coords_moy[i, 0]
+            yi = nodes_coords_moy[i, 1]
+            zi = nodes_coords_moy[i, 2]
+
+            ax.scatter(xi, yi, zi, s=10**2, edgecolors='k', alpha=0.7)
+
+        for i, j in enumerate(QG.edges()):
+            corresp = dict(zip(QG.nodes, range(len(QG.nodes))))
+            x = np.array((nodes_coords_moy[corresp[j[0]],0], nodes_coords_moy[corresp[j[1]],0]))
+            y = np.array((nodes_coords_moy[corresp[j[0]],1], nodes_coords_moy[corresp[j[1]],1]))
+            z = np.array((nodes_coords_moy[corresp[j[0]],2], nodes_coords_moy[corresp[j[1]],2]))
+            ax.plot(x, y, z, c='black', alpha=0.5)
+        ax.view_init(30, angle)
+        ax.set_axis_off()
+        plt.show()
 
 
 

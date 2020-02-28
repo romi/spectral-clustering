@@ -123,7 +123,11 @@ def draw_graph_open3d(pcd, G):
 # affichage du graphe via CellComplex
 # en entrée : la matrice d'adjacence (matrice de similarité) et le nuage de points importé/lu via open3D
 def draw_graph_cellcomplex(pcd, G):
-    pcdtab = np.asarray(pcd.points)
+
+    if type(pcd) is open3d.geometry.PointCloud:
+        pcdtab = np.asarray(pcd.points)
+    else:
+        pcdtab = pcd
     # s, t = np.meshgrid(np.arange(len(pcdtab)), np.arange(len(pcdtab)))
     # sources = s[simatrix > 0]
     # targets = t[simatrix > 0]
@@ -134,7 +138,7 @@ def draw_graph_cellcomplex(pcd, G):
     from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actors
     from cellcomplex.property_topomesh.analysis import compute_topomesh_property
 
-    topomesh = edge_topomesh(np.array(G.edges), dict(zip(np.arange(len(pcdtab)), pcdtab)))
+    topomesh = edge_topomesh(np.array(G.edges), dict(zip(np.asarray([n for n in G.nodes]), pcdtab)))
 
     compute_topomesh_property(topomesh, 'length', 1)
 

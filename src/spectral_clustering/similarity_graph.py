@@ -122,7 +122,7 @@ def draw_graph_open3d(pcd, G):
 
 # affichage du graphe via CellComplex
 # en entrée : la matrice d'adjacence (matrice de similarité) et le nuage de points importé/lu via open3D
-def draw_graph_cellcomplex(pcd, G):
+def draw_graph_cellcomplex(pcd, G, pcd_to_superimpose):
 
     if type(pcd) is open3d.geometry.PointCloud:
         pcdtab = np.asarray(pcd.points)
@@ -137,24 +137,29 @@ def draw_graph_cellcomplex(pcd, G):
     from cellcomplex.property_topomesh.visualization.vtk_actor_topomesh import VtkActorTopomesh
     from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actors
     from cellcomplex.property_topomesh.analysis import compute_topomesh_property
+    from cellcomplex.property_topomesh.creation import vertex_topomesh
 
-    topomesh = edge_topomesh(np.array(G.edges), dict(zip(np.asarray([n for n in G.nodes]), pcdtab)))
+    topomesh = edge_topomesh(np.array([e for e in G.edges if e[0]!=e[1]]), dict(zip(np.asarray([n for n in G.nodes]), pcdtab)))
 
     compute_topomesh_property(topomesh, 'length', 1)
 
     edge_actor = VtkActorTopomesh()
     edge_actor.set_topomesh(topomesh, 1, property_name='length')
-    edge_actor.line_glyph = 'line'
+    edge_actor.line_glyph = 'tube'
     edge_actor.update(colormap="cool")
 
     vertex_actor = VtkActorTopomesh()
     vertex_actor.set_topomesh(topomesh, 0)
     # vertex_actor.point_glyph = 'point'
     vertex_actor.point_glyph = 'sphere'
-    vertex_actor.glyph_scale = 0.0001
+    vertex_actor.glyph_scale = 2
     vertex_actor.update(colormap="Reds")
 
-    vtk_display_actors([vertex_actor.actor, edge_actor.actor], background=(1, 1, 1))
+    point_cloud_actor = VtkActorTopomesh(vertex_topomesh(pcd_to_superimpose), 0)
+    point_cloud_actor.point_glyph = 'point'
+    point_cloud_actor.update(colormap="Blues")
+
+    vtk_display_actors([vertex_actor.actor, edge_actor.actor, point_cloud_actor.actor], background=(0.9, 0.9, 0.9))
 
 
 def export_eigenvectors_on_pointcloud(pcd, keigenvec, k, filename='vecteurproprecol.txt'):

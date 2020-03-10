@@ -363,7 +363,7 @@ def simple_graph_to_test_methods():
 
 if __name__ == '__main__':
 
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply")
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/impr3D_pcd.ply")
     r = 18
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
@@ -376,7 +376,7 @@ if __name__ == '__main__':
     export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
     #export_figure_graph_of_Fiedler_vector(G)
     #display_gradient_vector_field(G, normalized=False, scale= 10000.)
-    kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.gradient_on_Fiedler)
+    kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
     export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
 
     #

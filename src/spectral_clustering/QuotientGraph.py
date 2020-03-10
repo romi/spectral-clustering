@@ -20,6 +20,7 @@ class QuotientGraph(nx.Graph):
         self.seed_colors = None
         self.graph_labels_dict = None
         self.label_count = None
+        self.nodes_coordinates = None
 
     def build_QuotientGraph_from_PointCloudGraph(self, G):
 
@@ -167,6 +168,30 @@ class QuotientGraph(nx.Graph):
 
         self.remove_nodes_from(nodes_to_remove)
 
+
+    def compute_quotientgraph_nodes_coordinates(self, G):
+        # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
+        new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
+        new_classif = new_classif[:, np.newaxis]
+        pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
+        sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
+        nodes_coords_moy = np.zeros((len(self), 3))
+        j = 0
+        for n in self.nodes:
+            X = []
+            Y = []
+            Z = []
+            for i in range(pcd_attribute.shape[0]):
+                if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
+                    X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
+                    Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
+                    Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
+            nodes_coords_moy[j, 0] = np.mean(X)
+            nodes_coords_moy[j, 1] = np.mean(Y)
+            nodes_coords_moy[j, 2] = np.mean(Z)
+            j += 1
+        self.nodes_coordinates = nodes_coords_moy
+
 def export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
     new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
     new_classif = new_classif[:, np.newaxis]
@@ -221,75 +246,8 @@ def draw_quotientgraph_cellcomplex(pcd, QG, G, color_attribute='quotient_graph_n
 
     vtk_display_actors([vertex_actor.actor, edge_actor.actor, point_cloud_actor.actor], background=(0.9, 0.9, 0.9))
 
-
-def display_and_export_quotient_graph_matplotlib(quotient_graph_manual, node_sizes=20, filename="quotient_graph_matplotlib"):
-
-    figure = plt.figure(0)
-    figure.clf()
-    graph_layout = nx.kamada_kawai_layout(quotient_graph_manual)
-    colormap = 'jet'
-    node_color_from_attribute = dict(QG.nodes(data='seed_colors')).values()
-    node_color = [quotient_graph_manual.nodes[i]['kmeans_labels'] / 4 for i in quotient_graph_manual.nodes()]
-    nx.drawing.nx_pylab.draw_networkx(quotient_graph_manual,
-                                          ax=figure.gca(),
-                                          pos=graph_layout,
-                                          with_labels=True,
-                                          node_size=node_sizes,
-                                          node_color=node_color_from_attribute,
-                                          labels=dict(QG.nodes(data='intra_class_node_number')),
-                                          cmap=plt.get_cmap(colormap))
-
-    figure.subplots_adjust(wspace=0, hspace=0)
-    figure.tight_layout()
-    figure.savefig(filename)
-    print("Export du graphe quotient matplotlib")
-
-######### Main
-
-if __name__ == '__main__':
-
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply")
-    r = 18
-    G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
-    G.compute_graph_eigenvectors()
-    G.compute_gradient_of_Fiedler_vector(method='simple')
-    #G.clustering_by_fiedler_and_agglomerative(number_of_clusters=45, criteria=X)
-    G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
-    QG = QuotientGraph()
-    QG.build_QuotientGraph_from_PointCloudGraph(G)
-
-    display_and_export_quotient_graph_matplotlib(QG, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_brut")
-    QG.delete_small_clusters()
-    display_and_export_quotient_graph_matplotlib(QG, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_without_small_clusters")
-    export_some_graph_attributes_on_point_cloud(G)
-
-    # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
-    new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
-    new_classif = new_classif[:, np.newaxis]
-    pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
-    sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
-    nodes_coords_moy = np.zeros((len(QG), 3))
-    j = 0
-    for n in QG.nodes:
-        X = []
-        Y = []
-        Z = []
-        for i in range(pcd_attribute.shape[0]):
-            if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
-                X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
-                Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
-                Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
-        nodes_coords_moy[j, 0] = np.mean(X)
-        nodes_coords_moy[j, 1] = np.mean(Y)
-        nodes_coords_moy[j, 2] = np.mean(Z)
-        j += 1
-
-    draw_quotientgraph_cellcomplex(pcd=nodes_coords_moy,QG=QG, G=G, color_attribute='kmeans_labels')
-
-
-
+#3d
+def draw_quotientgraph_matplotlib(nodes_coords_moy, QG):
     with plt.style.context(('ggplot')):
         fig = plt.figure(figsize=(10, 7))
         ax = Axes3D(fig)
@@ -311,6 +269,122 @@ if __name__ == '__main__':
         plt.show()
 
 
+def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib"):
+
+    figure = plt.figure(0)
+    figure.clf()
+    graph_layout = nx.kamada_kawai_layout(quotient_graph)
+    colormap = 'jet'
+    node_color_from_attribute = dict(quotient_graph.nodes(data='seed_colors')).values()
+    node_color = [quotient_graph.nodes[i]['kmeans_labels'] / 4 for i in quotient_graph.nodes()]
+    nx.drawing.nx_pylab.draw_networkx(quotient_graph,
+                                          ax=figure.gca(),
+                                          pos=graph_layout,
+                                          with_labels=True,
+                                          node_size=node_sizes,
+                                          node_color=node_color_from_attribute,
+                                          labels=dict(quotient_graph.nodes(data='intra_class_node_number')),
+                                          cmap=plt.get_cmap(colormap))
+    #nx.drawing.nx_pylab.draw_networkx_edge_labels(quotient_graph, pos=graph_layout, font_size=20, font_family="sans-sherif")
+
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
+    figure.savefig(filename)
+    print("Export du graphe quotient matplotlib")
+
+######### Main
+
+if __name__ == '__main__':
+
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
+
+    r = 18
+    G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    G.compute_graph_eigenvectors()
+    G.compute_gradient_of_Fiedler_vector(method='simple')
+    #G.clustering_by_fiedler_and_agglomerative(number_of_clusters=45, criteria=X)
+    G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
+    QG = QuotientGraph()
+    QG.build_QuotientGraph_from_PointCloudGraph(G)
+
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_brut")
+    QG.delete_small_clusters()
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_without_small_clusters")
+    export_some_graph_attributes_on_point_cloud(G)
+
+    QG.compute_quotientgraph_nodes_coordinates(G)
+
+    draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='kmeans_labels')
+
+
+    # Determinate a score for each vertex in a quotient node.
+    # init
+    for u in G.nodes:
+        G.nodes[u]['number_of_adj_labels'] = 0
+    # global score for the entire graph
+    global_topological_energy = 0
+    # for to compute the score of each vertex
+    for v in G.nodes:
+        neighb = [n for n in G[v]]
+        for n in neighb:
+            if G.nodes[v]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
+                G.nodes[v]['number_of_adj_labels'] += 1
+        global_topological_energy += G.node[v]['number_of_adj_labels']
+
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels', filename='graph_attribute_energy.txt')
+
+
+
+
+
+
+
+"""
+    with plt.style.context(('ggplot')):
+        fig = plt.figure(figsize=(10, 7))
+        ax = Axes3D(fig)
+        for i in range(nodes_coords_moy.shape[0]):
+            xi = nodes_coords_moy[i, 0]
+            yi = nodes_coords_moy[i, 1]
+            zi = nodes_coords_moy[i, 2]
+
+            ax.scatter(xi, yi, zi, s=10**2, edgecolors='k', alpha=0.7)
+
+        for i, j in enumerate(QG.edges()):
+            corresp = dict(zip(QG.nodes, range(len(QG.nodes))))
+            x = np.array((nodes_coords_moy[corresp[j[0]],0], nodes_coords_moy[corresp[j[1]],0]))
+            y = np.array((nodes_coords_moy[corresp[j[0]],1], nodes_coords_moy[corresp[j[1]],1]))
+            z = np.array((nodes_coords_moy[corresp[j[0]],2], nodes_coords_moy[corresp[j[1]],2]))
+            ax.plot(x, y, z, c='black', alpha=0.5)
+        ax.view_init(30, angle)
+        ax.set_axis_off()
+        plt.show()
+        
+        
+    # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
+    new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
+    new_classif = new_classif[:, np.newaxis]
+    pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
+    sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
+    nodes_coords_moy = np.zeros((len(QG), 3))
+    j = 0
+    for n in QG.nodes:
+        X = []
+        Y = []
+        Z = []
+        for i in range(pcd_attribute.shape[0]):
+            if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
+                X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
+                Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
+                Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
+        nodes_coords_moy[j, 0] = np.mean(X)
+        nodes_coords_moy[j, 1] = np.mean(Y)
+        nodes_coords_moy[j, 2] = np.mean(Z)
+        j += 1
+
+"""
 
 
 

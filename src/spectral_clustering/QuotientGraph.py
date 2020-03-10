@@ -10,6 +10,7 @@ import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
 import open3d as open3d
 import spectral_clustering.PointCloudGraph as kpcg
+import time
 
 ########### Définition classe
 
@@ -247,7 +248,7 @@ def draw_quotientgraph_cellcomplex(pcd, QG, G, color_attribute='quotient_graph_n
     vtk_display_actors([vertex_actor.actor, edge_actor.actor, point_cloud_actor.actor], background=(0.9, 0.9, 0.9))
 
 #3d
-def draw_quotientgraph_matplotlib(nodes_coords_moy, QG):
+def draw_quotientgraph_matplotlib_3D(nodes_coords_moy, QG):
     with plt.style.context(('ggplot')):
         fig = plt.figure(figsize=(10, 7))
         ax = Axes3D(fig)
@@ -269,7 +270,7 @@ def draw_quotientgraph_matplotlib(nodes_coords_moy, QG):
         plt.show()
 
 
-def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib"):
+def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number'):
 
     figure = plt.figure(0)
     figure.clf()
@@ -283,7 +284,7 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
                                           with_labels=True,
                                           node_size=node_sizes,
                                           node_color=node_color_from_attribute,
-                                          labels=dict(quotient_graph.nodes(data='intra_class_node_number')),
+                                          labels=dict(quotient_graph.nodes(data=data_on_nodes)),
                                           cmap=plt.get_cmap(colormap))
     #nx.drawing.nx_pylab.draw_networkx_edge_labels(quotient_graph, pos=graph_layout, font_size=20, font_family="sans-sherif")
 
@@ -297,7 +298,6 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 if __name__ == '__main__':
 
     pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
-
     r = 18
     G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
@@ -316,13 +316,17 @@ if __name__ == '__main__':
 
     QG.compute_quotientgraph_nodes_coordinates(G)
 
-    draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='kmeans_labels')
-
+    #draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='kmeans_labels')
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
+                                                filename='graph_attribute_quotient_graph_node_init.txt')
 
     # Determinate a score for each vertex in a quotient node.
+    # WARNING : IN CASE OF A RADIUS-BASED graph a normalization on the number of neighbor will be needed for the score/energy !!!!!!!!!!!!!!
     # init
     for u in G.nodes:
         G.nodes[u]['number_of_adj_labels'] = 0
+    for u in QG.nodes:
+        QG.nodes[u]['topological_energy'] = 0
     # global score for the entire graph
     global_topological_energy = 0
     # for to compute the score of each vertex
@@ -331,14 +335,99 @@ if __name__ == '__main__':
         for n in neighb:
             if G.nodes[v]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
                 G.nodes[v]['number_of_adj_labels'] += 1
-        global_topological_energy += G.node[v]['number_of_adj_labels']
+        u = G.nodes[v]['quotient_graph_node']
+        QG.nodes[u]['topological_energy'] += G.nodes[v]['number_of_adj_labels']
+        global_topological_energy += G.nodes[v]['number_of_adj_labels']
 
-    export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels', filename='graph_attribute_energy.txt')
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels', filename='graph_attribute_energy_init.txt')
+
+    display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_init",
+                                                 data_on_nodes='topological_energy')
+
+    # nombre d'itérations
+    n = 100
+    # Liste contenant l'énergie globale du graph
+    evol_energy = [global_topological_energy]
+    i = 0
+    stop = True
+    start = time.time()
+
+    for i in range(n):
+        # Creation of a dictionary with the energy per node
+        energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
+        # Extraction of a random point to treat, use of "smart indexing"
+        nodes = np.array(list(energy_per_node.keys()))
+        node_energies = np.array(list(energy_per_node.values()))
+        maximal_energy_nodes = nodes[node_energies == np.max(node_energies)]
+        node_to_change = np.random.choice(maximal_energy_nodes)
+        #if G.nodes[node_to_change]['number_of_adj_labels'] <= 0.3*r:
+        #    print(i)
+        #    stop = False
 
 
+        # change the cluster of the node_to_change
+        neighb = [n for n in G[node_to_change]]
+        previous_quotient_graph_node = G.nodes[node_to_change]['quotient_graph_node']
+        for n in G[node_to_change]:
+            if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
+                G.nodes[node_to_change]['quotient_graph_node'] = G.nodes[n]['quotient_graph_node']
 
 
+        # update of energy for the node changed
+        previous_energy = G.nodes[node_to_change]['number_of_adj_labels']
+        G.nodes[node_to_change]['number_of_adj_labels'] = 0
+        for n in G[node_to_change]:
+            if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
+                G.nodes[node_to_change]['number_of_adj_labels'] += 1
 
+        #if previous_energy <= G.nodes[node_to_change]['number_of_adj_labels']:
+        #    G.nodes[node_to_change]['quotient_graph_node'] = previous_quotient_graph_node
+        #    G.nodes[node_to_change]['number_of_adj_labels'] = previous_energy
+        #    print("idem energy")
+        #    print(i)
+        #    print("nothing done")
+        #else:
+        global_topological_energy += (G.nodes[node_to_change]['number_of_adj_labels'] - previous_energy)
+        u = G.nodes[node_to_change]['quotient_graph_node']
+        QG.nodes[u]['topological_energy'] += (G.nodes[node_to_change]['number_of_adj_labels'] - previous_energy)
+        # update of energy for the neighbors
+        for n in G[node_to_change]:
+            previous_energy = G.nodes[n]['number_of_adj_labels']
+            G.nodes[n]['number_of_adj_labels'] = 0
+            neighb2 = [n for n in G[n]]
+            for v in G[n]:
+                if G.nodes[n]['quotient_graph_node'] != G.nodes[v]['quotient_graph_node']:
+                    G.nodes[n]['number_of_adj_labels'] += 1
+            global_topological_energy += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
+            u = G.nodes[n]['quotient_graph_node']
+            QG.nodes[u]['topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
+
+        evol_energy.append(global_topological_energy)
+
+    end = time.time()
+    print(end-start)
+
+    figure = plt.figure(1)
+    figure.clf()
+    figure.gca().set_title("Evolution_of_energy")
+    plt.autoscale(enable=True, axis='both', tight=None)
+    figure.gca().scatter(range(len(evol_energy)), evol_energy, color='blue')
+    figure.set_size_inches(10, 10)
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
+    figure.savefig('Evolution_global_energy')
+    print("Export énergie globale")
+
+    display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_final",
+                                                 data_on_nodes='topological_energy')
+
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels',
+                                                filename='graph_attribute_energy_final.txt')
+
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
+                                                filename='graph_attribute_quotient_graph_node_final.txt')
+
+    draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='quotient_graph_node')
 
 
 """

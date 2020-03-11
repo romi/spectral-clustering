@@ -307,11 +307,11 @@ if __name__ == '__main__':
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G)
 
-    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_brut")
+    #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+    #                                             filename="quotient_graph_matplotlib_brut")
     QG.delete_small_clusters()
-    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_without_small_clusters")
+    #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+    #                                             filename="quotient_graph_matplotlib_without_small_clusters")
     export_some_graph_attributes_on_point_cloud(G)
 
     QG.compute_quotientgraph_nodes_coordinates(G)
@@ -323,6 +323,7 @@ if __name__ == '__main__':
     # Determinate a score for each vertex in a quotient node.
     # WARNING : IN CASE OF A RADIUS-BASED graph a normalization on the number of neighbor will be needed for the score/energy !!!!!!!!!!!!!!
     # init
+    maxNeighbSize = 0
     for u in G.nodes:
         G.nodes[u]['number_of_adj_labels'] = 0
     for u in QG.nodes:
@@ -331,10 +332,11 @@ if __name__ == '__main__':
     global_topological_energy = 0
     # for to compute the score of each vertex
     for v in G.nodes:
-        neighb = [n for n in G[v]]
-        for n in neighb:
+        number_of_neighb = len([n for n in G[v]])
+        for n in G[v]:
             if G.nodes[v]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
                 G.nodes[v]['number_of_adj_labels'] += 1
+        G.nodes[v]['number_of_adj_labels'] /= number_of_neighb
         u = G.nodes[v]['quotient_graph_node']
         QG.nodes[u]['topological_energy'] += G.nodes[v]['number_of_adj_labels']
         global_topological_energy += G.nodes[v]['number_of_adj_labels']
@@ -344,8 +346,10 @@ if __name__ == '__main__':
     display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_init",
                                                  data_on_nodes='topological_energy')
 
+    print("maxNeighbSize = "+str(maxNeighbSize))
+
     # nombre d'itérations
-    n = 100
+    n = 10000
     # Liste contenant l'énergie globale du graph
     evol_energy = [global_topological_energy]
     i = 0
@@ -363,22 +367,46 @@ if __name__ == '__main__':
         #if G.nodes[node_to_change]['number_of_adj_labels'] <= 0.3*r:
         #    print(i)
         #    stop = False
-
+        print(i)
+        print(node_to_change)
+        print(G.nodes[node_to_change]['number_of_adj_labels'])
+        print(G.nodes[node_to_change]['quotient_graph_node'])
+        print()
 
         # change the cluster of the node_to_change
         neighb = [n for n in G[node_to_change]]
         previous_quotient_graph_node = G.nodes[node_to_change]['quotient_graph_node']
+        number_of_neighb = len([n for n in G[node_to_change]])
+
+        proba_label = {}
         for n in G[node_to_change]:
-            if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
-                G.nodes[node_to_change]['quotient_graph_node'] = G.nodes[n]['quotient_graph_node']
+            if G.nodes[n]['quotient_graph_node'] not in proba_label:
+                proba_label[G.nodes[n]['quotient_graph_node']] = 0
+            proba_label[G.nodes[n]['quotient_graph_node']] += 1.0/number_of_neighb
+
+        new_label_proba = np.random.random()
+        new_score = 0
+        range_origin = 0
+        for l in proba_label:
+            if new_label_proba <= range_origin or new_label_proba > range_origin+proba_label[l]:
+                new_score += proba_label[l]
+            else:
+                G.nodes[node_to_change]['quotient_graph_node'] = l
+            range_origin += proba_label[l]
+
+
+        # for n in G[node_to_change]:
+        #     if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
+        #         G.nodes[node_to_change]['quotient_graph_node'] = G.nodes[n]['quotient_graph_node']
+        #         break
 
 
         # update of energy for the node changed
         previous_energy = G.nodes[node_to_change]['number_of_adj_labels']
-        G.nodes[node_to_change]['number_of_adj_labels'] = 0
-        for n in G[node_to_change]:
-            if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
-                G.nodes[node_to_change]['number_of_adj_labels'] += 1
+        G.nodes[node_to_change]['number_of_adj_labels'] = new_score
+        # for n in G[node_to_change]:
+        #     if G.nodes[node_to_change]['quotient_graph_node'] != G.nodes[n]['quotient_graph_node']:
+        #         G.nodes[node_to_change]['number_of_adj_labels'] += 1
 
         #if previous_energy <= G.nodes[node_to_change]['number_of_adj_labels']:
         #    G.nodes[node_to_change]['quotient_graph_node'] = previous_quotient_graph_node
@@ -394,10 +422,10 @@ if __name__ == '__main__':
         for n in G[node_to_change]:
             previous_energy = G.nodes[n]['number_of_adj_labels']
             G.nodes[n]['number_of_adj_labels'] = 0
-            neighb2 = [n for n in G[n]]
             for v in G[n]:
+                number_of_neighb = len([n for n in G[v]])
                 if G.nodes[n]['quotient_graph_node'] != G.nodes[v]['quotient_graph_node']:
-                    G.nodes[n]['number_of_adj_labels'] += 1
+                    G.nodes[n]['number_of_adj_labels'] += 1/number_of_neighb
             global_topological_energy += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
             u = G.nodes[n]['quotient_graph_node']
             QG.nodes[u]['topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
@@ -418,8 +446,8 @@ if __name__ == '__main__':
     figure.savefig('Evolution_global_energy')
     print("Export énergie globale")
 
-    display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_final",
-                                                 data_on_nodes='topological_energy')
+    #display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_final",
+    #                                             data_on_nodes='topological_energy')
 
     export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels',
                                                 filename='graph_attribute_energy_final.txt')
@@ -427,7 +455,7 @@ if __name__ == '__main__':
     export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
                                                 filename='graph_attribute_quotient_graph_node_final.txt')
 
-    draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='quotient_graph_node')
+    #draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=G, color_attribute='quotient_graph_node')
 
 
 """

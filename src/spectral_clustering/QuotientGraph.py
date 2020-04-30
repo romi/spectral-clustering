@@ -224,7 +224,45 @@ class QuotientGraph(nx.Graph):
                                                         data_on_nodes='topological_energy')
 
 
-    def optimization_topo_scores(self, G, exports=True, number_of_iteration=10000):
+    def update_quotient_graph_attributes_when_node_change_cluster(self, old_cluster, new_cluster, G):
+        # update Quotient Graph attributes
+        # Intra_class_node_number
+        self.nodes[old_cluster]['intra_class_node_number'] += -1
+        self.nodes[new_cluster]['intra_class_node_number'] += 1
+
+        # intra_class_edge_weight, inter_class_edge_number
+        for ng in G[node_to_change]:
+            if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster == G.nodes[ng]['quotient_graph_node']:
+                self.node[new_cluster]['intra_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                self.edges[old_cluster, new_cluster]['inter_class_edge_weight'] += - G.edges[ng, node_to_change][
+                    'weight']
+                self.edges[old_cluster, new_cluster]['inter_class_edge_number'] += - 1
+
+            if old_cluster == G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
+                self.node[old_cluster]['intra_class_edge_weight'] += -G.edges[ng, node_to_change]['weight']
+                cluster_adj = G.nodes[ng]['quotient_graph_node']
+                if self.has_edge(new_cluster, cluster_adj) is False:
+                    self.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=None, inter_class_edge_number=None)
+                self.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                self.edges[new_cluster, cluster_adj]['inter_class_edge_number'] += 1
+
+            if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
+                cluster_adj = G.nodes[ng]['quotient_graph_node']
+                if self.has_edge(new_cluster, cluster_adj) is False:
+                    self.add_edge(new_cluster, cluster_adj,
+                                  inter_class_edge_weight=G.edges[ng, node_to_change]['weight'],
+                                  inter_class_edge_number=1)
+                else:
+                    self.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change][
+                        'weight']
+                    self.edges[new_cluster, cluster_adj]['inter_class_edge_number'] += 1
+                if new_cluster != old_cluster:
+                    self.edges[old_cluster, cluster_adj]['inter_class_edge_weight'] += - \
+                        G.edges[ng, node_to_change]['weight']
+                    self.edges[old_cluster, cluster_adj]['inter_class_edge_number'] += - 1
+
+
+    def optimization_topo_scores(self, G, exports=True, number_of_iteration=1000):
         # nombre d'itérations
         n = number_of_iteration
         # Liste contenant l'énergie globale du graph
@@ -251,6 +289,7 @@ class QuotientGraph(nx.Graph):
             # attribution for each label a probability depending on the number of points having this label
             # in the neighborhood of node_to_change
             # stocked in a dictionary
+            old_cluster = G.nodes[node_to_change]['quotient_graph_node']
             proba_label = {}
             for n in G[node_to_change]:
                 if G.nodes[n]['quotient_graph_node'] not in proba_label:
@@ -266,6 +305,41 @@ class QuotientGraph(nx.Graph):
                 else:
                     G.nodes[node_to_change]['quotient_graph_node'] = l
                 range_origin += proba_label[l]
+
+            new_cluster = G.nodes[node_to_change]['quotient_graph_node']
+            # update Quotient Graph attributes
+            self.nodes[old_cluster]['intra_class_node_number'] += -1
+            self.nodes[new_cluster]['intra_class_node_number'] += 1
+
+            for ng in G[node_to_change]:
+                if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster == G.nodes[ng]['quotient_graph_node']:
+                    self.node[new_cluster]['intra_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                    self.edges[old_cluster, new_cluster]['inter_class_edge_weight'] += - G.edges[ng, node_to_change]['weight']
+                    self.edges[old_cluster, new_cluster]['inter_class_edge_number'] += - 1
+
+                if old_cluster == G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
+                    self.node[old_cluster]['intra_class_edge_weight'] += -G.edges[ng, node_to_change]['weight']
+                    cluster_adj = G.nodes[ng]['quotient_graph_node']
+                    if self.has_edge(new_cluster, cluster_adj) is False:
+                        self.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=None, inter_class_edge_number=None)
+                    self.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                    self.edges[new_cluster, cluster_adj]['inter_class_edge_number'] += 1
+
+                if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
+                    cluster_adj = G.nodes[ng]['quotient_graph_node']
+                    if self.has_edge(new_cluster, cluster_adj) is False:
+                        self.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=G.edges[ng, node_to_change]['weight'],
+                                      inter_class_edge_number=1)
+                    else:
+                        self.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change][
+                            'weight']
+                        self.edges[new_cluster, cluster_adj]['inter_class_edge_number'] += 1
+                    if new_cluster != old_cluster:
+                        self.edges[old_cluster, cluster_adj]['inter_class_edge_weight'] += - \
+                        G.edges[ng, node_to_change]['weight']
+                        self.edges[old_cluster, cluster_adj]['inter_class_edge_number'] += - 1
+
+
 
             # update of energy for the node changed
             previous_energy = G.nodes[node_to_change]['number_of_adj_labels']
@@ -284,6 +358,8 @@ class QuotientGraph(nx.Graph):
                 self.global_topological_energy += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
                 u = G.nodes[n]['quotient_graph_node']
                 self.nodes[u]['topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
+
+            # update quotient graph attribute
 
             # update list containing all the differents stages of energy obtained
             evol_energy.append(self.global_topological_energy)
@@ -395,13 +471,21 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
     colormap = 'jet'
     node_color_from_attribute = dict(quotient_graph.nodes(data='seed_colors')).values()
     node_color = [quotient_graph.nodes[i]['kmeans_labels'] / 4 for i in quotient_graph.nodes()]
+
+
+    labels_from_attributes = dict(quotient_graph.nodes(data=data_on_nodes))
+    # Rounding the data to allow an easy display
+    for dict_value in labels_from_attributes:
+            labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
+
+
     nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,
                                           with_labels=True,
                                           node_size=node_sizes,
                                           node_color=node_color_from_attribute,
-                                          labels=dict(quotient_graph.nodes(data=data_on_nodes)),
+                                          labels=labels_from_attributes,
                                           cmap=plt.get_cmap(colormap))
 
     #nx.drawing.nx_pylab.draw_networkx_edge_labels(quotient_graph, pos=graph_layout, font_size=20, font_family="sans-sherif")
@@ -438,8 +522,13 @@ if __name__ == '__main__':
                                                 filename='graph_attribute_quotient_graph_node_init.txt')
 
     QG.init_topo_scores(G)
-    QG.optimization_topo_scores(G)
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_init_number",
+                                                 data_on_nodes='intra_class_node_number')
 
+    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=10000)
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_end_number",
+                                                 data_on_nodes='intra_class_node_number')
 
 
 

@@ -2,6 +2,9 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
+import pandas as pd
+
 from mpl_toolkits.mplot3d import Axes3D
 import scipy.sparse as spsp
 import scipy as sp
@@ -24,14 +27,23 @@ class QuotientGraph(nx.Graph):
         self.nodes_coordinates = None
         self.global_topological_energy = None
 
-    def build_QuotientGraph_from_PointCloudGraph(self, G):
+    def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster):
 
-        kmeans_labels = G.kmeans_labels_gradient
+        kmeans_labels = labels_from_cluster
         connected_component_labels = np.zeros(kmeans_labels.shape, dtype=int)
         current_cc_size = 0
         connected_component_size = []
         seed_kmeans_labels = []
-        cluster_colors = ['#0000FF', '#00FF00', '#FFFF00', '#FF0000']
+        # This line has been added to obtain particular colors when the initial clustering is done with four clusters
+        # especially kmeans.
+        lablist = kmeans_labels.tolist()
+        my_count = pd.Series(lablist).value_counts()
+        if len(my_count) == 4:
+            cluster_colors = ['#0000FF', '#00FF00', '#FFFF00', '#FF0000']
+        else:
+            jet = cm.get_cmap('jet', len(my_count))
+            cluster_colors = jet(range(len(my_count)))
+            list_labels = np.unique(lablist).tolist()
         seed_colors = []
         label_count = 0
         visited = np.zeros(kmeans_labels.shape, dtype=int)
@@ -48,7 +60,10 @@ class QuotientGraph(nx.Graph):
                 visited[i] = 1
                 queue.append(i)
                 seed_kmeans_labels.append(kmeans_labels[seed])
-                seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
+                if len(my_count) == 4:
+                    seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
+                else:
+                    seed_colors.append(cluster_colors[list_labels.index(kmeans_labels[seed][0])][:])
                 current_cc_size = 0
 
                 # Region growing from the specified seed.
@@ -119,8 +134,12 @@ class QuotientGraph(nx.Graph):
         nx.set_node_attributes(self, dict(
             zip(np.asarray(self.nodes()), np.transpose(np.asarray(intra_edge_count)))), 'intra_class_edge_number')
 
-        nx.set_node_attributes(self, dict(
-            zip(np.asarray(self.nodes()), np.transpose(np.asarray(seed_colors)))), 'seed_colors')
+        if len(my_count) == 4:
+            nx.set_node_attributes(self, dict(
+                zip(np.asarray(self.nodes()), np.transpose(np.asarray(seed_colors)))), 'seed_colors')
+        else:
+            nx.set_node_attributes(self, dict(
+                zip(np.asarray(self.nodes()), seed_colors)), 'seed_colors')
 
         #self.seed_colors = seed_colors
         self.label_count = label_count
@@ -263,6 +282,22 @@ class QuotientGraph(nx.Graph):
                         G.edges[ng, node_to_change]['weight']
                     self.edges[old_cluster, cluster_adj]['inter_class_edge_number'] += - 1
 
+    def delete_empty_edges_and_nodes(self):
+        to_remove =[]
+        list = [e for e in self.edges]
+        for e in list:
+            if self.edges[e[0], e[1]]['inter_class_edge_number'] == 0:
+                to_remove.append(e)
+        print(to_remove)
+        self.remove_edges_from(to_remove)
+        to_remove=[]
+        for n in self.nodes:
+            if self.nodes[n]['intra_class_node_number'] == 0:
+                to_remove.append(n)
+        self.remove_nodes_from(to_remove)
+        print(to_remove)
+
+
 
     def optimization_topo_scores(self, G, exports=True, number_of_iteration=1000):
         # nombre d'itérations
@@ -334,12 +369,10 @@ class QuotientGraph(nx.Graph):
                 u = G.nodes[n]['quotient_graph_node']
                 self.nodes[u]['topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
 
-
-            # update quotient graph attribute
-
             # update list containing all the differents stages of energy obtained
             evol_energy.append(self.global_topological_energy)
 
+        self.delete_empty_edges_and_nodes()
         if exports:
             figure = plt.figure(1)
             figure.clf()
@@ -439,7 +472,7 @@ def draw_quotientgraph_matplotlib_3D(nodes_coords_moy, QG):
         plt.show()
 
 
-def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number'):
+def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number', attributekmeans4clusters = False):
 
     figure = plt.figure(0)
     figure.clf()
@@ -454,8 +487,8 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
     for dict_value in labels_from_attributes:
             labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
 
-
-    nx.drawing.nx_pylab.draw_networkx(quotient_graph,
+    if attributekmeans4clusters:
+        nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,
                                           with_labels=True,
@@ -463,6 +496,18 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
                                           node_color=node_color_from_attribute,
                                           labels=labels_from_attributes,
                                           cmap=plt.get_cmap(colormap))
+
+
+    else:
+        nx.drawing.nx_pylab.draw_networkx(quotient_graph,
+                                          ax=figure.gca(),
+                                          pos=graph_layout,
+                                          with_labels=True,
+                                          node_size=node_sizes,
+                                          node_color="r",
+                                          labels=labels_from_attributes,
+                                          cmap=plt.get_cmap(colormap))
+
 
     #nx.drawing.nx_pylab.draw_networkx_edge_labels(quotient_graph, pos=graph_layout, font_size=20, font_family="sans-sherif")
 
@@ -482,11 +527,11 @@ if __name__ == '__main__':
     G.compute_gradient_of_Fiedler_vector(method='simple')
     G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
     QG = QuotientGraph()
-    QG.build_QuotientGraph_from_PointCloudGraph(G)
+    QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
 
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
     #                                             filename="quotient_graph_matplotlib_brut")
-    QG.delete_small_clusters()
+    #QG.delete_small_clusters()
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
     #                                             filename="quotient_graph_matplotlib_without_small_clusters")
     export_some_graph_attributes_on_point_cloud(G)
@@ -499,14 +544,30 @@ if __name__ == '__main__':
 
     QG.init_topo_scores(G)
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_init_number",
-                                                 data_on_nodes='intra_class_node_number')
+                                                 data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
 
     QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000)
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_end_number",
+                                                 data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
+
+    QG2 = QuotientGraph()
+    labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
+    labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+    QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+    QG.delete_empty_edges_and_nodes()
+
+    export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
+                                                filename='graph_attribute_quotient_graph_node_end.txt')
+
+
+
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_QG2_intra_class_number",
                                                  data_on_nodes='intra_class_node_number')
-
-
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_QG_intra_class_number",
+                                                 data_on_nodes='intra_class_node_number')
 
 
 

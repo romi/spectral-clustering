@@ -299,24 +299,68 @@ class QuotientGraph(nx.Graph):
 
 
 
-    def optimization_topo_scores(self, G, exports=True, number_of_iteration=1000):
+    def optimization_topo_scores(self, G, exports=True, number_of_iteration=1000, choice_of_node_to_change='max_energy'):
         # nombre d'itérations
         n = number_of_iteration
         # Liste contenant l'énergie globale du graph
         evol_energy = [self.global_topological_energy]
 
+        # list to detect repetition in 'max_energy_and_select'
+        detect_rep = []
+        ban_list = []
+
         # Start loops for the number of iteration specified
         for i in range(n):
-            # Creation of a dictionary with the energy per node
-            energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
-            # Extraction of a random point to treat, use of "smart indexing"
-            nodes = np.array(list(energy_per_node.keys()))
-            node_energies = np.array(list(energy_per_node.values()))
-            maximal_energy_nodes = nodes[node_energies == np.max(node_energies)]
-            node_to_change = np.random.choice(maximal_energy_nodes)
+
+            # Choice of point to move from a cluster to another.
+
+            if choice_of_node_to_change == 'max_energy':
+                # Creation of a dictionary with the energy per node
+                energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
+                # Extraction of a random point to treat, use of "smart indexing"
+                nodes = np.array(list(energy_per_node.keys()))
+                node_energies = np.array(list(energy_per_node.values()))
+                maximal_energy_nodes = nodes[node_energies == np.max(node_energies)]
+                node_to_change = np.random.choice(maximal_energy_nodes)
+            if choice_of_node_to_change == 'random_proba_energy':
+                energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
+                nodes = np.array(list(energy_per_node.keys()))
+                total_energy = self.global_topological_energy
+                l = list(energy_per_node.values())
+                node_energies = np.array([e / total_energy for e in l])
+                node_to_change = np.random.choice(nodes, p=node_energies)
+            if choice_of_node_to_change == 'max_energy_and_select':
+                energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
+                nodes = np.array(list(energy_per_node.keys()))
+                node_energies = np.array(list(energy_per_node.values()))
+                maximal_energy_nodes = nodes[node_energies == np.max(node_energies)]
+                node_to_change = np.random.choice(maximal_energy_nodes)
+                if ban_list.count(node_to_change) == 0:
+                    if detect_rep.count(node_to_change) == 0 and ban_list.count(node_to_change) == 0:
+                        #detect_rep = []
+                        detect_rep.append(node_to_change)
+                    if detect_rep.count(node_to_change) != 0:
+                        detect_rep.append(node_to_change)
+                if ban_list.count(node_to_change) != 0:
+                    sort_energy_per_node = {k: v for k, v in sorted(energy_per_node.items(), key=lambda item: item[1], reverse=True)}
+                    for c in sort_energy_per_node:
+                        print(c)
+                        if ban_list.count(c) == 0:
+                            node_to_change = c
+                            if detect_rep.count(node_to_change) == 0:
+                                #detect_rep = []
+                                detect_rep.append(node_to_change)
+                            else:
+                                detect_rep.append(node_to_change)
+                            break
+                if detect_rep.count(node_to_change) >= G.nearest_neighbors * 2:
+                    ban_list.append(node_to_change)
+                    detect_rep = []
+
 
             print()
             print(i)
+            print(ban_list)
             print(node_to_change)
             print(G.nodes[node_to_change]['number_of_adj_labels'])
             print(G.nodes[node_to_change]['quotient_graph_node'])
@@ -546,7 +590,7 @@ if __name__ == '__main__':
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_init_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
 
-    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000)
+    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000, choice_of_node_to_change='max_energy_and_select')
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_end_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
@@ -556,6 +600,8 @@ if __name__ == '__main__':
     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
     QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
     QG.delete_empty_edges_and_nodes()
+
+    #draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG2, G=G, color_attribute='kmeans_labels')
 
     export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
                                                 filename='graph_attribute_quotient_graph_node_end.txt')

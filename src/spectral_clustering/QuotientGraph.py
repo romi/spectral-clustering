@@ -191,6 +191,18 @@ class QuotientGraph(nx.Graph):
 
 
     def compute_quotientgraph_nodes_coordinates(self, G):
+        """Compute X Y Z coordinates for each node of the quotient graph using the underlying point of the
+        PointCloudGraph (the distance_based_graph). The method just consist in computing the mean of each coordinates of
+        the underlying points of a quotient graph node.
+
+        Parameters
+        ----------
+        G : PointCloudGraph
+
+        Returns
+        -------
+
+        """
         # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
         new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
         new_classif = new_classif[:, np.newaxis]
@@ -214,6 +226,21 @@ class QuotientGraph(nx.Graph):
         self.nodes_coordinates = nodes_coords_moy
 
     def init_topo_scores(self, G, exports=True):
+        """When the node considered change of cluster, this function checks if the old cluster of the node is still
+        connected or formed two different parts.
+        This function is to use after the change occurred in the distance-based graph
+
+        Parameters
+        ----------
+        G : PointCloudGraph
+        The associated distance-based graph
+        exports : Boolean
+        Precise if the user want to export the scores values on the point cloud in a .txt file and the scores on a
+        matplotlib picture of the quotient graph.
+
+        Returns
+        -------
+        """
         # Determinate a score for each vertex in a quotient node. Normalized by the number of neighbors
         # init
         maxNeighbSize = 0
@@ -244,6 +271,22 @@ class QuotientGraph(nx.Graph):
 
 
     def update_quotient_graph_attributes_when_node_change_cluster(self, old_cluster, new_cluster, node_to_change, G):
+        """When the node considered change of cluster, this function updates all the attributes associated to the
+        quotient graph.
+
+        Parameters
+        ----------
+        node_to_change : int
+        The node considered and changed in an other cluster
+        old_cluster : int
+        The original cluster of the node
+        new_cluster : int
+        The new cluster of the node
+        G : PointCloudGraph
+
+        Returns
+        -------
+        """
         # update Quotient Graph attributes
         # Intra_class_node_number
         self.nodes[old_cluster]['intra_class_node_number'] += -1
@@ -282,7 +325,36 @@ class QuotientGraph(nx.Graph):
                         G.edges[ng, node_to_change]['weight']
                     self.edges[old_cluster, cluster_adj]['inter_class_edge_number'] += - 1
 
+    def check_connectivity_of_modified_cluster(self, old_cluster, new_cluster, node_to_change, G):
+        """When the node considered change of cluster, this function checks if the old cluster of the node is still
+        connected or formed two different parts.
+        This function is to use after the change occurred in the distance-based graph
+
+        Parameters
+        ----------
+        node_to_change : int
+        The node considered and changed in an other cluster
+        old_cluster : int
+        The original cluster of the node
+        new_cluster : int
+        The new cluster of the node
+
+        Returns
+        -------
+        Boolean
+        True if the connectivity was conserved
+        """
+
     def delete_empty_edges_and_nodes(self):
+        """Delete edges from the quotient graph that do not represent any edges in the distance-based graph anymore.
+        Delete nodes from the quotient graph that do not represent any nodes of the distance_based graph.
+        Update of the topological structure by removal only.
+
+        Parameters
+        ----------
+        Returns
+        -------
+        """
         to_remove =[]
         list = [e for e in self.edges]
         for e in list:
@@ -590,7 +662,7 @@ if __name__ == '__main__':
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_init_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
 
-    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000, choice_of_node_to_change='max_energy_and_select')
+    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=10000, choice_of_node_to_change='max_energy_and_select')
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_end_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)

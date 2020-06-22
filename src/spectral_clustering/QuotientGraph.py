@@ -28,6 +28,24 @@ class QuotientGraph(nx.Graph):
         self.global_topological_energy = None
 
     def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster):
+        """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
+        of the points. Each region becomes a node of que quotient graph.
+
+        Parameters
+        ----------
+        G : PointCloudGraph
+        The associated distance-based graph
+        labels_from_cluster : np.array
+        Each point of que point cloud/ distance based graph is associated to a label.
+        If the labels are an attribute to each node of the PointCloudGraph, use the following lines to convert :
+        labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
+        labels_from_cluster = np.asarray(labels_qg)[:, np.newaxis]
+
+        Returns
+        -------
+        Nothing
+        Update :
+        """
 
         kmeans_labels = labels_from_cluster
         connected_component_labels = np.zeros(kmeans_labels.shape, dtype=int)
@@ -226,9 +244,11 @@ class QuotientGraph(nx.Graph):
         self.nodes_coordinates = nodes_coords_moy
 
     def init_topo_scores(self, G, exports=True):
-        """When the node considered change of cluster, this function checks if the old cluster of the node is still
-        connected or formed two different parts.
-        This function is to use after the change occurred in the distance-based graph
+        """Compute the topological scores of each node of the PointCloudGraph. It counts the number of adjacent clusters
+        different from the cluster of the node considered.
+        It computes a energy per node of the quotient graph
+        It also computes the global score/energy of the quotient graph by computing the sum of the energy of each nodes.
+
 
         Parameters
         ----------
@@ -236,7 +256,7 @@ class QuotientGraph(nx.Graph):
         The associated distance-based graph
         exports : Boolean
         Precise if the user want to export the scores values on the point cloud in a .txt file and the scores on a
-        matplotlib picture of the quotient graph.
+        matplotlib picture .png of the quotient graph.
 
         Returns
         -------
@@ -327,7 +347,7 @@ class QuotientGraph(nx.Graph):
 
     def check_connectivity_of_modified_cluster(self, old_cluster, new_cluster, node_to_change, G):
         """When the node considered change of cluster, this function checks if the old cluster of the node is still
-        connected or formed two different parts.
+        connected or forms two different parts.
         This function is to use after the change occurred in the distance-based graph
 
         Parameters
@@ -338,16 +358,33 @@ class QuotientGraph(nx.Graph):
         The original cluster of the node
         new_cluster : int
         The new cluster of the node
+        G : PointCloudGraph
 
         Returns
         -------
         Boolean
         True if the connectivity was conserved
         """
+        # Build a dictionary which associate each node of the PointCloudGraph with its cluster/node in the QuotientGraph
+        d = dict(G.nodes(data='quotient_graph_node', default=None))
+        # Extract points of the old_cluster
+        points_of_interest = [key for (key, value) in d.items() if value == old_cluster]
+        # Handling the case where this cluster has completely disappeared
+        if not points_of_interest:
+            result = True
+        else:
+            # Creation of the subgraph and test
+            subgraph = G.subgraph(points_of_interest)
+            result = nx.is_connected(subgraph)
+
+        return result
+
+    #def rebuilt_topological_quotient_graph
+
 
     def delete_empty_edges_and_nodes(self):
         """Delete edges from the quotient graph that do not represent any edges in the distance-based graph anymore.
-        Delete nodes from the quotient graph that do not represent any nodes of the distance_based graph.
+        Delete nodes from the quotient graph that do not represent any nodes of the distance-based graph.
         Update of the topological structure by removal only.
 
         Parameters
@@ -372,6 +409,7 @@ class QuotientGraph(nx.Graph):
 
 
     def optimization_topo_scores(self, G, exports=True, number_of_iteration=1000, choice_of_node_to_change='max_energy'):
+
         # nombre d'itérations
         n = number_of_iteration
         # Liste contenant l'énergie globale du graph
@@ -661,8 +699,10 @@ if __name__ == '__main__':
     QG.init_topo_scores(G)
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_init_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
-
+    start = time.time()
     QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=10000, choice_of_node_to_change='max_energy_and_select')
+    end = time.time()
+    timescore = end - start
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                                  filename="quotient_graph_matplotlib_end_number",
                                                  data_on_nodes='intra_class_node_number', attributekmeans4clusters=True)
@@ -670,7 +710,10 @@ if __name__ == '__main__':
     QG2 = QuotientGraph()
     labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+    start2 = time.time()
     QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+    end2 = time.time()
+    timebuild = end2 - start2
     QG.delete_empty_edges_and_nodes()
 
     #draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG2, G=G, color_attribute='kmeans_labels')

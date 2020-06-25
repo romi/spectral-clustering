@@ -683,6 +683,8 @@ if __name__ == '__main__':
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
 
+
+"""
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
     #                                             filename="quotient_graph_matplotlib_brut")
     #QG.delete_small_clusters()
@@ -730,7 +732,7 @@ if __name__ == '__main__':
                                                  filename="quotient_graph_matplotlib_QG_intra_class_number",
                                                  data_on_nodes='intra_class_node_number')
 
-
+"""
 
 
 

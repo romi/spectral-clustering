@@ -10,6 +10,9 @@ import sklearn.cluster as skc
 import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
 import open3d as open3d
+import spectral_clustering.utils.angle as utilsangle
+import spectral_clustering.QuotientGraph as kQG
+import statistics as st
 
 ########### Définition classe
 
@@ -80,7 +83,7 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, node_eigenvector_values, 'eigenvector_'+str(k))
 
     def add_anything_as_attribute(self, anything, name_of_the_new_attribute):
-        node_anything_values = dict(zip(self.nodes(), np.transpose(anything)))
+        node_anything_values = dict(zip(self.nodes(), anything))
         nx.set_node_attributes(self, node_anything_values, name_of_the_new_attribute)
 
 
@@ -179,6 +182,33 @@ class PointCloudGraph(nx.Graph):
 
         self.gradient_on_Fiedler = vp2grad[:, np.newaxis]
         self.direction_gradient_on_Fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
+        self.add_anything_as_attribute(self.direction_gradient_on_Fiedler_scaled, 'direction_gradient')
+
+    def compute_angles_from_gradient_directions(self, angle_computed='angle_max'):
+        for u in self.nodes:
+            self.nodes[u][angle_computed] = 0
+        angles = []
+        for i in self.nodes:
+            for v in self[i]:
+                angle = utilsangle.angle(self.nodes[i]['direction_gradient'], self.nodes[v]['direction_gradient'], degree=True)
+                angles.append(angle)
+            if angle_computed == 'angle_max':
+                print(max(angles))
+                self.nodes[i][angle_computed] = max(angles)
+                angles = []
+            elif angle_computed == 'angle_mean':
+                self.nodes[i][angle_computed] = sum(angles)/len(angles)
+                angles = []
+            elif angle_computed == 'angle_variance':
+                #mean = sum(angles) / len(angles)
+                #self.nodes[i][angle_computed] = sum ((a - mean) ** 2 for a in angles) / len(angles)
+                self.nodes[i][angle_computed] = st.variance(angles)
+            elif angle_computed == 'angle_standard_deviation':
+                self.nodes[i][angle_computed] = st.stdev(angles)
+                #mean = sum(angles) / len(angles)
+                #self.nodes[i][angle_computed] = np.sqrt(sum((a - mean) ** 2 for a in angles) / len(angles))
+            elif angle_computed == 'angle_median':
+                self.nodes[i][angle_computed] = st.median(angles)
 
 
     def add_gradient_of_Fiedler_vector_as_attribute(self):
@@ -368,15 +398,24 @@ if __name__ == '__main__':
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='simple')
+    G.compute_angles_from_gradient_directions(angle_computed='angle_variance')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_variance', filename='angle_variance.txt')
+    G.compute_angles_from_gradient_directions(angle_computed='angle_median')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_median', filename='angle_median.txt')
+    G.compute_angles_from_gradient_directions(angle_computed='angle_standard_deviation')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_standard_deviation', filename='angle_standard_deviation.txt')
 
-    X = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
-    G.clustering_by_fiedler_and_agglomerative(number_of_clusters=45, criteria=X)
-    export_clustering_labels_on_point_cloud(G)
-    export_gradient_of_Fiedler_vector_on_pointcloud(G)
-    export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
+
+
+
+    #X = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
+    #G.clustering_by_fiedler_and_agglomerative(number_of_clusters=45, criteria=X)
+    #export_clustering_labels_on_point_cloud(G)
+    #export_gradient_of_Fiedler_vector_on_pointcloud(G)
+    #export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
     #export_figure_graph_of_Fiedler_vector(G)
-    display_gradient_vector_field(G, normalized=True, scale= 1.)
-    kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
-    export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
+    #display_gradient_vector_field(G, normalized=True, scale= 1.)
+    #kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
+    #export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
 
     #

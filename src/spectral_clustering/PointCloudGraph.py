@@ -75,6 +75,8 @@ class PointCloudGraph(nx.Graph):
         self.keigenvec = keigenvec
         self.keigenval = keigenval
 
+        G.add_eigenvector_value_as_attribute()
+
     def add_eigenvector_value_as_attribute(self, k=2):
         if self.keigenvec is None:
             print("Compute the graph spectrum first !")
@@ -89,126 +91,147 @@ class PointCloudGraph(nx.Graph):
 
     def compute_gradient_of_Fiedler_vector(self, method = 'simple'):
 
-        A = nx.adjacency_matrix(self).astype(float)
-        vp2 = np.asarray(self.keigenvec[:, 1])
+        if method != 'by_Fiedler_weight':
+            A = nx.adjacency_matrix(self).astype(float)
+            vp2 = np.asarray(self.keigenvec[:, 1])
 
-        vp2_matrix = A.copy()
-        vp2_matrix[A.nonzero()] = vp2[A.nonzero()[1]]
+            vp2_matrix = A.copy()
+            vp2_matrix[A.nonzero()] = vp2[A.nonzero()[1]]
 
-        if method == 'simple':
-            node_neighbor_max_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_min_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
+            if method == 'simple':
+                node_neighbor_max_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_min_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
 
-            # Second method fo gradient, just obtain the max and min value in the neighborhood.
-            node_neighbor_max_vp2 = np.array([vp2_matrix[node].data.max() for node in range(A.shape[0])])
-            node_neighbor_min_vp2 = np.array([vp2_matrix[node].data.min() for node in range(A.shape[0])])
-            vp2grad = node_neighbor_max_vp2 - node_neighbor_min_vp2
+                # Second method fo gradient, just obtain the max and min value in the neighborhood.
+                node_neighbor_max_vp2 = np.array([vp2_matrix[node].data.max() for node in range(A.shape[0])])
+                node_neighbor_min_vp2 = np.array([vp2_matrix[node].data.min() for node in range(A.shape[0])])
+                vp2grad = node_neighbor_max_vp2 - node_neighbor_min_vp2
 
-            # First method not adapted to big clouds
-            # node_neighbor_max_vp2 = np.array([vp2[A[node].nonzero()[1]].max() for node in range(A.shape[0])])
-            # node_neighbor_min_vp2 = np.array([vp2[A[node].nonzero()[1]].min() for node in range(A.shape[0])])
+                # First method not adapted to big clouds
+                # node_neighbor_max_vp2 = np.array([vp2[A[node].nonzero()[1]].max() for node in range(A.shape[0])])
+                # node_neighbor_min_vp2 = np.array([vp2[A[node].nonzero()[1]].min() for node in range(A.shape[0])])
 
-        if method == 'simple_divided_by_distance':
-            node_neighbor_max_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
-                                              zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
+            if method == 'simple_divided_by_distance':
+                node_neighbor_max_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
+                                                zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
 
-            node_neighbor_min_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
-                                              zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
+                node_neighbor_min_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
+                                                zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
 
-            pcdtab = self.nodes_coords
-            vp2_max_min = (node_neighbor_max_vp2 - node_neighbor_min_vp2)
+                pcdtab = self.nodes_coords
+                vp2_max_min = (node_neighbor_max_vp2 - node_neighbor_min_vp2)
 
-            grad_weight = np.zeros(node_neighbor_min_vp2_node.shape[0])
-            for i in range(node_neighbor_min_vp2_node.shape[0]):
-                grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
+                grad_weight = np.zeros(node_neighbor_min_vp2_node.shape[0])
+                for i in range(node_neighbor_min_vp2_node.shape[0]):
+                    grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
 
-            vp2grad = np.divide(vp2_max_min, grad_weight)
+                vp2grad = np.divide(vp2_max_min, grad_weight)
 
-        if method == 'simple_divided_by_distance_along_edges':
-            node_neighbor_max_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
-                                              zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
+            if method == 'simple_divided_by_distance_along_edges':
+                node_neighbor_max_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
+                                                zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
 
-            node_neighbor_min_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
-                                              zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
+                node_neighbor_min_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
+                                                zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
 
-            pcdtab = self.nodes_coords
-            vp2_max_min = (node_neighbor_max_vp2 - node_neighbor_min_vp2)
+                pcdtab = self.nodes_coords
+                vp2_max_min = (node_neighbor_max_vp2 - node_neighbor_min_vp2)
 
-            grad_weight = np.zeros(node_neighbor_min_vp2_node.shape[0])
-            for i in range(node_neighbor_min_vp2_node.shape[0]):
-                grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[i].reshape(1, 3)) + \
-                                 sp.spatial.distance.euclidean(pcdtab[i].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
+                grad_weight = np.zeros(node_neighbor_min_vp2_node.shape[0])
+                for i in range(node_neighbor_min_vp2_node.shape[0]):
+                    grad_weight[i] = sp.spatial.distance.euclidean(pcdtab[node_neighbor_max_vp2_node[i]].reshape(1, 3), pcdtab[i].reshape(1, 3)) + \
+                                    sp.spatial.distance.euclidean(pcdtab[i].reshape(1, 3), pcdtab[node_neighbor_min_vp2_node[i]].reshape(1, 3))
 
-            vp2grad = np.divide(vp2_max_min, grad_weight)
-
-
-        if method == 'by_Laplacian_matrix_on_Fiedler_signal':
-            vp2grad = self.Laplacian.dot(vp2)
+                vp2grad = np.divide(vp2_max_min, grad_weight)
 
 
-        if method == 'by_weight':
-            node_neighbor_max_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
-                                              zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
-
-            node_neighbor_min_vp2_node = np.array(
-                [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
-            node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
-                                              zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
-
-            wmax = np.zeros(node_neighbor_min_vp2.shape)
-            wmin = np.zeros(node_neighbor_max_vp2.shape)
-
-            for i in range(node_neighbor_min_vp2_node.shape[0]):
-                print(i)
-                wmax[i] = G.edges[node_neighbor_max_vp2_node[i], i]['weight']
-                print(wmax[i])
-                wmin[i] = G.edges[i, node_neighbor_min_vp2_node[i]]['weight']
-                print(wmin[i])
-
-            vp2grad = np.divide((wmin*node_neighbor_max_vp2[i] - wmax*node_neighbor_min_vp2[i]), wmax+wmin)
+            if method == 'by_Laplacian_matrix_on_Fiedler_signal':
+                vp2grad = self.Laplacian.dot(vp2)
 
 
-        self.gradient_on_Fiedler = vp2grad[:, np.newaxis]
-        self.direction_gradient_on_Fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
-        self.add_anything_as_attribute(self.direction_gradient_on_Fiedler_scaled, 'direction_gradient')
+            if method == 'by_weight':
+                node_neighbor_max_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmax(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_max_vp2 = np.array([vp2_matrix[node, neighbor_max_node] for node, neighbor_max_node in
+                                                zip(range(A.shape[0]), node_neighbor_max_vp2_node)])
+
+                node_neighbor_min_vp2_node = np.array(
+                    [vp2_matrix[node].indices[np.argmin(vp2_matrix[node].data)] for node in range(A.shape[0])])
+                node_neighbor_min_vp2 = np.array([vp2_matrix[node, neighbor_min_node] for node, neighbor_min_node in
+                                                zip(range(A.shape[0]), node_neighbor_min_vp2_node)])
+
+                wmax = np.zeros(node_neighbor_min_vp2.shape)
+                wmin = np.zeros(node_neighbor_max_vp2.shape)
+
+                for i in range(node_neighbor_min_vp2_node.shape[0]):
+                    print(i)
+                    wmax[i] = G.edges[node_neighbor_max_vp2_node[i], i]['weight']
+                    print(wmax[i])
+                    wmin[i] = G.edges[i, node_neighbor_min_vp2_node[i]]['weight']
+                    print(wmin[i])
+
+                vp2grad = np.divide((wmin*node_neighbor_max_vp2[i] - wmax*node_neighbor_min_vp2[i]), wmax+wmin)
+
+
+            self.gradient_on_Fiedler = vp2grad[:, np.newaxis]
+            self.direction_gradient_on_Fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
+            self.add_anything_as_attribute(self.direction_gradient_on_Fiedler_scaled, 'direction_gradient')
+
+        else:
+            if method == 'by_Fiedler_weight':
+                vp2grad = np.zeros((len(self), 1))
+                vp2dir = np.zeros((len(self), 3))
+                line = 0
+                for n in self.nodes:
+                    grad = 0
+                    for v in self[n]:
+                        grad += (self.nodes[n]['eigenvector_2'] - self.nodes[v]['eigenvector_2']) * \
+                                (self.nodes[n]['pos'] - self.nodes[v]['pos']) / np.linalg.norm(self.nodes[n]['pos'] - self.nodes[v]['pos'])
+                    self.nodes[n]['norm_gradient'] = np.linalg.norm(grad)
+                    self.nodes[n]['direction_gradient'] = grad / np.linalg.norm(grad)
+                    vp2grad[line] = self.nodes[n]['norm_gradient']
+                    vp2dir[line, :] = self.nodes[n]['direction_gradient']
+                    line += 1
+                self.gradient_on_Fiedler = vp2grad
+                self.direction_gradient_on_Fiedler_scaled = vp2dir
+
+
 
     def compute_angles_from_gradient_directions(self, angle_computed='angle_max'):
         for u in self.nodes:
             self.nodes[u][angle_computed] = 0
-        angles = []
+
         for i in self.nodes:
+            angles = []
             for v in self[i]:
                 angle = utilsangle.angle(self.nodes[i]['direction_gradient'], self.nodes[v]['direction_gradient'], degree=True)
                 angles.append(angle)
             if angle_computed == 'angle_max':
                 print(max(angles))
                 self.nodes[i][angle_computed] = max(angles)
-                angles = []
             elif angle_computed == 'angle_mean':
                 self.nodes[i][angle_computed] = sum(angles)/len(angles)
-                angles = []
             elif angle_computed == 'angle_variance':
                 #mean = sum(angles) / len(angles)
                 #self.nodes[i][angle_computed] = sum ((a - mean) ** 2 for a in angles) / len(angles)
-                self.nodes[i][angle_computed] = st.variance(angles)
+                self.nodes[i][angle_computed] = np.var(angles)
             elif angle_computed == 'angle_standard_deviation':
                 self.nodes[i][angle_computed] = st.stdev(angles)
                 #mean = sum(angles) / len(angles)
                 #self.nodes[i][angle_computed] = np.sqrt(sum((a - mean) ** 2 for a in angles) / len(angles))
             elif angle_computed == 'angle_median':
                 self.nodes[i][angle_computed] = st.median(angles)
+
 
 
     def add_gradient_of_Fiedler_vector_as_attribute(self):
@@ -397,11 +420,11 @@ if __name__ == '__main__':
     r = 18
     G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
-    G.compute_gradient_of_Fiedler_vector(method='simple')
-    G.compute_angles_from_gradient_directions(angle_computed='angle_variance')
-    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_variance', filename='angle_variance.txt')
-    G.compute_angles_from_gradient_directions(angle_computed='angle_median')
-    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_median', filename='angle_median.txt')
+    G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
+    #G.compute_angles_from_gradient_directions(angle_computed='angle_variance')
+    #kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_variance', filename='angle_variance.txt')
+    #G.compute_angles_from_gradient_directions(angle_computed='angle_median')
+    #kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_median', filename='angle_median.txt')
     G.compute_angles_from_gradient_directions(angle_computed='angle_standard_deviation')
     kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_standard_deviation', filename='angle_standard_deviation.txt')
 
@@ -414,7 +437,7 @@ if __name__ == '__main__':
     #export_gradient_of_Fiedler_vector_on_pointcloud(G)
     #export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
     #export_figure_graph_of_Fiedler_vector(G)
-    #display_gradient_vector_field(G, normalized=True, scale= 1.)
+    display_gradient_vector_field(G, normalized=True, scale= 1.)
     #kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
     #export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
 

@@ -75,7 +75,7 @@ class PointCloudGraph(nx.Graph):
         self.keigenvec = keigenvec
         self.keigenval = keigenval
 
-        G.add_eigenvector_value_as_attribute()
+        self.add_eigenvector_value_as_attribute()
 
     def add_eigenvector_value_as_attribute(self, k=2):
         if self.keigenvec is None:
@@ -423,12 +423,14 @@ if __name__ == '__main__':
     G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
     #G.compute_angles_from_gradient_directions(angle_computed='angle_variance')
     #kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_variance', filename='angle_variance.txt')
-    #G.compute_angles_from_gradient_directions(angle_computed='angle_median')
-    #kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_median', filename='angle_median.txt')
+    G.compute_angles_from_gradient_directions(angle_computed='angle_median')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_median', filename='angle_median.txt')
     G.compute_angles_from_gradient_directions(angle_computed='angle_standard_deviation')
     kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_standard_deviation', filename='angle_standard_deviation.txt')
-
-
+    G.compute_angles_from_gradient_directions(angle_computed='angle_max')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_max', filename='angle_max.txt')
+    G.compute_angles_from_gradient_directions(angle_computed='angle_mean')
+    kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_mean', filename='angle_mean.txt')
 
 
     #X = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
@@ -437,7 +439,7 @@ if __name__ == '__main__':
     #export_gradient_of_Fiedler_vector_on_pointcloud(G)
     #export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
     #export_figure_graph_of_Fiedler_vector(G)
-    display_gradient_vector_field(G, normalized=True, scale= 1.)
+    display_gradient_vector_field(G, normalized=False, scale= 10000.)
     #kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
     #export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
 

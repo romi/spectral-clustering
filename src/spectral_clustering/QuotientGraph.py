@@ -626,6 +626,33 @@ class QuotientGraph(nx.Graph):
                                                         filename='graph_attribute_quotient_graph_node_final.txt')
 
 
+    def segment_a_node_using_attribute(self, quotient_node_to_work, G):
+        nw = quotient_node_to_work
+
+        # make list of nodes inside the quotient graph node to work with
+        list_of_nodes = [x for x,y in G.nodes(data=True) if y['quotient_graph_node'] == nw]
+
+        # Use of a function to segment
+        nodes_with_attributes = np.zeros((len(list_of_nodes), 3))
+
+        for i in range(len(list_of_nodes)):
+            nodes_with_attributes[i] = G.nodes[list_of_nodes[i]]['direction_gradient']
+
+        kmeans = skc.KMeans(n_clusters=2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
+            nodes_with_attributes)
+
+        # Instead of having 0 or 1, this gives a number not already used in the quotient graph to name the nodes
+        kmeans_labels = kmeans.labels_[:, np.newaxis] + max(self.nodes) + 1
+
+        # Integration of the new labels in the quotient graph and updates
+
+        for i in range(len(list_of_nodes)):
+            G.nodes[list_of_nodes[i]]['quotient_graph_node'] = kmeans_labels[i]
+
+
+
+
+
 def export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
     new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
     new_classif = new_classif[:, np.newaxis]
@@ -752,7 +779,7 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 
 if __name__ == '__main__':
     start = time.time()
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/tomatoe1_noisy.ply", format='ply')
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
     r = 18
     G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
@@ -764,12 +791,11 @@ if __name__ == '__main__':
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
 
-    """
     QG.init_topo_scores(G, exports=True, formulae='improved')
     endi = time.time()
     print(endi-starti)
     start1 = time.time()
-    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=10000,
+    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000,
                                 choice_of_node_to_change='max_energy', formulae='improved')
     end1 = time.time()
     print(start1 - end1)
@@ -789,7 +815,7 @@ if __name__ == '__main__':
 
     
     
-    """
+
 """
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
     #                                             filename="quotient_graph_matplotlib_brut")

@@ -27,6 +27,7 @@ class QuotientGraph(nx.Graph):
         self.label_count = None
         self.nodes_coordinates = None
         self.global_topological_energy = None
+        self.point_cloud_graph = None
 
     def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster):
         """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
@@ -162,6 +163,7 @@ class QuotientGraph(nx.Graph):
 
         #self.seed_colors = seed_colors
         self.label_count = label_count
+        self.point_cloud_graph = G
         #self.graph_labels_dict = dict(zip(np.asarray(self.nodes()), range(label_count)))
         kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels)
 
@@ -327,6 +329,8 @@ class QuotientGraph(nx.Graph):
         """
         # update Quotient Graph attributes
         # Intra_class_node_number
+        print(old_cluster)
+        print(new_cluster)
         self.nodes[old_cluster]['intra_class_node_number'] += -1
         self.nodes[new_cluster]['intra_class_node_number'] += 1
 
@@ -626,6 +630,18 @@ class QuotientGraph(nx.Graph):
                                                         filename='graph_attribute_quotient_graph_node_final.txt')
 
 
+    def update_quotient_graph(self, G):
+        labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
+        labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+
+    def rebuild_quotient_graph(self, G):
+        self.clear()
+        labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
+        labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+
+
     def segment_a_node_using_attribute(self, quotient_node_to_work, G):
         nw = quotient_node_to_work
 
@@ -633,23 +649,145 @@ class QuotientGraph(nx.Graph):
         list_of_nodes = [x for x,y in G.nodes(data=True) if y['quotient_graph_node'] == nw]
 
         # Use of a function to segment
-        nodes_with_attributes = np.zeros((len(list_of_nodes), 3))
+        X = np.zeros((len(list_of_nodes), 3))
 
         for i in range(len(list_of_nodes)):
-            nodes_with_attributes[i] = G.nodes[list_of_nodes[i]]['direction_gradient']
+            X[i] = G.nodes[list_of_nodes[i]]['direction_gradient']
 
-        kmeans = skc.KMeans(n_clusters=2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
-            nodes_with_attributes)
+        #clustering = skc.KMeans(n_clusters=2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X)
+
+        clustering = skc.OPTICS(min_samples=100).fit(X)
 
         # Instead of having 0 or 1, this gives a number not already used in the quotient graph to name the nodes
-        kmeans_labels = kmeans.labels_[:, np.newaxis] + max(self.nodes) + 1
+        #clustering_labels = kmeans.labels_[:, np.newaxis] + max(self.nodes) + 1
+
+        clustering_labels = clustering.labels_[:, np.newaxis] + max(self.nodes) + 1
 
         # Integration of the new labels in the quotient graph and updates
 
         for i in range(len(list_of_nodes)):
-            G.nodes[list_of_nodes[i]]['quotient_graph_node'] = kmeans_labels[i]
+            G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
+
+    def segment_several_nodes_using_attribute(self, G, list_quotient_node_to_work=[], algo='OPTICS',
+                                              para_clustering_meth=100, attribute='direction_gradient'):
+        lw = list_quotient_node_to_work
+
+        # make list of nodes inside the different quotient graph nodes to work with
+        list_of_nodes = []
+        for qnode in lw:
+            list_of_nodes_each = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+            list_of_nodes += list_of_nodes_each
+
+        # Use of a function to segment
+        X = np.zeros((len(list_of_nodes), 3))
+
+        for i in range(len(list_of_nodes)):
+            X[i] = G.nodes[list_of_nodes[i]][attribute]
+
+        if algo == 'OPTICS':
+            clustering = skc.OPTICS(min_samples=para_clustering_meth).fit(X)
+        elif algo == 'kmeans':
+            clustering = skc.KMeans(n_clusters=para_clustering_meth, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X)
+
+        # Instead of having 0 or 1, this gives a number not already used in the quotient graph to name the nodes
+        clustering_labels = clustering.labels_[:, np.newaxis] + max(self.nodes) + 1
+
+        # Integration of the new labels in the quotient graph and updates
+        for i in range(len(list_of_nodes)):
+            G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
+
+    def compute_local_descriptors(self, G, method='each_point', data='coords'):
+        # compute the descriptor for all the point in a quotient graph node
+        if method == 'all_qg_cluster' and data == 'coords':
+            for qnode in self:
+                list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+                mat = np.zeros((len(list_of_nodes_in_qnode), 3))
+                i = 0
+                for n in list_of_nodes_in_qnode:
+                    mat[i] = G.nodes_coords[n]
+                    i += 1
+                covmat = np.cov(np.transpose(mat))
+                print(covmat)
+                eigenval, eigenvec = np.linalg.eigh(covmat)
+                print(eigenval)
+                self.nodes[qnode]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
+                self.nodes[qnode]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
+                self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
+                print(qnode)
+
+        if method == 'each_point' and data == 'coords':
+            # compute each decriptor for each point of the point cloud and its neighborhood
+            for p in G:
+                mat = np.zeros((len(G[p]), 3))
+                i = 0
+                for n in G[p]:
+                    mat[i] = G.nodes_coords[n]
+                    i += 1
+                covmat = np.cov(np.transpose(mat))
+                print(covmat)
+                eigenval, eigenvec = np.linalg.eigh(covmat)
+                G.nodes[p]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
+                G.nodes[p]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
+                G.nodes[p]['scattering'] = eigenval[0] / eigenval[2]
+            # compute mean value for the qnode
+            for qnode in self:
+                list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+                self.nodes[qnode]['planarity'] = 0
+                self.nodes[qnode]['linearity'] = 0
+                self.nodes[qnode]['scattering'] = 0
+                for n in list_of_nodes_in_qnode:
+                    self.nodes[qnode]['planarity'] += G.nodes[n]['planarity']
+                    self.nodes[qnode]['linearity'] += G.nodes[n]['linearity']
+                    self.nodes[qnode]['scattering'] += G.nodes[n]['scattering']
+                self.nodes[qnode]['planarity'] /= len(list_of_nodes_in_qnode)
+                self.nodes[qnode]['linearity'] /= len(list_of_nodes_in_qnode)
+                self.nodes[qnode]['scattering'] /= len(list_of_nodes_in_qnode)
+
+        if method == 'all_qg_cluster' and data == 'gradient_vector_fiedler':
+            for qnode in self:
+                list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+                mat = np.zeros((len(list_of_nodes_in_qnode), 3))
+                i = 0
+                for n in list_of_nodes_in_qnode:
+                    mat[i] = G.nodes[n]['direction_gradient']
+                    i += 1
+                covmat = np.cov(np.transpose(mat))
+                print(covmat)
+                eigenval, eigenvec = np.linalg.eigh(covmat)
+                print(eigenval)
+                self.nodes[qnode]['max_eigenval'] = eigenval[2]
+                self.nodes[qnode]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
+                self.nodes[qnode]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
+                self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
+                print(qnode)
 
 
+    def compute_silhouette(self, method='all_qg_cluster', data='direction_gradient_vector_fiedler'):
+        G = self.point_cloud_graph
+
+        #if method == 'all' and data =='gradient_vector_fiedler':
+            # return a unique coefficient for all the graph
+
+        if method == 'all_qg_cluster':
+            label = []
+            for node in G:
+                label.append(G.nodes[node]['quotient_graph_node'])
+
+            if data == 'direction_gradient_vector_fiedler':
+                sil = sk.metrics.silhouette_samples(G.direction_gradient_on_Fiedler_scaled, label, metric='euclidean')
+            elif data == 'norm_gradient_vector_Fiedler':
+                sil = sk.metrics.silhouette_samples(G.gradient_on_Fiedler, label, metric='euclidean')
+
+            i = 0
+            for node in G:
+                G.nodes[node]['silhouette'] = sil[i]
+                i += 1
+            for qnode in self:
+                list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+                self.nodes[qnode]['silhouette'] = 0
+                for n in list_of_nodes_in_qnode:
+                    self.nodes[qnode]['silhouette'] += G.nodes[n]['silhouette']
+                self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
 
 
 
@@ -731,22 +869,20 @@ def draw_quotientgraph_matplotlib_3D(nodes_coords_moy, QG):
         plt.show()
 
 
-def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number', attributekmeans4clusters = False):
+def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number', data=True, attributekmeans4clusters = False):
 
     figure = plt.figure(0)
     figure.clf()
     graph_layout = nx.kamada_kawai_layout(quotient_graph)
     colormap = 'jet'
-    node_color_from_attribute = dict(quotient_graph.nodes(data='seed_colors')).values()
-    node_color = [quotient_graph.nodes[i]['kmeans_labels'] / 4 for i in quotient_graph.nodes()]
 
-
-    labels_from_attributes = dict(quotient_graph.nodes(data=data_on_nodes))
-    # Rounding the data to allow an easy display
-    for dict_value in labels_from_attributes:
+    if attributekmeans4clusters and data:
+        labels_from_attributes = dict(quotient_graph.nodes(data=data_on_nodes))
+        # Rounding the data to allow an easy display
+        for dict_value in labels_from_attributes:
             labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
-
-    if attributekmeans4clusters:
+        node_color_from_attribute = dict(quotient_graph.nodes(data='seed_colors')).values()
+        node_color = [quotient_graph.nodes[i]['kmeans_labels'] / 4 for i in quotient_graph.nodes()]
         nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,
@@ -756,8 +892,20 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
                                           labels=labels_from_attributes,
                                           cmap=plt.get_cmap(colormap))
 
+    elif attributekmeans4clusters is False and data is False:
+        nx.drawing.nx_pylab.draw_networkx(quotient_graph,
+                                          ax=figure.gca(),
+                                          pos=graph_layout,
+                                          with_labels=False,
+                                          node_size=node_sizes,
+                                          node_color="r",
+                                          cmap=plt.get_cmap(colormap))
 
-    else:
+    elif attributekmeans4clusters is False and data:
+        labels_from_attributes = dict(quotient_graph.nodes(data=data_on_nodes))
+        # Rounding the data to allow an easy display
+        for dict_value in labels_from_attributes:
+            labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
         nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,
@@ -799,7 +947,7 @@ if __name__ == '__main__':
                                 choice_of_node_to_change='max_energy', formulae='improved')
     end1 = time.time()
     print(start1 - end1)
-
+    QG.rebuild_quotient_graph(G)
 
     QG2 = QuotientGraph()
     labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
@@ -807,11 +955,20 @@ if __name__ == '__main__':
     start2 = time.time()
     QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
     display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_QG2_intra_class_number",
+                                                 filename="quotient_graph_matplotlib_QG2_intra_class_number2",
                                                  data_on_nodes='intra_class_node_number')
     export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
                                                 filename='graph_attribute_quotient_graph_node_very_end.txt')
     print(time.time())
+
+    for (u, v) in QG.edges:
+        QG.edges[u, v]['inverse_inter_class_edge_weight'] = 1.0 / QG.edges[u, v]['inter_class_edge_weight']
+
+
+    mst = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='inverse_inter_class_edge_weight')
+
+    display_and_export_quotient_graph_matplotlib(quotient_graph=mst, node_sizes=20,
+                                                 filename="mst", data=False, attributekmeans4clusters=False)
 
     
     

@@ -14,6 +14,7 @@ import spectral_clustering.similarity_graph as sgk
 import open3d as open3d
 import spectral_clustering.PointCloudGraph as kpcg
 import time
+import operator
 from collections import Counter
 
 ########### Définition classe
@@ -29,7 +30,7 @@ class QuotientGraph(nx.Graph):
         self.global_topological_energy = None
         self.point_cloud_graph = None
 
-    def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster):
+    def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster, filename="pcd_attribute.txt"):
         """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
         of the points. Each region becomes a node of que quotient graph.
 
@@ -165,7 +166,7 @@ class QuotientGraph(nx.Graph):
         self.label_count = label_count
         self.point_cloud_graph = G
         #self.graph_labels_dict = dict(zip(np.asarray(self.nodes()), range(label_count)))
-        kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels)
+        kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels, filename=filename)
 
 
     def delete_small_clusters(self, min_number_of_element_in_a_quotient_node=50):
@@ -329,8 +330,8 @@ class QuotientGraph(nx.Graph):
         """
         # update Quotient Graph attributes
         # Intra_class_node_number
-        print(old_cluster)
-        print(new_cluster)
+        #print(old_cluster)
+        #print(new_cluster)
         self.nodes[old_cluster]['intra_class_node_number'] += -1
         self.nodes[new_cluster]['intra_class_node_number'] += 1
 
@@ -497,7 +498,7 @@ class QuotientGraph(nx.Graph):
                 if ban_list.count(node_to_change) != 0:
                     sort_energy_per_node = {k: v for k, v in sorted(energy_per_node.items(), key=lambda item: item[1], reverse=True)}
                     for c in sort_energy_per_node:
-                        print(c)
+                        #print(c)
                         if ban_list.count(c) == 0:
                             node_to_change = c
                             if detect_rep.count(node_to_change) == 0:
@@ -511,12 +512,12 @@ class QuotientGraph(nx.Graph):
                     detect_rep = []
 
 
-            print()
-            print(i)
-            print(ban_list)
-            print(node_to_change)
-            print(G.nodes[node_to_change]['number_of_adj_labels'])
-            print(G.nodes[node_to_change]['quotient_graph_node'])
+            #print()
+            #print(i)
+            #print(ban_list)
+            #print(node_to_change)
+            #print(G.nodes[node_to_change]['number_of_adj_labels'])
+            #print(G.nodes[node_to_change]['quotient_graph_node'])
 
             # change the cluster of the node_to_change
             number_of_neighb = len([n for n in G[node_to_change]])
@@ -548,12 +549,12 @@ class QuotientGraph(nx.Graph):
                 # update of energy for the node changed
                 previous_energy = G.nodes[node_to_change]['number_of_adj_labels']
                 G.nodes[node_to_change]['number_of_adj_labels'] = new_energy
-                print(new_energy)
+                #print(new_energy)
                 self.global_topological_energy += (new_energy - previous_energy)
                 u = G.nodes[node_to_change]['quotient_graph_node']
                 self.nodes[u]['topological_energy'] += new_energy
                 self.nodes[old_cluster]['topological_energy'] -= previous_energy
-                print(self.nodes[u]['topological_energy'])
+                #print(self.nodes[u]['topological_energy'])
                 # update of energy for the neighbors
                 for n in G[node_to_change]:
                     previous_energy = G.nodes[n]['number_of_adj_labels']
@@ -635,11 +636,11 @@ class QuotientGraph(nx.Graph):
         labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
         self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
 
-    def rebuild_quotient_graph(self, G):
+    def rebuild_quotient_graph(self, G, filename="pcd_attribute.txt"):
         self.clear()
         labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
         labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
-        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re, filename=filename)
 
 
     def segment_a_node_using_attribute(self, quotient_node_to_work, G):
@@ -668,10 +669,10 @@ class QuotientGraph(nx.Graph):
         for i in range(len(list_of_nodes)):
             G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
 
-    def segment_several_nodes_using_attribute(self, G, list_quotient_node_to_work=[], algo='OPTICS',
+    def segment_several_nodes_using_attribute(self, list_quotient_node_to_work=[], algo='OPTICS',
                                               para_clustering_meth=100, attribute='direction_gradient'):
         lw = list_quotient_node_to_work
-
+        G = self.point_cloud_graph
         # make list of nodes inside the different quotient graph nodes to work with
         list_of_nodes = []
         for qnode in lw:
@@ -689,12 +690,18 @@ class QuotientGraph(nx.Graph):
         elif algo == 'kmeans':
             clustering = skc.KMeans(n_clusters=para_clustering_meth, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X)
 
+        # Selection of max value for 'quotient_graph_node' in G
+        q_g = nx.get_node_attributes(G, 'quotient_graph_node')
+        q_g_values = list(q_g.values())
+
         # Instead of having 0 or 1, this gives a number not already used in the quotient graph to name the nodes
-        clustering_labels = clustering.labels_[:, np.newaxis] + max(self.nodes) + 1
+        clustering_labels = clustering.labels_[:, np.newaxis] + max(q_g_values) + 2
 
         # Integration of the new labels in the quotient graph and updates
         for i in range(len(list_of_nodes)):
             G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
+
+        self.point_cloud_graph = G
 
     def compute_local_descriptors(self, G, method='each_point', data='coords'):
         # compute the descriptor for all the point in a quotient graph node
@@ -788,6 +795,108 @@ class QuotientGraph(nx.Graph):
                 for n in list_of_nodes_in_qnode:
                     self.nodes[qnode]['silhouette'] += G.nodes[n]['silhouette']
                 self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
+
+    def define_leaves_by_topo(self):
+        G = self.point_cloud_graph
+        # Put the "end" nodes in a list
+        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
+
+
+        # Pick the node with the most average norm gradient (most likely to be part of the stem)
+        max_norm = 0
+        max_norm_node = -1
+        for l in list_leaves:
+            self.nodes[l]['norm_gradient_mean'] = 0
+            list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
+            for n in list_of_nodes_in_qnode:
+                self.nodes[l]['norm_gradient_mean'] += G.nodes[n]['norm_gradient']
+            self.nodes[l]['norm_gradient_mean'] /= len(list_of_nodes_in_qnode)
+            if self.nodes[l]['norm_gradient_mean'] > max_norm:
+                max_norm = self.nodes[l]['norm_gradient_mean']
+                max_norm_node = l
+
+        # Finally I chose randomly the root among the leaves but I could choose the max_norm_node
+        root = np.random.choice(list_leaves)
+        # cluster again the branches by following a path
+        #to_cluster = []
+        #for n in self:
+        #    if n not in list_leaves:
+        #       to_cluster.append(n)
+
+        #self.segment_several_nodes_using_attribute(G=self.point_cloud_graph, list_quotient_node_to_work=to_cluster,
+        #                                          algo='OPTICS', para_clustering_meth=100, attribute='direction_gradient')
+        #self.delete_small_clusters(min_number_of_element_in_a_quotient_node=100)
+    def segment_each_cluster_by_optics_using_directions(self):
+        G = self.point_cloud_graph
+        # Put the "end" nodes in a list
+        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
+        for n in self:
+            if n not in list_leaves and self.nodes[n]['intra_class_node_number'] > 100:
+                self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[n])
+        self.rebuild_quotient_graph(self.point_cloud_graph, filename='optics_seg.txt')
+
+    def compute_direction_info(self, list_leaves):
+        for l in self:
+            self.nodes[l]['dir_gradient_mean'] = 0
+            list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
+            for n in list_of_nodes_in_qnode:
+                self.nodes[l]['dir_gradient_mean'] += G.nodes[n]['direction_gradient']
+            self.nodes[l]['dir_gradient_mean'] /= len(list_of_nodes_in_qnode)
+
+        # take all the edges and compute the dot product between the two cluster
+        for e in self.edges():
+            v1 = self.nodes[e[0]]['dir_gradient_mean']
+            v2 = self.nodes[e[1]]['dir_gradient_mean']
+            if e[0] in list_leaves or e[1] in list_leaves:
+                self.edges[e]['energy_dot_product'] = 2.0
+            else:
+                dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+                energy_dot_product = 1 - dot
+                self.edges[e]['energy_dot_product'] = energy_dot_product
+
+    def opti_energy_dot_product(self):
+        # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
+        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
+
+        for i in range(10):
+            # select the edge
+            self.compute_direction_info(list_leaves)
+            G = self.point_cloud_graph
+            energy_per_edges = nx.get_edge_attributes(self, 'energy_dot_product')
+            edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+            print(edge_to_delete)
+            # make list of nodes inside the different quotient graph nodes to work with
+            list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
+            for j in range(len(list_of_nodes)):
+                G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+
+            list_one_point_per_leaf = []
+            for l in list_leaves:
+                list_one_point_per_leaf.append([x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l][0])
+
+            self.point_cloud_graph = G
+            self.rebuild_quotient_graph(G=self.point_cloud_graph, filename='graph_attribute_quotient_graph_'+str(i)+'.txt')
+
+            list_leaves = []
+            for p in list_one_point_per_leaf:
+                list_leaves.append(G.nodes[p]['quotient_graph_node'])
+
+
+
+        """
+        for l in list_leaves:
+            if l != root:
+                path = nx.bidirectional_shortest_path(self, root, l)
+                path.pop()
+                path.pop(0)
+                le = len(path)
+                if len(path) >= 2:
+                    for i in range(le-1):
+                        self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[path[i], path[i+1]])
+                    G = self.point_cloud_graph
+                    self.rebuild_quotient_graph(G)
+        """
+
 
 
 

@@ -772,29 +772,83 @@ class QuotientGraph(nx.Graph):
     def compute_silhouette(self, method='all_qg_cluster', data='direction_gradient_vector_fiedler'):
         G = self.point_cloud_graph
 
-        #if method == 'all' and data =='gradient_vector_fiedler':
-            # return a unique coefficient for all the graph
+        label = []
+        for node in G:
+            label.append(G.nodes[node]['quotient_graph_node'])
+
 
         if method == 'all_qg_cluster':
-            label = []
-            for node in G:
-                label.append(G.nodes[node]['quotient_graph_node'])
+            # this method is based on the classical way to compute silhouette coefficients in the sci-kit learn module
 
             if data == 'direction_gradient_vector_fiedler':
                 sil = sk.metrics.silhouette_samples(G.direction_gradient_on_Fiedler_scaled, label, metric='euclidean')
-            elif data == 'norm_gradient_vector_Fiedler':
+            elif data == 'norm_gradient_vector_fiedler':
                 sil = sk.metrics.silhouette_samples(G.gradient_on_Fiedler, label, metric='euclidean')
 
-            i = 0
-            for node in G:
-                G.nodes[node]['silhouette'] = sil[i]
-                i += 1
-            for qnode in self:
-                list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
-                self.nodes[qnode]['silhouette'] = 0
-                for n in list_of_nodes_in_qnode:
-                    self.nodes[qnode]['silhouette'] += G.nodes[n]['silhouette']
-                self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
+
+
+        if method == 'topological':
+            import scipy.ndimage as nd
+            from sklearn.metrics import pairwise_distances_chunked
+            # this method aims at comparing the cluster A of the point considered with the adjacent clusters of A.
+            X = []
+
+            if data == 'direction_gradient_vector_fiedler':
+                X = G.direction_gradient_on_Fiedler_scaled
+            elif data == 'norm_gradient_vector_fiedler':
+                X = G.gradient_on_Fiedler
+
+            labels = np.array(label)
+
+            label_list = np.array(self.nodes)
+
+            label_adjacency = nx.adjacency_matrix(self).todense().astype('float64')
+            label_adjacency -= 1 * np.eye(len(label_adjacency)).astype('float64')
+
+            label_index = np.array([np.where(label_list == l)[0][0] for l in labels])
+
+            def mean_by_label(D_chunk, start):
+                label_mean = []
+                chunk_labels = labels[start:start + len(D_chunk)]
+                for line, label in zip(D_chunk, chunk_labels):
+                    label_sum = nd.sum(line, labels, index=label_list)
+                    label_count = nd.sum(np.ones_like(labels), labels, index=label_list)
+                    label_count -= label_list == label
+                    label_mean += [label_sum / label_count]
+                return np.array(label_mean)
+
+            gen = pairwise_distances_chunked(X, reduce_func=mean_by_label)
+
+            start = 0
+            silhouette = []
+            for label_mean_dissimilarity in gen:
+                chunk_label_index = label_index[start:start + len(label_mean_dissimilarity)]
+
+                adjacent_label_mean_dissimilarity = np.copy(label_mean_dissimilarity)
+                adjacent_label_mean_dissimilarity[label_adjacency[chunk_label_index] != 1] = np.nan
+
+                self_label_mean_dissimilarity = np.copy(label_mean_dissimilarity)
+                self_label_mean_dissimilarity[label_adjacency[chunk_label_index] != -1] = np.nan
+
+                intra = np.nanmin(self_label_mean_dissimilarity, axis=1)
+                inter = np.nanmin(adjacent_label_mean_dissimilarity, axis=1)
+
+                silhouette += list((inter - intra) / np.maximum(inter, intra))
+                start += len(label_mean_dissimilarity)
+
+            sil = np.array(silhouette)
+
+        i = 0
+        for node in G:
+            G.nodes[node]['silhouette'] = sil[i]
+            i += 1
+        for qnode in self:
+            list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+            self.nodes[qnode]['silhouette'] = 0
+            for n in list_of_nodes_in_qnode:
+                self.nodes[qnode]['silhouette'] += G.nodes[n]['silhouette']
+            self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
+
 
     def define_leaves_by_topo(self):
         G = self.point_cloud_graph
@@ -848,23 +902,24 @@ class QuotientGraph(nx.Graph):
             v1 = self.nodes[e[0]]['dir_gradient_mean']
             v2 = self.nodes[e[1]]['dir_gradient_mean']
             if e[0] in list_leaves or e[1] in list_leaves:
-                self.edges[e]['energy_dot_product'] = 2.0
+                self.edges[e]['energy_dot_product'] = 4
             else:
                 dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-                energy_dot_product = 1 - dot
+                energy_dot_product = 1-dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
 
-    def opti_energy_dot_product(self):
+    def opti_energy_dot_product(self, iter=10):
         # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
         list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
 
-        for i in range(10):
+        for i in range(iter):
             # select the edge
             self.compute_direction_info(list_leaves)
             G = self.point_cloud_graph
             energy_per_edges = nx.get_edge_attributes(self, 'energy_dot_product')
             edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
             print(edge_to_delete)
+            print(energy_per_edges[edge_to_delete])
             # make list of nodes inside the different quotient graph nodes to work with
             list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
             for j in range(len(list_of_nodes)):
@@ -876,7 +931,9 @@ class QuotientGraph(nx.Graph):
 
             self.point_cloud_graph = G
             self.rebuild_quotient_graph(G=self.point_cloud_graph, filename='graph_attribute_quotient_graph_'+str(i)+'.txt')
-
+            display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                         filename="quotient_graph_matplotlib_QG_intra_class_number_"+str(i),
+                                                         data_on_nodes='intra_class_node_number')
             list_leaves = []
             for p in list_one_point_per_leaf:
                 list_leaves.append(G.nodes[p]['quotient_graph_node'])
@@ -1075,6 +1132,7 @@ if __name__ == '__main__':
 
 
     mst = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='inverse_inter_class_edge_weight')
+
 
     display_and_export_quotient_graph_matplotlib(quotient_graph=mst, node_sizes=20,
                                                  filename="mst", data=False, attributekmeans4clusters=False)

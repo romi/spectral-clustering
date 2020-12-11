@@ -38,6 +38,11 @@ class PointCloudGraph(nx.Graph):
 
         G = sgk.gen_graph(point_cloud, method=self.method, nearest_neighbors=self.nearest_neighbors, radius=self.radius)
         super().__init__(G)
+        open3d.geometry.estimate_normals(point_cloud)
+
+        self.normals = np.asarray(point_cloud.normals)
+        for i in range(len(point_cloud.points)):
+            G.add_node(i, normal = np.asarray(point_cloud.normals)[i, :])
 
         self.nodes_coords = np.asarray(point_cloud.points)
         self.Laplacian = None

@@ -437,7 +437,7 @@ class QuotientGraph(nx.Graph):
 
          Parameters
          ----------
-        G : PoinCloudGraph
+        G : PointCloudGraph
         exports : Boolean, if True : the function exports the graph of the evolution of the global energy, the quotient
         graph with energy on each node, two point clouds, one with the energy of each point, the other with the clusters
         number_of_iteration : int
@@ -610,6 +610,7 @@ class QuotientGraph(nx.Graph):
             evol_energy.append(self.global_topological_energy)
 
         self.delete_empty_edges_and_nodes()
+
         if exports:
             figure = plt.figure(1)
             figure.clf()
@@ -622,7 +623,9 @@ class QuotientGraph(nx.Graph):
             figure.savefig('Evolution_global_energy')
             print("Export énergie globale")
 
-            display_and_export_quotient_graph_matplotlib(QG, node_sizes=20, filename="quotient_graph_matplotlib_energy_final",
+
+
+            display_and_export_quotient_graph_matplotlib(self, node_sizes=20, filename="quotient_graph_matplotlib_energy_final",
                                                          data_on_nodes='topological_energy')
             export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels',
                                                         filename='graph_attribute_energy_final.txt')
@@ -714,13 +717,18 @@ class QuotientGraph(nx.Graph):
                     mat[i] = G.nodes_coords[n]
                     i += 1
                 covmat = np.cov(np.transpose(mat))
-                print(covmat)
+
                 eigenval, eigenvec = np.linalg.eigh(covmat)
-                print(eigenval)
+
                 self.nodes[qnode]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
                 self.nodes[qnode]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
                 self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
-                print(qnode)
+                self.nodes[qnode]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])
+                self.nodes[qnode]['lambda1'] = eigenval[2]
+                self.nodes[qnode]['lambda2'] = eigenval[1]
+                self.nodes[qnode]['lambda3'] = eigenval[0]
+
+
 
         if method == 'each_point' and data == 'coords':
             # compute each decriptor for each point of the point cloud and its neighborhood
@@ -731,24 +739,30 @@ class QuotientGraph(nx.Graph):
                     mat[i] = G.nodes_coords[n]
                     i += 1
                 covmat = np.cov(np.transpose(mat))
-                print(covmat)
+
                 eigenval, eigenvec = np.linalg.eigh(covmat)
                 G.nodes[p]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
                 G.nodes[p]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
                 G.nodes[p]['scattering'] = eigenval[0] / eigenval[2]
+                G.nodes[p]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])
+
             # compute mean value for the qnode
             for qnode in self:
                 list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
                 self.nodes[qnode]['planarity'] = 0
                 self.nodes[qnode]['linearity'] = 0
                 self.nodes[qnode]['scattering'] = 0
+                self.nodes[qnode]['curvature_eig'] = 0
+
                 for n in list_of_nodes_in_qnode:
                     self.nodes[qnode]['planarity'] += G.nodes[n]['planarity']
                     self.nodes[qnode]['linearity'] += G.nodes[n]['linearity']
                     self.nodes[qnode]['scattering'] += G.nodes[n]['scattering']
+                    self.nodes[qnode]['curvature_eig'] += G.nodes[n]['curvature_eig']
                 self.nodes[qnode]['planarity'] /= len(list_of_nodes_in_qnode)
                 self.nodes[qnode]['linearity'] /= len(list_of_nodes_in_qnode)
                 self.nodes[qnode]['scattering'] /= len(list_of_nodes_in_qnode)
+                self.nodes[qnode]['curvature_eig'] /= len(list_of_nodes_in_qnode)
 
         if method == 'all_qg_cluster' and data == 'gradient_vector_fiedler':
             for qnode in self:
@@ -759,17 +773,19 @@ class QuotientGraph(nx.Graph):
                     mat[i] = G.nodes[n]['direction_gradient']
                     i += 1
                 covmat = np.cov(np.transpose(mat))
-                print(covmat)
+
                 eigenval, eigenvec = np.linalg.eigh(covmat)
-                print(eigenval)
+
                 self.nodes[qnode]['max_eigenval'] = eigenval[2]
                 self.nodes[qnode]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
                 self.nodes[qnode]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
                 self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
-                print(qnode)
+                self.nodes[qnode]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])
 
 
-    def compute_silhouette(self, method='all_qg_cluster', data='direction_gradient_vector_fiedler'):
+
+    def compute_silhouette(self, method='topological', data='direction_gradient_vector_fiedler'):
+
         G = self.point_cloud_graph
 
         label = []
@@ -880,6 +896,28 @@ class QuotientGraph(nx.Graph):
         #self.segment_several_nodes_using_attribute(G=self.point_cloud_graph, list_quotient_node_to_work=to_cluster,
         #                                          algo='OPTICS', para_clustering_meth=100, attribute='direction_gradient')
         #self.delete_small_clusters(min_number_of_element_in_a_quotient_node=100)
+
+    def define_semantic_classes(self):
+
+        # leaves : one adjacency
+        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
+
+        # the node with the most number of neighborhood is the stem
+        degree_sorted = sorted(self.degree, key=lambda x: x[1], reverse=True)
+        stem = [degree_sorted[0][0]]
+
+        # the rest is defined as branches
+        for n in self.nodes:
+            if n in list_leaves:
+                self.nodes[n]['semantic_label'] = 'leaf'
+            if n in stem:
+                self.nodes[n]['semantic_label'] = 'stem'
+            elif n not in list_leaves and n not in stem:
+                self.nodes[n]['semantic_label'] = 'petiole'
+
+
+
+
     def segment_each_cluster_by_optics_using_directions(self):
         G = self.point_cloud_graph
         # Put the "end" nodes in a list
@@ -890,6 +928,7 @@ class QuotientGraph(nx.Graph):
         self.rebuild_quotient_graph(self.point_cloud_graph, filename='optics_seg.txt')
 
     def compute_direction_info(self, list_leaves):
+        G = self.point_cloud_graph
         for l in self:
             self.nodes[l]['dir_gradient_mean'] = 0
             list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
@@ -1071,7 +1110,8 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
         labels_from_attributes = dict(quotient_graph.nodes(data=data_on_nodes))
         # Rounding the data to allow an easy display
         for dict_value in labels_from_attributes:
-            labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
+            if data_on_nodes != 'semantic_label':
+                labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
         nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,
@@ -1093,51 +1133,86 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 
 if __name__ == '__main__':
     start = time.time()
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Young_cheno_best_res_crop.ply", format='ply')
     r = 18
     G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    print(nx.is_connected(G))
+
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
     G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
-    end = time.time()
-    print(end - start)
-    starti = time.time()
+
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
 
-    QG.init_topo_scores(G, exports=True, formulae='improved')
-    endi = time.time()
-    print(endi-starti)
-    start1 = time.time()
-    QG.optimization_topo_scores(G=G, exports=True, number_of_iteration=3000,
-                                choice_of_node_to_change='max_energy', formulae='improved')
-    end1 = time.time()
-    print(start1 - end1)
-    QG.rebuild_quotient_graph(G)
+    QG.init_topo_scores(QG.point_cloud_graph, exports=True, formulae='improved')
 
-    QG2 = QuotientGraph()
+    QG.optimization_topo_scores(G=QG.point_cloud_graph, exports=True, number_of_iteration=10000,
+                                choice_of_node_to_change='max_energy', formulae='improved')
+
+    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+
+    QG.segment_each_cluster_by_optics_using_directions()
+    QG.init_topo_scores(G=QG.point_cloud_graph, exports=True, formulae='improved')
+    QG.optimization_topo_scores(G=QG.point_cloud_graph, exports=True, number_of_iteration=1000,
+                                choice_of_node_to_change='max_energy', formulae='improved')
+    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+    QG.opti_energy_dot_product(iter=8)
+    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+
+    end = time.time()
+
+    time = end-start
+
+
+
     labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
-    start2 = time.time()
-    QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
-    display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20,
-                                                 filename="quotient_graph_matplotlib_QG2_intra_class_number2",
+
+
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="quotient_graph_matplotlib_QG_intra_class_number2",
                                                  data_on_nodes='intra_class_node_number')
-    export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node',
+    export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph, graph_attribute='quotient_graph_node',
                                                 filename='graph_attribute_quotient_graph_node_very_end.txt')
-    print(time.time())
+
+    QG.define_semantic_classes()
+    for (u,v) in QG.edges:
+        if QG.nodes[u]['semantic_label'] == QG.nodes[v]['semantic_label']:
+            QG.edges[u, v]['semantic_weight'] = 50
+        else:
+            QG.edges[u, v]['semantic_weight'] = 1
+
+    ac = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='semantic_weight')
+    display_and_export_quotient_graph_matplotlib(quotient_graph=ac, node_sizes=20,
+                                                 filename="ac", data_on_nodes='semantic_label', data=True, attributekmeans4clusters=False)
+
 
     for (u, v) in QG.edges:
         QG.edges[u, v]['inverse_inter_class_edge_weight'] = 1.0 / QG.edges[u, v]['inter_class_edge_weight']
-
-
     mst = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='inverse_inter_class_edge_weight')
-
-
     display_and_export_quotient_graph_matplotlib(quotient_graph=mst, node_sizes=20,
                                                  filename="mst", data=False, attributekmeans4clusters=False)
 
-    
+    tab = np.zeros((len(QG), 3))
+    i = 0
+    for n in QG.nodes:
+        tab[i, 0] = QG.nodes[n]['planarity']
+        tab[i, 1] = QG.nodes[n]['linearity']
+        tab[i, 2] = QG.nodes[n]['intra_class_node_number']/len(pcd.points)
+        i += 1
+
+    figure = plt.figure(1)
+    figure.clf()
+    figure.gca().set_title("Evolution_of_energy")
+    plt.autoscale(enable=True, axis='both', tight=None)
+    figure.gca().scatter(tab[:, 0], tab[:, 1], color='blue', s=(tab[:, 2]*10000))
+    figure.set_size_inches(10, 10)
+    figure.subplots_adjust(wspace=0, hspace=0)
+    figure.tight_layout()
+    figure.savefig('linearity_planarity')
+    print("linearity_planarity")
+
     
 
 """

@@ -915,6 +915,21 @@ class QuotientGraph(nx.Graph):
             elif n not in list_leaves and n not in stem:
                 self.nodes[n]['semantic_label'] = 'petiole'
 
+    def define_semantic_scores(self):
+        self.compute_local_descriptors(self.point_cloud_graph, method='all_qg_cluster', data='coords')
+        self.compute_silhouette()
+        degree_sorted = sorted(self.degree, key=lambda x: x[1], reverse=True)
+        stem = [degree_sorted[0][0]]
+
+        for n in self.nodes:
+            score_vector_leaf = [self.nodes[n]['planarity'] > 0.5, self.nodes[n]['linearity'] < 0.5, self.degree(n) == 1]
+            score_vector_petiole = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == 2, self.nodes[n]['silhouette'] > 0.2]
+            score_vector_stem = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == degree_sorted[0][1]]
+            self.nodes[n]['score_leaf'] = score_vector_leaf.count(True)/len(score_vector_leaf)
+            self.nodes[n]['score_petiole'] = score_vector_petiole.count(True)/len(score_vector_petiole)
+            self.nodes[n]['score_stem'] = score_vector_stem.count(True)/len(score_vector_stem)
+
+
 
 
 
@@ -1133,7 +1148,7 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 
 if __name__ == '__main__':
     start = time.time()
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Young_cheno_best_res_crop.ply", format='ply')
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
     r = 18
     G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
     print(nx.is_connected(G))
@@ -1194,6 +1209,7 @@ if __name__ == '__main__':
     display_and_export_quotient_graph_matplotlib(quotient_graph=mst, node_sizes=20,
                                                  filename="mst", data=False, attributekmeans4clusters=False)
 
+    QG.compute_local_descriptors(QG.point_cloud_graph, method='all_qg_cluster', data='coords')
     tab = np.zeros((len(QG), 3))
     i = 0
     for n in QG.nodes:
@@ -1212,6 +1228,20 @@ if __name__ == '__main__':
     figure.tight_layout()
     figure.savefig('linearity_planarity')
     print("linearity_planarity")
+
+    labels_from_qg = np.zeros((len(QG.point_cloud_graph), 4))
+    i = 0
+    G = QG.point_cloud_graph
+    for n in G.nodes:
+        labels_from_qg[i, 0:3] = G.nodes[n]['pos']
+        labels_from_qg[i, 3] = QG.nodes[G.nodes[n]['quotient_graph_node']]['score_petiole']
+        i += 1
+
+    np.savetxt('pcd_petiole_sil_0_2.txt', labels_from_qg, delimiter=",")
+
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                 filename="QG_petiol_sil0_2", data_on_nodes='score_petiole', data=True,
+                                                 attributekmeans4clusters=False)
 
     
 

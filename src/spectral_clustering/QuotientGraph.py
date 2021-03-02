@@ -610,7 +610,7 @@ class QuotientGraph(nx.Graph):
             evol_energy.append(self.global_topological_energy)
 
         self.delete_empty_edges_and_nodes()
-
+        self.point_cloud_graph = G
         if exports:
             figure = plt.figure(1)
             figure.clf()
@@ -915,32 +915,80 @@ class QuotientGraph(nx.Graph):
             elif n not in list_leaves and n not in stem:
                 self.nodes[n]['semantic_label'] = 'petiole'
 
-    def define_semantic_scores(self):
+    def define_semantic_scores(self, method='similarity_dist'):
         self.compute_local_descriptors(self.point_cloud_graph, method='all_qg_cluster', data='coords')
         self.compute_silhouette()
         degree_sorted = sorted(self.degree, key=lambda x: x[1], reverse=True)
         stem = [degree_sorted[0][0]]
 
-        for n in self.nodes:
-            score_vector_leaf = [self.nodes[n]['planarity'] > 0.5, self.nodes[n]['linearity'] < 0.5, self.degree(n) == 1]
-            score_vector_petiole = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == 2, self.nodes[n]['silhouette'] > 0.2]
-            score_vector_stem = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == degree_sorted[0][1]]
-            self.nodes[n]['score_leaf'] = score_vector_leaf.count(True)/len(score_vector_leaf)
-            self.nodes[n]['score_petiole'] = score_vector_petiole.count(True)/len(score_vector_petiole)
-            self.nodes[n]['score_stem'] = score_vector_stem.count(True)/len(score_vector_stem)
+        if method == 'condition_list':
+            for n in self.nodes:
+                score_vector_leaf = [self.nodes[n]['planarity'] > 0.5, self.nodes[n]['linearity'] < 0.5, self.degree(n) == 1]
+                score_vector_petiole = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == 2, self.nodes[n]['silhouette'] > 0.2]
+                score_vector_stem = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == degree_sorted[0][1]]
+                self.nodes[n]['score_leaf'] = score_vector_leaf.count(True)/len(score_vector_leaf)
+                self.nodes[n]['score_petiole'] = score_vector_petiole.count(True)/len(score_vector_petiole)
+                self.nodes[n]['score_stem'] = score_vector_stem.count(True)/len(score_vector_stem)
 
+        if method == 'similarity_dist':
+            def smoothstep(x):
+                if x <= 0:
+                    res = 0
+                elif x >= 1:
+                    res = 1
+                else:
+                    res = 3 * pow(x, 2) - 2 * pow(x, 3)
 
+                return res
 
+            def identity(x):
+                if x <= 0:
+                    res = 0
+                elif x >= 1:
+                    res = 1
+                else:
+                    res = x
 
+                return res
 
-    def segment_each_cluster_by_optics_using_directions(self):
-        G = self.point_cloud_graph
+            score_vector_leaf_ref = [0.81, 0, -0.1]
+            score_vector_linea_ref = [0, 1, 0.3]
+            for n in QG.nodes:
+                # score_vector_n = sk.preprocessing.normalize(np.asarray([QG.nodes[n]['planarity'], QG.nodes[n]['linearity']]).reshape(1,len(score_vector_leaf_ref)), norm='l2')
+                score_vector_n = [QG.nodes[n]['planarity'], QG.nodes[n]['linearity'], QG.nodes[n]['silhouette']]
+                print(score_vector_n)
+                d1_leaf = sp.spatial.distance.euclidean(score_vector_leaf_ref, score_vector_n)
+                # print(d1_leaf)
+                d2_linea = sp.spatial.distance.euclidean(score_vector_linea_ref, score_vector_n)
+                # print(d2_leaf)
+                f1 = 1 - d1_leaf
+                f2 = 1 - d2_linea
+                QG.nodes[n]['score_leaf'] = identity(f1)
+                QG.nodes[n]['score_petiole'] = identity(f2)
+
+    def segment_each_cluster_by_optics_using_directions(self, leaves_out=True):
         # Put the "end" nodes in a list
         list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
         for n in self:
-            if n not in list_leaves and self.nodes[n]['intra_class_node_number'] > 100:
+            if leaves_out:
+                if n not in list_leaves and self.nodes[n]['intra_class_node_number'] > 100:
+                    self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[n])
+            elif leaves_out is False and self.nodes[n]['intra_class_node_number'] > 100:
                 self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[n])
-        self.rebuild_quotient_graph(self.point_cloud_graph, filename='optics_seg.txt')
+
+        self.rebuild_quotient_graph(self.point_cloud_graph, filename='optics_seg_directions.txt')
+
+    def segment_each_cluster_by_optics_using_norm(self, leaves_out=True):
+        # Put the "end" nodes in a list
+        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
+        for n in self:
+            if leaves_out:
+                if n not in list_leaves and self.nodes[n]['intra_class_node_number'] > 100:
+                    self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[n], attribute='norm_gradient')
+            elif leaves_out is False and self.nodes[n]['intra_class_node_number'] > 100:
+                self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[n], attribute = 'norm_gradient')
+
+        self.rebuild_quotient_graph(self.point_cloud_graph, filename='optics_seg_norms.txt')
 
     def compute_direction_info(self, list_leaves):
         G = self.point_cloud_graph
@@ -962,7 +1010,7 @@ class QuotientGraph(nx.Graph):
                 energy_dot_product = 1-dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
 
-    def opti_energy_dot_product(self, iter=10):
+    def opti_energy_dot_product(self, iter=10, leaves_out=False, list_quotient_node_to_work=[], export_iter=True):
         # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
         list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
 
@@ -975,22 +1023,30 @@ class QuotientGraph(nx.Graph):
             print(edge_to_delete)
             print(energy_per_edges[edge_to_delete])
             # make list of nodes inside the different quotient graph nodes to work with
-            list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
-            for j in range(len(list_of_nodes)):
-                G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+            if not(list_quotient_node_to_work):
+                list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
+                for j in range(len(list_of_nodes)):
+                    G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+            else:
 
-            list_one_point_per_leaf = []
-            for l in list_leaves:
-                list_one_point_per_leaf.append([x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l][0])
+
+            if leaves_out:
+                list_one_point_per_leaf = []
+                for l in list_leaves:
+                    list_one_point_per_leaf.append([x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l][0])
+                list_leaves = []
+                for p in list_one_point_per_leaf:
+                    list_leaves.append(G.nodes[p]['quotient_graph_node'])
 
             self.point_cloud_graph = G
-            self.rebuild_quotient_graph(G=self.point_cloud_graph, filename='graph_attribute_quotient_graph_'+str(i)+'.txt')
-            display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
-                                                         filename="quotient_graph_matplotlib_QG_intra_class_number_"+str(i),
-                                                         data_on_nodes='intra_class_node_number')
-            list_leaves = []
-            for p in list_one_point_per_leaf:
-                list_leaves.append(G.nodes[p]['quotient_graph_node'])
+            self.rebuild_quotient_graph(G=self.point_cloud_graph,
+                                        filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
+            if export_iter:
+                self.rebuild_quotient_graph(G=self.point_cloud_graph,
+                                            filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
+                display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                             filename="quotient_graph_matplotlib_QG_intra_class_number_" + str(i),
+                                                             data_on_nodes='intra_class_node_number')
 
 
 
@@ -1001,14 +1057,47 @@ class QuotientGraph(nx.Graph):
                 path.pop()
                 path.pop(0)
                 le = len(path)
-                if len(path) >= 2:
-                    for i in range(le-1):
+                if len(path) >= 2:                    for i in range(le-1):
                         self.segment_several_nodes_using_attribute(list_quotient_node_to_work=[path[i], path[i+1]])
                     G = self.point_cloud_graph
                     self.rebuild_quotient_graph(G)
+                    
+                    
         """
+    def oversegment_part(self, list_quotient_node_to_work=[], average_size_cluster=20):
+        lw = list_quotient_node_to_work
+        G = self.point_cloud_graph
+        # make list of nodes inside the different quotient graph nodes to work with
+        list_of_nodes = []
+        for qnode in lw:
+            list_of_nodes_each = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+            list_of_nodes += list_of_nodes_each
+
+        Xcoord = np.zeros((len(list_of_nodes), 3))
+        for i in range(len(list_of_nodes)):
+            Xcoord[i] = G.nodes[list_of_nodes[i]]['pos']
+
+        number_of_points = len(list_of_nodes)
+        number_of_clusters = number_of_points/average_size_cluster
+
+        clustering = skc.KMeans(n_clusters=number_of_clusters, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xcoord)
+        clustering_labels = clustering.labels_[:, np.newaxis] + max(QG.nodes) + 1
+
+        self.rebuild_quotient_graph(G)
+
+        return list_of_nodes
 
 
+
+def collect_quotient_graph_nodes_from_points(quotient_graph, list_of_points=[]):
+    G = quotient_graph.point_cloud_graph
+    list =[]
+    for node in list_of_points:
+        list.pop(G.nodes[node]['quotient_graph_node'])
+
+    list_of_clusters = list(set(list))
+
+    return list_of_clusters
 
 
 def export_some_graph_attributes_on_point_cloud(G, graph_attribute='quotient_graph_node', filename='graph_attribute.txt'):
@@ -1147,15 +1236,30 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 ######### Main
 
 if __name__ == '__main__':
-    start = time.time()
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Older_Cheno.ply", format='ply')
     r = 18
-    G = kpcg.PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    G = kpcg.PointCloudGraph()
+    G.PointCloudGraph_init_with_pcd(point_cloud=pcd, method='knn', nearest_neighbors=r)
     print(nx.is_connected(G))
+    if nx.is_connected(G) is False:
+        largest_cc = max(nx.connected_components(G), key=len)
+        # creating the new pcd point clouds
+        coords = np.zeros((len(largest_cc), 3))
+        i = 0
+        for node in largest_cc:
+            coords[i, :] = G.node[node]['pos']
+            i += 1
+        np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
+        pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
+        r = 18
+        G = kpcg.PointCloudGraph()
+        G.PointCloudGraph_init_with_pcd(point_cloud=pcd2, method='knn', nearest_neighbors=r)
+
 
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
-    G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
+    #G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
+    G.clustering_by_fiedler_and_optics(criteria=[G.direction_gradient_on_Fiedler_scaled])
 
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
@@ -1168,18 +1272,20 @@ if __name__ == '__main__':
     QG.rebuild_quotient_graph(QG.point_cloud_graph)
 
     QG.segment_each_cluster_by_optics_using_directions()
+
     QG.init_topo_scores(G=QG.point_cloud_graph, exports=True, formulae='improved')
     QG.optimization_topo_scores(G=QG.point_cloud_graph, exports=True, number_of_iteration=1000,
                                 choice_of_node_to_change='max_energy', formulae='improved')
     QG.rebuild_quotient_graph(QG.point_cloud_graph)
+    """
+    
     QG.opti_energy_dot_product(iter=8)
     QG.rebuild_quotient_graph(QG.point_cloud_graph)
 
-    end = time.time()
-
-    time = end-start
+    QG.compute_local_descriptors(QG.point_cloud_graph, method='all_qg_cluster', data='coords')
 
 
+    
 
     labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
@@ -1234,16 +1340,117 @@ if __name__ == '__main__':
     G = QG.point_cloud_graph
     for n in G.nodes:
         labels_from_qg[i, 0:3] = G.nodes[n]['pos']
-        labels_from_qg[i, 3] = QG.nodes[G.nodes[n]['quotient_graph_node']]['score_petiole']
+        labels_from_qg[i, 3] = QG.nodes[G.nodes[n]['quotient_graph_node']]['silhouette']
         i += 1
 
-    np.savetxt('pcd_petiole_sil_0_2.txt', labels_from_qg, delimiter=",")
+    np.savetxt('pcd_silhouette.txt', labels_from_qg, delimiter=",")
 
-    display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
-                                                 filename="QG_petiol_sil0_2", data_on_nodes='score_petiole', data=True,
-                                                 attributekmeans4clusters=False)
+    #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+    #                                             filename="QG_leaf", data_on_nodes='score_leaf', data=True,
+    #                                             attributekmeans4clusters=False)
 
-    
+    sil = []
+    """
+
+    nw = 12
+    G = QG.point_cloud_graph
+
+    # make list of nodes inside the quotient graph node to work with
+    list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == nw]
+
+
+    # Use of a function to segment
+    Xcoord = np.zeros((len(list_of_nodes), 3))
+
+    for i in range(len(list_of_nodes)):
+        Xcoord[i] = G.nodes[list_of_nodes[i]]['pos']
+
+    H = nx.subgraph(G, list_of_nodes)
+    H.compute_graph_eigenvectors(is_sparse=True, k=50, smallest_first=True, laplacian_type='classical')
+
+    figure = plt.figure(1)
+    figure.clf()
+    figure.gca().set_title("eigenvalues")
+    plt.autoscale(enable=True, axis='both', tight=None)
+    figure.gca().scatter(range(len(H.keigenval)), H.keigenval, color='blue')
+    figure.savefig('valeurs_propres')
+
+
+
+    clustering = skc.SpectralClustering(n_clusters=2, affinity='nearest_neighbors', n_neighbors=18).fit(Xcoord)
+
+
+    #clustering = skc.KMeans(n_clusters=2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X2)
+    clustering_labels = clustering.labels_[:, np.newaxis] + max(QG.nodes) + 1
+
+    """
+
+    # Integration of the new labels in the quotient graph and updates
+    for i in range(len(list_of_nodes)):
+        G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
+    QG.point_cloud_graph = G
+
+    QG.rebuild_quotient_graph(G=QG.point_cloud_graph)
+    QG.compute_silhouette()
+    labels_from_qg = np.zeros((len(QG.point_cloud_graph), 4))
+    i = 0
+    G = QG.point_cloud_graph
+    for n in G.nodes:
+        labels_from_qg[i, 0:3] = G.nodes[n]['pos']
+        labels_from_qg[i, 3] = QG.nodes[G.nodes[n]['quotient_graph_node']]['silhouette']
+        i += 1
+    np.savetxt('pcd_silhouette.txt', labels_from_qg, delimiter=",")
+
+
+    labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
+    labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+
+    export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph, graph_attribute='quotient_graph_node',
+                                                filename='graph_attribute_quotient_graph_node_very_end.txt')
+
+    sil.append(sk.metrics.silhouette_score(X1, clustering_labels))
+
+    #sil = []
+    #for rep in range(8):
+    #    clustering = skc.KMeans(n_clusters=rep+2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X)
+    #affinity = 1 - sp.spatial.distance_matrix(X, X)
+
+    #clustering = skc.affinity_propagation(S=affinity)
+    #clustering = skc.AffinityPropagation(damping=0.95).fit(X)
+
+    # Instead of having 0 or 1, this gives a number not already used in the quotient graph to name the nodes
+    # clustering_labels = kmeans.labels_[:, np.newaxis] + max(self.nodes) + 1
+
+    #    clustering_labels = clustering.labels_[:, np.newaxis] + max(QG.nodes) + 1
+
+    #    sil.append(sk.metrics.silhouette_score(X, clustering_labels))
+
+    figure = plt.figure(1)
+    figure.clf()
+    figure.gca().set_title("eigenvalues")
+    plt.autoscale(enable=True, axis='both', tight=None)
+    figure.gca().scatter(range(len(H.keigenval)), H.keigenval, color='blue')
+    figure.savefig('valeurs_propres')
+
+    QG.compute_quotientgraph_nodes_coordinates(G)
+
+    draw_quotientgraph_cellcomplex(pcd=QG.nodes_coordinates, QG=QG, G=QG.point_cloud_graph)
+    """
+    """
+    # Integration of the new labels in the quotient graph and updates
+    clustering = skc.KMeans(n_clusters=2, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(X)
+    clustering_labels = clustering.labels_[:, np.newaxis] + max(QG.nodes) + 1
+    for i in range(len(list_of_nodes)):
+        G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
+    QG.point_cloud_graph = G
+
+    labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
+    labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+
+    export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph, graph_attribute='quotient_graph_node',
+                                                filename='graph_attribute_quotient_graph_node_very_end.txt')
+    """
+
 
 """
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,

@@ -21,8 +21,24 @@ class PointCloudGraph(nx.Graph):
     A graph structure that keep in memory all the computations made and the informations about the point cloud from which
     the graph was constructed.
     """
+    def __init__(self):
+        super().__init__()
+        self.method = None
+        self.nearest_neighbors = None
+        self.radius = None
+        self.normals = None
+        self.nodes_coords = None
+        self.Laplacian = None
+        self.keigenvec = None
+        self.keigenval = None
+        self.gradient_on_Fiedler = None
+        self.direction_gradient_on_Fiedler_scaled = None
+        self.clustering_labels = None
+        self.clusters_leaves = None
+        self.kmeans_labels_gradient = None
+        self.minimum_local = None
 
-    def __init__(self, point_cloud, method='knn', nearest_neighbors=1, radius=1.):
+    def PointCloudGraph_init_with_pcd(self, point_cloud, method='knn', nearest_neighbors=1, radius=1.):
         """Initialize the graph.
 
         The graph is created from the point cloud indicated.
@@ -254,6 +270,13 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, node_clustering_label, 'clustering_labels')
         self.clustering_labels = clustering.labels_[:, np.newaxis]
 
+    def clustering_by_fiedler_and_optics(self, criteria=[]):
+        X = criteria
+        clustering = skc.OPTICS(min_samples=100).fit(X)
+        clustering_labels = clustering.labels_[:, np.newaxis]
+        for i in range(len(self.nodes)):
+            self.nodes[i]['optics_label'] = clustering_labels[i]
+
 
     def clustering_by_kmeans_in_four_clusters_using_gradient_norm(self, export_in_labeled_point_cloud=False):
         kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
@@ -423,7 +446,7 @@ if __name__ == '__main__':
 
     pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply")
     r = 18
-    G = PointCloudGraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    G = PointCloudGraph_init_with_pcd(point_cloud=pcd, method='knn', nearest_neighbors=r)
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
     #G.compute_angles_from_gradient_directions(angle_computed='angle_variance')

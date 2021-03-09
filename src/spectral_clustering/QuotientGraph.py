@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import pandas as pd
+from treex import *
 
 from mpl_toolkits.mplot3d import Axes3D
 import scipy.sparse as spsp
@@ -338,15 +339,15 @@ class QuotientGraph(nx.Graph):
         # intra_class_edge_weight, inter_class_edge_number
         for ng in G[node_to_change]:
             if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster == G.nodes[ng]['quotient_graph_node']:
-                self.node[new_cluster]['intra_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
-                self.node[new_cluster]['intra_class_edge_number'] += 1
+                self.nodes[new_cluster]['intra_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                self.nodes[new_cluster]['intra_class_edge_number'] += 1
                 self.edges[old_cluster, new_cluster]['inter_class_edge_weight'] += - G.edges[ng, node_to_change][
                     'weight']
                 self.edges[old_cluster, new_cluster]['inter_class_edge_number'] += - 1
 
             if old_cluster == G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
-                self.node[old_cluster]['intra_class_edge_weight'] += -G.edges[ng, node_to_change]['weight']
-                self.node[old_cluster]['intra_class_edge_number'] += -1
+                self.nodes[old_cluster]['intra_class_edge_weight'] += -G.edges[ng, node_to_change]['weight']
+                self.nodes[old_cluster]['intra_class_edge_number'] += -1
                 cluster_adj = G.nodes[ng]['quotient_graph_node']
                 if self.has_edge(new_cluster, cluster_adj) is False:
                     self.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=None, inter_class_edge_number=None)
@@ -1015,20 +1016,28 @@ class QuotientGraph(nx.Graph):
         list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
 
         for i in range(iter):
-            # select the edge
-            self.compute_direction_info(list_leaves)
             G = self.point_cloud_graph
-            energy_per_edges = nx.get_edge_attributes(self, 'energy_dot_product')
-            edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
-            print(edge_to_delete)
-            print(energy_per_edges[edge_to_delete])
-            # make list of nodes inside the different quotient graph nodes to work with
-            if not(list_quotient_node_to_work):
+            if not list_quotient_node_to_work:
+                # select the edge
+                self.compute_direction_info(list_leaves)
+                energy_per_edges = nx.get_edge_attributes(self, 'energy_dot_product')
+                edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+                print(edge_to_delete)
+                print(energy_per_edges[edge_to_delete])
+                # make list of nodes inside the different quotient graph nodes to work with
                 list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
                 for j in range(len(list_of_nodes)):
                     G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
             else:
-
+                S = nx.subgraph(self.point_cloud_graph, list_quotient_node_to_work)
+                self.compute_direction_info()
+                energy_per_edges = nx.get_edge_attributes(S, 'energy_dot_product')
+                edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+                print(edge_to_delete)
+                print(energy_per_edges[edge_to_delete])
+                list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
+                for j in range(len(list_of_nodes)):
+                    G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
 
             if leaves_out:
                 list_one_point_per_leaf = []
@@ -1080,8 +1089,12 @@ class QuotientGraph(nx.Graph):
         number_of_points = len(list_of_nodes)
         number_of_clusters = number_of_points/average_size_cluster
 
-        clustering = skc.KMeans(n_clusters=number_of_clusters, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xcoord)
-        clustering_labels = clustering.labels_[:, np.newaxis] + max(QG.nodes) + 1
+        clustering = skc.KMeans(n_clusters=int(number_of_clusters), init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xcoord)
+        clustering_labels = clustering.labels_[:, np.newaxis] + max(self.nodes) + 1
+
+        # Integration of the new labels in the quotient graph and updates
+        for i in range(len(list_of_nodes)):
+            G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
 
         self.rebuild_quotient_graph(G)
 
@@ -1236,7 +1249,7 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
 ######### Main
 
 if __name__ == '__main__':
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Older_Cheno.ply", format='ply')
+    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply", format='ply')
     r = 18
     G = kpcg.PointCloudGraph()
     G.PointCloudGraph_init_with_pcd(point_cloud=pcd, method='knn', nearest_neighbors=r)
@@ -1247,7 +1260,7 @@ if __name__ == '__main__':
         coords = np.zeros((len(largest_cc), 3))
         i = 0
         for node in largest_cc:
-            coords[i, :] = G.node[node]['pos']
+            coords[i, :] = G.nodes[node]['pos']
             i += 1
         np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
         pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
@@ -1258,8 +1271,8 @@ if __name__ == '__main__':
 
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
-    #G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
-    G.clustering_by_fiedler_and_optics(criteria=[G.direction_gradient_on_Fiedler_scaled])
+    G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
+    #G.clustering_by_fiedler_and_optics(criteria=np.multiply(G.direction_gradient_on_Fiedler_scaled, G.gradient_on_Fiedler))
 
     QG = QuotientGraph()
     QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)

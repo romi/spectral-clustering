@@ -6,6 +6,8 @@ import scipy.sparse as spsp
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
 
+from spectral_clustering.PointCloudGraph import *
+
 from spectral_clustering.utils.sparse import sparsity
 
 # p est le nuage de points pcd, r_nn le seuil pour la détermination des connexions
@@ -60,6 +62,27 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
                 G.add_edge(i, idx, weight = w)
 
     return G
+
+
+def create_connected_pointcloudgraph(point_cloud=pcd, method='knn', nearest_neighbors=r, radius=1.):
+    G = PointCloudGraph()
+    G.PointCloudGraph_init_with_pcd(point_cloud=point_cloud, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+    if nx.is_connected(G) is False:
+        largest_cc = max(nx.connected_components(G), key=len)
+        # creating the new pcd point clouds
+        coords = np.zeros((len(largest_cc), 3))
+        i = 0
+        for node in largest_cc:
+            coords[i, :] = G.nodes[node]['pos']
+            i += 1
+        np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
+        pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
+        r = 18
+        G = PointCloudGraph()
+        G.PointCloudGraph_init_with_pcd(point_cloud=pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+
+    return G
+
 
 def graph_laplacian(G, laplacian_type='classical'):
     if laplacian_type == 'classical':

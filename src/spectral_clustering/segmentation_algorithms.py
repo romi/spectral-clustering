@@ -72,9 +72,9 @@ def segment_each_cluster_by_optics_using_directions(quotientgraph, leaves_out=Tr
     for n in quotientgraph:
         if leaves_out:
             if n not in list_leaves and quotientgraph.nodes[n]['intra_class_node_number'] > 100:
-                segment_several_nodes_using_attribute(list_quotient_node_to_work=[n])
+                segment_several_nodes_using_attribute(quotientgraph=quotientgraph, list_quotient_node_to_work=[n])
         elif leaves_out is False and quotientgraph.nodes[n]['intra_class_node_number'] > 100:
-            segment_several_nodes_using_attribute(list_quotient_node_to_work=[n])
+            segment_several_nodes_using_attribute(quotientgraph=quotientgraph, list_quotient_node_to_work=[n])
 
     quotientgraph.rebuild_quotient_graph(quotientgraph.point_cloud_graph, filename='optics_seg_directions.txt')
 
@@ -84,8 +84,8 @@ def segment_each_cluster_by_optics_using_norm(quotientgraph, leaves_out=True):
     for n in quotientgraph:
         if leaves_out:
             if n not in list_leaves and quotientgraph.nodes[n]['intra_class_node_number'] > 100:
-                segment_several_nodes_using_attribute(list_quotient_node_to_work=[n], attribute='norm_gradient')
+                segment_several_nodes_using_attribute(quotientgraph=quotientgraph, list_quotient_node_to_work=[n], attribute='norm_gradient')
         elif leaves_out is False and quotientgraph.nodes[n]['intra_class_node_number'] > 100:
-            segment_several_nodes_using_attribute(list_quotient_node_to_work=[n], attribute = 'norm_gradient')
+            segment_several_nodes_using_attribute(quotientgraph=quotientgraph, list_quotient_node_to_work=[n], attribute = 'norm_gradient')
 
     quotientgraph.rebuild_quotient_graph(quotientgraph.point_cloud_graph, filename='optics_seg_norms.txt')

@@ -2,6 +2,27 @@
 
 from collections import Counter
 from spectral_clustering.display_and_export import *
+from spectral_clustering.quotientgraph_operations import *
+
+def define_and_optimize_topological_energy(quotient_graph,
+                                           point_cloud_graph,
+                                           exports=True,
+                                           formulae='improved',
+                                           number_of_iteration=1000,
+                                           choice_of_node_to_change='max_energy'):
+
+    init_topo_scores(quotient_graph=quotient_graph,
+                     point_cloud_graph=point_cloud_graph,
+                     exports=exports,
+                     formulae=formulae)
+    optimization_topo_scores(quotientgraph=quotient_graph,
+                             pointcloudgraph=point_cloud_graph,
+                             exports=exports,
+                             number_of_iteration=number_of_iteration,
+                             choice_of_node_to_change=choice_of_node_to_change,
+                             formulae=formulae)
+
+    print('Optimization of topological energy : Done')
 
 
 
@@ -24,8 +45,8 @@ def init_topo_scores(quotient_graph, point_cloud_graph, exports=True, formulae='
     Returns
     -------
     """
-    G = quotient_graph
-    QG = point_cloud_graph
+    QG = quotient_graph
+    G = point_cloud_graph
 
     # Determinate a score for each vertex in a quotient node. Normalized by the number of neighbors
     # init
@@ -185,7 +206,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
 
         new_cluster = G.nodes[node_to_change]['quotient_graph_node']
 
-        quotientgraph.update_quotient_graph_attributes_when_node_change_cluster(old_cluster, new_cluster, node_to_change, G)
+        update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old_cluster, new_cluster, node_to_change)
 
         if formulae == 'old':
             # update of energy for the node changed

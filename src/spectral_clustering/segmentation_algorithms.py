@@ -9,11 +9,15 @@ def segment_a_node_using_attribute(quotientgraph, quotient_node_to_work, attribu
 
     Parameters
     ----------
-    quotientgraph : QuotientGraph class object.
-    quotient_node_to_work : the number of the quotientgraph node we want to cluster.
-    attribute_to_work_with : which attribute of the pointcloudgraph associated to the quotientgraph mentioned to use to
-    part the quotient_node_to_work.
-    method : method of clustering to use.
+    quotientgraph : QuotientGraph
+        Quotient graph object.
+    quotient_node_to_work : int
+        The number of the quotientgraph node we want to cluster.
+    attribute_to_work_with : str
+        which attribute of the pointcloudgraph associated to the quotientgraph mentioned to use to
+        part the quotient_node_to_work.
+    method : str
+        method of clustering to use.
 
     Returns
     -------
@@ -132,4 +136,5 @@ def segment_each_cluster_by_optics(quotientgraph, leaves_out=True, attribute_to_
             segment_several_nodes_using_attribute(quotientgraph=quotientgraph, list_quotient_node_to_work=[n],
                                                   attribute=attribute_to_work)
 
-    quotientgraph.rebuild_quotient_graph(quotientgraph.point_cloud_graph, filename='optics_seg_directions.txt')
+    quotientgraph.rebuild(quotientgraph.point_cloud_graph)
+

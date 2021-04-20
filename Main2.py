@@ -16,7 +16,7 @@ pcd = open3d.read_point_cloud("Data/as_cylinders.ply")
 r = 4.5
 
 # p_light=open3d.voxel_down_sample(pcd,r)
-G = SGk.gen_graph(pcd, method='radius', radius=r)
+G = SGk.create_riemannian_graph(pcd, method='radius', radius=r)
 # SGk.drawGraphO3D(pcd, G)
 
 #Connect = nx.number_connected_components(G)

@@ -1,21 +1,16 @@
 ########### Imports
+import time
+from collections import Counter
+
 import networkx as nx
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import pandas as pd
-from treex import *
-
-
-import scipy.sparse as spsp
 import scipy as sp
+import scipy.sparse as spsp
 import sklearn as sk
-import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
-import spectral_clustering.PointCloudGraph as kpcg
-import time
+import pandas as pd
 
-from collections import Counter
+import spectral_clustering.point_cloud_graph as kpcg
+
 
 ########### Définition classe
 
@@ -23,26 +18,27 @@ class QuotientGraph(nx.Graph):
 
     def __init__(self):
         super().__init__()
-        self.seed_colors = None
-        self.graph_labels_dict = None
-        self.label_count = None
-        self.nodes_coordinates = None
-        self.global_topological_energy = None
+        # self.seed_colors = None
+        # self.graph_labels_dict = None
+        # self.label_count = None
         self.point_cloud_graph = None
+        self.nodes_coordinates = None
 
-    def build_QuotientGraph_from_PointCloudGraph(self, G, labels_from_cluster, filename="pcd_attribute.txt"):
+    def build_from_pointcloudgraph(self, G, labels_from_cluster):
         """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
         of the points. Each region becomes a node of que quotient graph.
 
         Parameters
         ----------
         G : PointCloudGraph
-        The associated distance-based graph
+            The associated distance-based graph
         labels_from_cluster : np.array
-        Each point of que point cloud/ distance based graph is associated to a label.
-        If the labels are an attribute to each node of the PointCloudGraph, use the following lines to convert :
-        labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
-        labels_from_cluster = np.asarray(labels_qg)[:, np.newaxis]
+            Each point of que point cloud/ distance based graph is associated to a label.
+            If the labels are an attribute to each node of the PointCloudGraph, use the following lines to convert :
+            labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
+            labels_from_cluster = np.asarray(labels_qg)[:, np.newaxis]
+        filename : str
+            File to export
 
         Returns
         -------
@@ -59,12 +55,13 @@ class QuotientGraph(nx.Graph):
         # especially kmeans.
         lablist = kmeans_labels.tolist()
         my_count = pd.Series(lablist).value_counts()
-        if len(my_count) == 4:
-            cluster_colors = ['#0000FF', '#00FF00', '#FFFF00', '#FF0000']
-        else:
-            jet = cm.get_cmap('jet', len(my_count))
-            cluster_colors = jet(range(len(my_count)))
-            list_labels = np.unique(lablist).tolist()
+        # if len(my_count) == 4:
+        #     #cluster_colors = ['#0000FF', '#00FF00', '#FFFF00', '#FF0000']
+        #     cluster_colors = ['glasbey_'+str(i) for i in range(len(my_count))]
+        # else:
+        #     jet = cm.get_cmap('jet', len(my_count))
+        #     cluster_colors = jet(range(len(my_count)))
+        #     list_labels = np.unique(lablist).tolist()
         seed_colors = []
         label_count = 0
         visited = np.zeros(kmeans_labels.shape, dtype=int)
@@ -81,10 +78,11 @@ class QuotientGraph(nx.Graph):
                 visited[i] = 1
                 queue.append(i)
                 seed_kmeans_labels.append(kmeans_labels[seed])
-                if len(my_count) == 4:
-                    seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
-                else:
-                    seed_colors.append(cluster_colors[list_labels.index(kmeans_labels[seed][0])][:])
+                seed_colors.append('glasbey_'+str(kmeans_labels[seed][0]%256))
+                # if len(my_count) == 4:
+                #     seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
+                # else:
+                #     seed_colors.append(cluster_colors[list_labels.index(kmeans_labels[seed][0])][:])
                 current_cc_size = 0
 
                 # Region growing from the specified seed.
@@ -155,68 +153,104 @@ class QuotientGraph(nx.Graph):
         nx.set_node_attributes(self, dict(
             zip(np.asarray(self.nodes()), np.transpose(np.asarray(intra_edge_count)))), 'intra_class_edge_number')
 
-        if len(my_count) == 4:
-            nx.set_node_attributes(self, dict(
-                zip(np.asarray(self.nodes()), np.transpose(np.asarray(seed_colors)))), 'seed_colors')
-        else:
-            nx.set_node_attributes(self, dict(
-                zip(np.asarray(self.nodes()), seed_colors)), 'seed_colors')
+        # if len(my_count) == 4:
+        #     nx.set_node_attributes(self, dict(
+        #         zip(np.asarray(self.nodes()), np.transpose(np.asarray(seed_colors)))), 'seed_colors')
+        # else:
+        nx.set_node_attributes(self, dict(
+            zip(np.asarray(self.nodes()), seed_colors)), 'seed_colors')
 
         #self.seed_colors = seed_colors
-        self.label_count = label_count
+        # self.label_count = label_count
         self.point_cloud_graph = G
         #self.graph_labels_dict = dict(zip(np.asarray(self.nodes()), range(label_count)))
-        kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels, filename=filename)
+        #kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels, filename=filename)
 
 
-    def compute_quotientgraph_nodes_coordinates(self, G):
-        """Compute X Y Z coordinates for each node of the quotient graph using the underlying point of the
+    def compute_nodes_coordinates(self):
+        """Compute X Y Z coordinates for each node.
+
+        Compute X Y Z coordinates for each node of the quotient graph using the underlying point of the
         PointCloudGraph (the distance_based_graph). The method just consist in computing the mean of each coordinates of
         the underlying points of a quotient graph node.
 
-        Parameters
-        ----------
-        G : PointCloudGraph
 
         Returns
         -------
 
         """
+
+        G = self.point_cloud_graph
+
         # Calcul de coordonnées moyennes pour chaque noeud du graphe quotient, dans le but d'afficher en 3D le graphe.
         new_classif = np.asarray(list((dict(G.nodes(data='quotient_graph_node')).values())))
-        new_classif = new_classif[:, np.newaxis]
-        pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
-        sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
-        nodes_coords_moy = np.zeros((len(self), 3))
-        j = 0
-        for n in self.nodes:
-            X = []
-            Y = []
-            Z = []
-            for i in range(pcd_attribute.shape[0]):
-                if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
-                    X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
-                    Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
-                    Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
-            nodes_coords_moy[j, 0] = np.mean(X)
-            nodes_coords_moy[j, 1] = np.mean(Y)
-            nodes_coords_moy[j, 2] = np.mean(Z)
-            j += 1
+        nodes_coords_moy = np.array([np.mean(G.nodes_coords[new_classif == n], axis=0) for n in self.nodes])
+
+        # import scipy.ndimage as nd
+        # nodes_coords_moy = np.transpose([nd.mean(G.nodes_coords[:,k],
+        #                                          new_classif,
+        #                                          index=list(self.nodes)) for k in range(3)])
+        #
+        # nodes_coords_moy = np.zeros((len(self), 3))
+        # for j, n in enumerate(self.nodes):
+        #     nodes_coords_moy[j] = np.mean(G.nodes_coords[new_classif == n], axis=0)
+        #
+        #     X = []
+        #     Y = []
+        #     Z = []
+        #     for i in range(pcd_attribute.shape[0]):
+        #         if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
+        #             X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
+        #             Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
+        #             Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
+        #     nodes_coords_moy[j, 0] = np.mean(X)
+        #     nodes_coords_moy[j, 1] = np.mean(Y)
+        #     nodes_coords_moy[j, 2] = np.mean(Z)
+
+
+        # new_classif = new_classif[:, np.newaxis]
+        # pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
+        # sorted_pcd_attribute_by_quotient_graph_attribute = pcd_attribute[np.argsort(pcd_attribute[:, 3])]
+        # nodes_coords_moy = np.zeros((len(self), 3))
+        # j = 0
+        # for n in self.nodes:
+        #     X = []
+        #     Y = []
+        #     Z = []
+        #     for i in range(pcd_attribute.shape[0]):
+        #         if sorted_pcd_attribute_by_quotient_graph_attribute[i, 3] == n:
+        #             X.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 0])
+        #             Y.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 1])
+        #             Z.append(sorted_pcd_attribute_by_quotient_graph_attribute[i, 2])
+        #     nodes_coords_moy[j, 0] = np.mean(X)
+        #     nodes_coords_moy[j, 1] = np.mean(Y)
+        #     nodes_coords_moy[j, 2] = np.mean(Z)
+        #     j += 1
         self.nodes_coordinates = nodes_coords_moy
 
+    # def update_quotient_graph(self, G):
+    #     labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
+    #     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
+    #     self.build_from_pointcloudgraph(G, labels_qg_re)
 
+    def rebuild(self, G, clear=True):
+        """
 
-    def update_quotient_graph(self, G):
+        Parameters
+        ----------
+        G
+        clear
+        filename
+
+        Returns
+        -------
+
+        """
+        if clear:
+            self.clear()
         labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
         labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
-        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
-
-    def rebuild_quotient_graph(self, G, filename="pcd_attribute.txt"):
-        self.clear()
-        labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
-        labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
-        self.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re, filename=filename)
-
+        self.build_from_pointcloudgraph(G, labels_qg_re)
 
     def delete_empty_edges_and_nodes(self):
         """Delete edges from the quotient graph that do not represent any edges in the distance-based graph anymore.
@@ -241,7 +275,6 @@ class QuotientGraph(nx.Graph):
                 to_remove.append(n)
         self.remove_nodes_from(to_remove)
         print(to_remove)
-
 
     def compute_local_descriptors(self, method='each_point', data='coords'):
         G = self.point_cloud_graph
@@ -326,16 +359,13 @@ class QuotientGraph(nx.Graph):
         for node in G:
             label.append(G.nodes[node]['quotient_graph_node'])
 
-
         if method == 'all_qg_cluster':
             # this method is based on the classical way to compute silhouette coefficients in the sci-kit learn module
 
             if data == 'direction_gradient_vector_fiedler':
-                sil = sk.metrics.silhouette_samples(G.direction_gradient_on_Fiedler_scaled, label, metric='euclidean')
+                sil = sk.metrics.silhouette_samples(G.direction_gradient_on_fiedler_scaled, label, metric='euclidean')
             elif data == 'norm_gradient_vector_fiedler':
-                sil = sk.metrics.silhouette_samples(G.gradient_on_Fiedler, label, metric='euclidean')
-
-
+                sil = sk.metrics.silhouette_samples(G.gradient_on_fiedler, label, metric='euclidean')
 
         if method == 'topological':
             import scipy.ndimage as nd
@@ -344,9 +374,9 @@ class QuotientGraph(nx.Graph):
             X = []
 
             if data == 'direction_gradient_vector_fiedler':
-                X = G.direction_gradient_on_Fiedler_scaled
+                X = G.direction_gradient_on_fiedler_scaled
             elif data == 'norm_gradient_vector_fiedler':
-                X = G.gradient_on_Fiedler
+                X = G.gradient_on_fiedler
 
             labels = np.array(label)
 
@@ -399,7 +429,6 @@ class QuotientGraph(nx.Graph):
                 self.nodes[qnode]['silhouette'] += G.nodes[n]['silhouette']
             self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
 
-
     def compute_direction_info(self, list_leaves):
         G = self.point_cloud_graph
         for l in self:
@@ -419,7 +448,6 @@ class QuotientGraph(nx.Graph):
                 dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
                 energy_dot_product = 1-dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
-
 
     def define_leaves_by_topo(self):
         G = self.point_cloud_graph
@@ -525,10 +553,16 @@ class QuotientGraph(nx.Graph):
 ######### Main
 
 if __name__ == '__main__':
+    import open3d as open3d
+
+    import spectral_clustering.similarity_graph as sgk
+
     pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Older_Cheno.ply", format='ply')
     r = 18
-    G = kpcg.PointCloudGraph()
-    G.PointCloudGraph_init_with_pcd(point_cloud=pcd, method='knn', nearest_neighbors=r)
+
+    G = sgk.create_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
+    G = kpcg.PointCloudGraph(G)
+
     print(nx.is_connected(G))
     if nx.is_connected(G) is False:
         largest_cc = max(nx.connected_components(G), key=len)
@@ -541,31 +575,32 @@ if __name__ == '__main__':
         np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
         pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
         r = 18
-        G = kpcg.PointCloudGraph()
-        G.PointCloudGraph_init_with_pcd(point_cloud=pcd2, method='knn', nearest_neighbors=r)
+
+        G = sgk.create_riemannian_graph(pcd2, method='knn', nearest_neighbors=r)
+        G = kpcg.PointCloudGraph(G)
 
 
     G.compute_graph_eigenvectors()
-    G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
+    G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
     G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
-    #G.clustering_by_fiedler_and_optics(criteria=np.multiply(G.direction_gradient_on_Fiedler_scaled, G.gradient_on_Fiedler))
+    #G.clustering_by_fiedler_and_optics(criteria=np.multiply(G.direction_gradient_on_fiedler_scaled, G.gradient_on_fiedler))
 
     QG = QuotientGraph()
-    QG.build_QuotientGraph_from_PointCloudGraph(G, G.kmeans_labels_gradient)
+    QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
 
     QG.init_topo_scores(QG.point_cloud_graph, exports=True, formulae='improved')
 
     QG.optimization_topo_scores(G=QG.point_cloud_graph, exports=True, number_of_iteration=10000,
                                 choice_of_node_to_change='max_energy', formulae='improved')
 
-    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+    QG.rebuild(QG.point_cloud_graph)
 
     QG.segment_each_cluster_by_optics_using_directions()
 
     QG.init_topo_scores(G=QG.point_cloud_graph, exports=True, formulae='improved')
     QG.optimization_topo_scores(G=QG.point_cloud_graph, exports=True, number_of_iteration=1000,
                                 choice_of_node_to_change='max_energy', formulae='improved')
-    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+    QG.rebuild(QG.point_cloud_graph)
 
     list_of_nodes_to_work = QG.oversegment_part(list_quotient_node_to_work=[10], average_size_cluster=50)
     QG.compute_direction_info(list_leaves=[])
@@ -576,7 +611,7 @@ if __name__ == '__main__':
     """
     
     QG.opti_energy_dot_product(iter=8)
-    QG.rebuild_quotient_graph(QG.point_cloud_graph)
+    QG.rebuild(QG.point_cloud_graph)
 
     QG.compute_local_descriptors(QG.point_cloud_graph, method='all_qg_cluster', data='coords')
 
@@ -686,7 +721,7 @@ if __name__ == '__main__':
         G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
     QG.point_cloud_graph = G
 
-    QG.rebuild_quotient_graph(G=QG.point_cloud_graph)
+    QG.rebuild(G=QG.point_cloud_graph)
     QG.compute_silhouette()
     labels_from_qg = np.zeros((len(QG.point_cloud_graph), 4))
     i = 0
@@ -777,7 +812,7 @@ if __name__ == '__main__':
     labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
     start2 = time.time()
-    QG2.build_QuotientGraph_from_PointCloudGraph(G, labels_qg_re)
+    QG2.build_from_pointcloudgraph(G, labels_qg_re)
     end2 = time.time()
     timebuild = end2 - start2
     QG.delete_empty_edges_and_nodes()

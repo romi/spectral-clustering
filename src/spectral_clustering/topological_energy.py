@@ -78,7 +78,7 @@ def init_topo_scores(quotient_graph, point_cloud_graph, exports=True, formulae='
     for u in QG.nodes:
         QG.nodes[u]['topological_energy'] = 0
     # global score for the entire graph
-    QG.global_topological_energy = 0
+    QG.graph['global_topological_energy'] = 0
     # for to compute the score of each vertex
     if formulae == 'old':
         for v in G.nodes:
@@ -89,7 +89,7 @@ def init_topo_scores(quotient_graph, point_cloud_graph, exports=True, formulae='
             G.nodes[v]['number_of_adj_labels'] /= number_of_neighb
             u = G.nodes[v]['quotient_graph_node']
             QG.nodes[u]['topological_energy'] += G.nodes[v]['number_of_adj_labels']
-            QG.global_topological_energy += G.nodes[v]['number_of_adj_labels']
+            QG.graph['global_topological_energy'] += G.nodes[v]['number_of_adj_labels']
     elif formulae == 'improved':
         for v in G.nodes:
             list_neighb_clust = []
@@ -105,7 +105,7 @@ def init_topo_scores(quotient_graph, point_cloud_graph, exports=True, formulae='
                             (number_diff + (number_of_clusters - 1) * number_same)
             u = G.nodes[v]['quotient_graph_node']
             QG.nodes[u]['topological_energy'] += G.nodes[v]['number_of_adj_labels']
-            QG.global_topological_energy += G.nodes[v]['number_of_adj_labels']
+            QG.graph['global_topological_energy'] += G.nodes[v]['number_of_adj_labels']
 
     if exports:
         export_some_graph_attributes_on_point_cloud(G, graph_attribute='number_of_adj_labels',
@@ -143,7 +143,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
     # nombre d'itérations
     iter = number_of_iteration
     # Liste contenant l'énergie globale du graph
-    evol_energy = [quotientgraph.global_topological_energy]
+    evol_energy = [quotientgraph.graph['global_topological_energy']]
 
     # list to detect repetition in 'max_energy_and_select'
     detect_rep = []
@@ -167,7 +167,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
         if choice_of_node_to_change == 'random_proba_energy':
             energy_per_node = nx.get_node_attributes(G, 'number_of_adj_labels')
             nodes = np.array(list(energy_per_node.keys()))
-            total_energy = quotientgraph.global_topological_energy
+            total_energy = quotientgraph.graph['global_topological_energy']
             l = list(energy_per_node.values())
             node_energies = np.array([e / total_energy for e in l])
             node_to_change = np.random.choice(nodes, p=node_energies)
@@ -234,7 +234,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
             # update of energy for the node changed
             previous_energy = G.nodes[node_to_change]['number_of_adj_labels']
             G.nodes[node_to_change]['number_of_adj_labels'] = new_energy
-            quotientgraph.global_topological_energy += (new_energy - previous_energy)
+            quotientgraph.graph['global_topological_energy'] += (new_energy - previous_energy)
             u = G.nodes[node_to_change]['quotient_graph_node']
             quotientgraph.nodes[u]['topological_energy'] += new_energy
             quotientgraph.nodes[old_cluster]['topological_energy'] -= previous_energy
@@ -246,7 +246,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
                     number_of_neighb = len([n for n in G[v]])
                     if G.nodes[n]['quotient_graph_node'] != G.nodes[v]['quotient_graph_node']:
                         G.nodes[n]['number_of_adj_labels'] += 1 / number_of_neighb
-                quotientgraph.global_topological_energy += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
+                quotientgraph.graph['global_topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
                 u = G.nodes[n]['quotient_graph_node']
                 quotientgraph.nodes[u]['topological_energy'] += (G.nodes[n]['number_of_adj_labels'] - previous_energy)
 
@@ -265,7 +265,7 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
                 G.nodes[node_to_change]['number_of_adj_labels'] = number_diff / (number_diff + (number_of_clusters-1)*number_same)
 
             new_energy = G.nodes[node_to_change]['number_of_adj_labels']
-            quotientgraph.global_topological_energy += (new_energy - previous_energy)
+            quotientgraph.graph['global_topological_energy'] += (new_energy - previous_energy)
             quotientgraph.nodes[new_cluster]['topological_energy'] += new_energy
             quotientgraph.nodes[old_cluster]['topological_energy'] -= previous_energy
 
@@ -284,13 +284,13 @@ def optimization_topo_scores(quotientgraph, pointcloudgraph, exports=True, numbe
                     number_diff = len(list_neighb_clust) - number_same
                     G.nodes[n]['number_of_adj_labels'] = number_diff / (number_diff + (number_of_clusters - 1) * number_same)
                 new_energy = G.nodes[n]['number_of_adj_labels']
-                quotientgraph.global_topological_energy += (new_energy - previous_energy)
+                quotientgraph.graph['global_topological_energy'] += (new_energy - previous_energy)
                 u = G.nodes[n]['quotient_graph_node']
                 quotientgraph.nodes[u]['topological_energy'] += (new_energy - previous_energy)
 
 
         # update list containing all the differents stages of energy obtained
-        evol_energy.append(quotientgraph.global_topological_energy)
+        evol_energy.append(quotientgraph.graph['global_topological_energy'])
 
     quotientgraph.delete_empty_edges_and_nodes()
     quotientgraph.point_cloud_graph = G

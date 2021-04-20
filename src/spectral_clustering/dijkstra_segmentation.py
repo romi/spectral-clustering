@@ -233,7 +233,7 @@ def sortienuagesegm(pcd, G, segmentdict, c):
 if __name__ == '__main__':
     pcd = open3d.read_point_cloud("../../Data/impr3D_pcd.ply")
     r = 8
-    G = SGk.gen_graph(pcd, method='knn', nearest_neighbors=r)
+    G = SGk.create_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
     SGk.draw_graph_open3d(pcd, G)
 
     method = 'k'

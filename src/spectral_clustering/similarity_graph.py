@@ -6,13 +6,13 @@ import scipy.sparse as spsp
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
 
-from spectral_clustering.PointCloudGraph import *
+from spectral_clustering.point_cloud_graph import *
 
 from spectral_clustering.utils.sparse import sparsity
 
 # p est le nuage de points pcd, r_nn le seuil pour la détermination des connexions
 # fonction permettant la création d'un graphe grâce à la librairie networkx
-def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
+def create_riemannian_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
     """Generate a similarity graph from a point cloud.
 
     Parameters
@@ -35,16 +35,19 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
     N = len(pcd.points)
     # définition d'un arbre KD contenant tous les points
     tree = open3d.KDTreeFlann(pcd)
+
+    open3d.geometry.estimate_normals(pcd)
+
     # Prise des points sous forme de tableau ndarray
     pts = np.array(pcd.points)
+    normals = np.array(pcd.normals)
 
     # Déclaration d'un graph networkx
     G = nx.Graph()
 
-
     # On insère chaque point du nuage de points dans le graphe avec un numéro et le trio de coordonnées (pos) en attributs
     for i in range(N):
-        G.add_node(i, pos=pts[i])
+        G.add_node(i, pos=pts[i], normal=normals[i])
 
     # Construction des edges du graphe à partir d'un seuil
     # On part de la structure de nuage de points en KDTree
@@ -64,9 +67,9 @@ def gen_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
     return G
 
 
-def create_connected_pointcloudgraph(point_cloud=pcd, method='knn', nearest_neighbors=r, radius=1.):
-    G = PointCloudGraph()
-    G.PointCloudGraph_init_with_pcd(point_cloud=point_cloud, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+def create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r, radius=1.):
+    G = create_riemannian_graph(point_cloud, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+    #G = PointCloudGraph(method=method, nearest_neighbors=nearest_neighbors, radius=radius)
     if nx.is_connected(G) is False:
         largest_cc = max(nx.connected_components(G), key=len)
         # creating the new pcd point clouds
@@ -78,61 +81,11 @@ def create_connected_pointcloudgraph(point_cloud=pcd, method='knn', nearest_neig
         np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
         pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
         r = 18
-        G = PointCloudGraph()
-        G.PointCloudGraph_init_with_pcd(point_cloud=pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+
+        G = create_riemannian_graph(pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+        # G = PointCloudGraph(method=method, nearest_neighbors=nearest_neighbors, radius=radius)
 
     return G
-
-
-def graph_laplacian(G, laplacian_type='classical'):
-    if laplacian_type == 'classical':
-        L = nx.laplacian_matrix(G, weight='weight')
-    if laplacian_type == 'simple_normalized':
-        L_normalized_numpyformat = nx.normalized_laplacian_matrix(G, weight='weight')
-        L = spsp.csr_matrix(L_normalized_numpyformat)
-
-    return L
-
-def graph_spectrum(G, sparse=True, k=50, smallest_first=True, laplacian_type='classical'):
-    """
-
-    Parameters
-    ----------
-    G : nx.Graph
-
-    sparse
-    k
-
-    Returns
-    -------
-
-    """
-    # fonction condensée plus efficace en quantité de points :
-    L = graph_laplacian(G, laplacian_type=laplacian_type)
-
-
-    if sparse:
-        Lcsr = spsp.csr_matrix.asfptype(L)
-
-        # k = 50
-        # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
-        # Les valeurs propres sont bien classées par ordre croissant
-
-        # Calcul des k premiers vecteurs et valeurs propres
-        if smallest_first:
-            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
-        else:
-            #TODO check if ordering is ok
-            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, which='LM')
-
-    else:
-        keigenval, keigenvec = np.linalg.eigh(L)
-        if not smallest_first:
-            keigenvec = keigenvec[np.argsort(-np.abs(keigenval))]
-            keigenval = keigenval[np.argsort(-np.abs(keigenval))]
-
-    return keigenval, keigenvec
-
 
 # affichage via open3D
 # En entrée : p nuage de points

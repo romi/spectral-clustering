@@ -105,7 +105,7 @@ BGk.save_graph_plot(G, ['clustering_label'], colormap='plasma', filename='/Users
 
 pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
 r = 8
-G = SGk.gen_graph(pcd, method='knn', nearest_neighbors=r)
+G = SGk.create_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
 
 Lcsr = nx.laplacian_matrix(G, weight='weight')
 Lcsr = spsp.csr_matrix.asfptype(Lcsr)
@@ -159,25 +159,25 @@ pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2_grad, vp2[:,np.newaxis]], axis=1)
 pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:,4].argsort()]
 figure = plt.figure(0)
 figure.clf()
-figure.gca().set_title("Fiedler vector")
+figure.gca().set_title("fiedler vector")
 # figure.gca().plot(range(len(vec)),vec,color='blue')
 figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, 4], color='blue')
 figure.set_size_inches(10, 10)
 figure.subplots_adjust(wspace=0, hspace=0)
 figure.tight_layout()
-figure.savefig("Fiedler_vector")
+figure.savefig("fiedler_vector")
 print("Export du vecteur propre 2")
 
 
 figure = plt.figure(1)
 figure.clf()
-figure.gca().set_title("Gradient of Fiedler vector")
+figure.gca().set_title("Gradient of fiedler vector")
 # figure.gca().plot(range(len(vec)),vec,color='blue')
 figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, 3], color='blue')
 figure.set_size_inches(10, 10)
 figure.subplots_adjust(wspace=0, hspace=0)
 figure.tight_layout()
-figure.savefig("Gradient_of_Fiedler_vector")
+figure.savefig("Gradient_of_fiedler_vector")
 print("Export du gradient trié selon vecteur propre 2")
 
 # vp2_matrix = np.tile(vp2, (len(G), 1))

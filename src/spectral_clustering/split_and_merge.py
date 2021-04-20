@@ -4,6 +4,7 @@ import sklearn.cluster as skc
 import numpy as np
 from spectral_clustering.display_and_export import *
 
+
 def opti_energy_dot_product(quotientgraph, energy_to_stop=0.13, leaves_out=False, list_graph_node_to_work=[], export_iter=True):
     # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
     list_leaves = [x for x in quotientgraph.nodes() if quotientgraph.degree(x) == 1]
@@ -56,9 +57,9 @@ def opti_energy_dot_product(quotientgraph, energy_to_stop=0.13, leaves_out=False
                 list_leaves.append(G.nodes[p]['quotient_graph_node'])
 
         quotientgraph.point_cloud_graph = G
-        # quotientgraph.rebuild_quotient_graph(G=quotientgraph.point_cloud_graph,filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
+        # quotientgraph.rebuild(G=quotientgraph.point_cloud_graph,filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
         if export_iter:
-            quotientgraph.rebuild_quotient_graph(G=quotientgraph.point_cloud_graph,
+            quotientgraph.rebuild(G=quotientgraph.point_cloud_graph,
                                         filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
             display_and_export_quotient_graph_matplotlib(quotient_graph=quotientgraph, node_sizes=20,
                                                          filename="quotient_graph_matplotlib_QG_intra_class_number_" + str(i),
@@ -78,7 +79,7 @@ def opti_energy_dot_product(quotientgraph, energy_to_stop=0.13, leaves_out=False
             for i in range(le-1):
                     quotientgraph.segment_several_nodes_using_attribute(list_quotient_node_to_work=[path[i], path[i+1]])
                 G = quotientgraph.point_cloud_graph
-                quotientgraph.rebuild_quotient_graph(G)
+                quotientgraph.rebuild(G)
 
 
     """
@@ -107,7 +108,7 @@ def oversegment_part(quotientgraph, list_quotient_node_to_work=[], average_size_
     # Integration of the new labels in the quotient graph and updates
     for i in range(len(list_of_nodes)):
         G.nodes[list_of_nodes[i]]['quotient_graph_node'] = clustering_labels[i]
-    quotientgraph.rebuild_quotient_graph(G)
+    quotientgraph.rebuild(G)
 
     # return of the list of nodes in pointcloudgraph to keep working with them
     list_of_nodes_pointcloudgraph = list_of_nodes

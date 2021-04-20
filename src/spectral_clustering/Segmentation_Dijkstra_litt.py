@@ -68,7 +68,7 @@ def sortienuagelitt(pcd, G, segmentdict, c):
 if __name__ == '__main__':
     pcd = open3d.read_point_cloud("Data/arabi_densep_clean_segm.ply")
     r = 8
-    G = SGk.gen_graph(pcd, method='knn', nearest_neighbors=r)
+    G = SGk.create_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
     #SGk.drawGraphO3D(pcd, G)
     G = actugraph(G)
     segmsource = initdijkstralitt(G)

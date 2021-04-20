@@ -1,6 +1,8 @@
 # Structure which allows to work on a class which stock all the informations.
 
 ########### Imports
+import statistics as st
+
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,11 +10,10 @@ import scipy.sparse as spsp
 import scipy as sp
 import sklearn.cluster as skc
 import sklearn as sk
+
 import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
 import spectral_clustering.utils.angle as utilsangle
-import spectral_clustering.QuotientGraph as kQG
-import statistics as st
+import spectral_clustering.quotient_graph as kQG
 
 ########### Définition classe
 
@@ -21,55 +22,55 @@ class PointCloudGraph(nx.Graph):
     A graph structure that keep in memory all the computations made and the informations about the point cloud from which
     the graph was constructed.
     """
-    def __init__(self):
-        super().__init__()
-        self.method = None
-        self.nearest_neighbors = None
-        self.radius = None
-        self.normals = None
-        self.nodes_coords = None
-        self.Laplacian = None
-        self.keigenvec = None
-        self.keigenval = None
-        self.gradient_on_Fiedler = None
-        self.direction_gradient_on_Fiedler_scaled = None
-        self.clustering_labels = None
-        self.clusters_leaves = None
-        self.kmeans_labels_gradient = None
-        self.minimum_local = None
-
-    def PointCloudGraph_init_with_pcd(self, point_cloud, method='knn', nearest_neighbors=1, radius=1.):
-        """Initialize the graph.
-
-        The graph is created from the point cloud indicated.
-
-        Parameters
-        ----------
-
-        The point cloud in .ply format.
-        """
-        self.method = method
-        self.nearest_neighbors = nearest_neighbors
-        self.radius = radius
-
-        G = sgk.gen_graph(point_cloud, method=self.method, nearest_neighbors=self.nearest_neighbors, radius=self.radius)
+    #def __init__(self, method='knn', nearest_neighbors=1, radius=1.):
+    def __init__(self, G):
         super().__init__(G)
-        open3d.geometry.estimate_normals(point_cloud)
+        # self.method = method
+        # self.nearest_neighbors = nearest_neighbors
+        # self.radius = radius
 
-        self.normals = np.asarray(point_cloud.normals)
-        for i in range(len(point_cloud.points)):
-            G.add_node(i, normal = np.asarray(point_cloud.normals)[i, :])
+        # self.normals = None
+        self.nodes_coords = np.array(list(dict(self.nodes(data='pos')).values()))
 
-        self.nodes_coords = np.asarray(point_cloud.points)
-        self.Laplacian = None
+        self.laplacian = None
         self.keigenvec = None
         self.keigenval = None
-        self.gradient_on_Fiedler = None
-        self.direction_gradient_on_Fiedler_scaled = None
+        self.gradient_on_fiedler = None
+        self.direction_gradient_on_fiedler_scaled = None
         self.clustering_labels = None
         self.clusters_leaves = None
         self.kmeans_labels_gradient = None
         self.minimum_local = None
+
+    # def build_from_pointcloud(self, point_cloud):
+    #     """Initialize the graph.
+    #
+    #     The graph is created from the point cloud indicated.
+    #
+    #     Parameters
+    #     ----------
+    #
+    #     The point cloud in .ply format.
+    #     """
+    #
+    #     G = sgk.create_riemannian_graph(point_cloud, method=self.method, nearest_neighbors=self.nearest_neighbors, radius=self.radius)
+    #     super().__init__(G)
+    #     open3d.geometry.estimate_normals(point_cloud)
+    #
+    #     self.normals = np.asarray(point_cloud.normals)
+    #     for i in range(len(point_cloud.points)):
+    #         G.add_node(i, normal=np.asarray(point_cloud.normals)[i, :])
+    #
+    #     self.nodes_coords = np.asarray(point_cloud.points)
+    #     self.laplacian = None
+    #     self.keigenvec = None
+    #     self.keigenval = None
+    #     self.gradient_on_fiedler = None
+    #     self.direction_gradient_on_fiedler_scaled = None
+    #     self.clustering_labels = None
+    #     self.clusters_leaves = None
+    #     self.kmeans_labels_gradient = None
+    #     self.minimum_local = None
 
     def add_coordinates_as_attribute_for_each_node(self):
         nodes_coordinates_X = dict(zip(self.nodes(), self.nodes_coords[:, 0]))
@@ -80,19 +81,15 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, nodes_coordinates_Y, 'Y_coordinate')
         nx.set_node_attributes(self, nodes_coordinates_Z, 'Z_coordinate')
 
-    def compute_graph_Laplacian(self, laplacian_type='classical'):
-        if laplacian_type == 'classical':
-            L = nx.laplacian_matrix(self, weight='weight')
-        if laplacian_type == 'simple_normalized':
-            L_normalized_numpyformat = nx.normalized_laplacian_matrix(self, weight='weight')
-            L = spsp.csr_matrix(L_normalized_numpyformat)
-
-        self.Laplacian = L
+    def compute_graph_laplacian(self, laplacian_type='classical'):
+        L = graph_laplacian(self, laplacian_type)
+        self.laplacian = L
 
     def compute_graph_eigenvectors(self, is_sparse=True, k=50, smallest_first=True, laplacian_type='classical'):
-        keigenval, keigenvec = sgk.graph_spectrum(self, sparse=is_sparse, k=k, smallest_first=smallest_first,
-                                                  laplacian_type=laplacian_type)
-        self.compute_graph_Laplacian(laplacian_type=laplacian_type)
+        if self.laplacian is None:
+            self.compute_graph_laplacian(laplacian_type=laplacian_type)
+        keigenval, keigenvec = graph_spectrum(self, sparse=is_sparse, k=k, smallest_first=smallest_first,
+                                              laplacian_type=laplacian_type, laplacian=self.laplacian)
         self.keigenvec = keigenvec
         self.keigenval = keigenval
 
@@ -109,10 +106,9 @@ class PointCloudGraph(nx.Graph):
         node_anything_values = dict(zip(self.nodes(), anything))
         nx.set_node_attributes(self, node_anything_values, name_of_the_new_attribute)
 
+    def compute_gradient_of_fiedler_vector(self, method='simple'):
 
-    def compute_gradient_of_Fiedler_vector(self, method = 'simple'):
-
-        if method != 'by_Fiedler_weight':
+        if method != 'by_fiedler_weight':
             A = nx.adjacency_matrix(self).astype(float)
             vp2 = np.asarray(self.keigenvec[:, 1])
 
@@ -175,10 +171,8 @@ class PointCloudGraph(nx.Graph):
 
                 vp2grad = np.divide(vp2_max_min, grad_weight)
 
-
-            if method == 'by_Laplacian_matrix_on_Fiedler_signal':
-                vp2grad = self.Laplacian.dot(vp2)
-
+            if method == 'by_laplacian_matrix_on_fiedler_signal':
+                vp2grad = self.laplacian.dot(vp2)
 
             if method == 'by_weight':
                 node_neighbor_max_vp2_node = np.array(
@@ -203,13 +197,12 @@ class PointCloudGraph(nx.Graph):
 
                 vp2grad = np.divide((wmin*node_neighbor_max_vp2[i] - wmax*node_neighbor_min_vp2[i]), wmax+wmin)
 
-
-            self.gradient_on_Fiedler = vp2grad[:, np.newaxis]
-            self.direction_gradient_on_Fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
-            self.add_anything_as_attribute(self.direction_gradient_on_Fiedler_scaled, 'direction_gradient')
+            self.gradient_on_fiedler = vp2grad[:, np.newaxis]
+            self.direction_gradient_on_fiedler_scaled = create_normalized_vector_field(node_neighbor_max_vp2_node, node_neighbor_min_vp2_node, self.nodes_coords)
+            self.add_anything_as_attribute(self.direction_gradient_on_fiedler_scaled, 'direction_gradient')
 
         else:
-            if method == 'by_Fiedler_weight':
+            if method == 'by_fiedler_weight':
                 vp2grad = np.zeros((len(self), 1))
                 vp2dir = np.zeros((len(self), 3))
                 line = 0
@@ -223,10 +216,8 @@ class PointCloudGraph(nx.Graph):
                     vp2grad[line] = self.nodes[n]['norm_gradient']
                     vp2dir[line, :] = self.nodes[n]['direction_gradient']
                     line += 1
-                self.gradient_on_Fiedler = vp2grad
-                self.direction_gradient_on_Fiedler_scaled = vp2dir
-
-
+                self.gradient_on_fiedler = vp2grad
+                self.direction_gradient_on_fiedler_scaled = vp2dir
 
     def compute_angles_from_gradient_directions(self, angle_computed='angle_max'):
         for u in self.nodes:
@@ -253,12 +244,9 @@ class PointCloudGraph(nx.Graph):
             elif angle_computed == 'angle_median':
                 self.nodes[i][angle_computed] = st.median(angles)
 
-
-
-    def add_gradient_of_Fiedler_vector_as_attribute(self):
-        node_gradient_Fiedler_values = dict(zip(self.nodes(), np.transpose(self.gradient_on_Fiedler)))
-        nx.set_node_attributes(self, node_gradient_Fiedler_values, 'gradient_of_Fiedler_vector')
-
+    def add_gradient_of_fiedler_vector_as_attribute(self):
+        node_gradient_fiedler_values = dict(zip(self.nodes(), np.transpose(self.gradient_on_fiedler)))
+        nx.set_node_attributes(self, node_gradient_fiedler_values, 'gradient_of_fiedler_vector')
 
     def clustering_by_fiedler_and_agglomerative(self, number_of_clusters=2, criteria=[]):
         A = nx.adjacency_matrix(self)
@@ -277,10 +265,9 @@ class PointCloudGraph(nx.Graph):
         for i in range(len(self.nodes)):
             self.nodes[i]['optics_label'] = clustering_labels[i]
 
-
     def clustering_by_kmeans_in_four_clusters_using_gradient_norm(self, export_in_labeled_point_cloud=False):
         kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
-            self.gradient_on_Fiedler)
+            self.gradient_on_fiedler)
 
         if export_in_labeled_point_cloud is True:
             export_anything_on_point_cloud(self, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
@@ -292,13 +279,12 @@ class PointCloudGraph(nx.Graph):
             zip(np.asarray(self.nodes()), np.transpose(np.asarray(self.kmeans_labels_gradient))[0]))
         nx.set_node_attributes(self, kmeans_labels_gradient_dict, 'kmeans_labels')
 
-
     def find_local_minimum_of_gradient_norm(self):
         min_local = []
         for i in self:
             A = [n for n in self[i]]
-            min_neighborhood = min(self.gradient_on_Fiedler[A])
-            gradient_on_point = self.gradient_on_Fiedler[i]
+            min_neighborhood = min(self.gradient_on_fiedler[A])
+            gradient_on_point = self.gradient_on_fiedler[i]
             if gradient_on_point < min_neighborhood:
                 min_local.append(i)
 
@@ -306,6 +292,59 @@ class PointCloudGraph(nx.Graph):
 
 
 
+
+def graph_laplacian(G, laplacian_type='classical'):
+    if laplacian_type == 'classical':
+        L = nx.laplacian_matrix(G, weight='weight')
+    if laplacian_type == 'simple_normalized':
+        L_normalized_numpyformat = nx.normalized_laplacian_matrix(G, weight='weight')
+        L = spsp.csr_matrix(L_normalized_numpyformat)
+
+    return L
+
+def graph_spectrum(G, sparse=True, k=50, smallest_first=True, laplacian_type='classical', laplacian=None):
+    """
+
+    Parameters
+    ----------
+    G : nx.Graph
+
+    sparse
+    k
+
+    Returns
+    -------
+
+    """
+
+    if laplacian is None:
+        # fonction condensée plus efficace en quantité de points :
+        L = graph_laplacian(G, laplacian_type=laplacian_type)
+    else:
+        L = laplacian
+
+
+    if sparse:
+        Lcsr = spsp.csr_matrix.asfptype(L)
+
+        # k = 50
+        # On précise que l'on souhaite les k premières valeurs propres directement dans la fonction
+        # Les valeurs propres sont bien classées par ordre croissant
+
+        # Calcul des k premiers vecteurs et valeurs propres
+        if smallest_first:
+            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, sigma=0, which='LM')
+        else:
+            #TODO check if ordering is ok
+            keigenval, keigenvec = spsp.linalg.eigsh(Lcsr, k=k, which='LM')
+
+    else:
+        keigenval, keigenvec = np.linalg.eigh(L)
+        if not smallest_first:
+            keigenvec = keigenvec[np.argsort(-np.abs(keigenval))]
+            keigenval = keigenval[np.argsort(-np.abs(keigenval))]
+
+    return keigenval, keigenvec
 
 
 def create_normalized_vector_field(list_of_max_nodes, list_of_min_nodes, pcd_coordinates):
@@ -315,105 +354,12 @@ def create_normalized_vector_field(list_of_max_nodes, list_of_min_nodes, pcd_coo
 
     return vectors_scaled
 
-def display_gradient_vector_field(G, normalized=True, scale= 1.):
-    from cellcomplex.property_topomesh.creation import vertex_topomesh
-    from cellcomplex.property_topomesh.visualization.vtk_actor_topomesh import VtkActorTopomesh
-    from cellcomplex.property_topomesh.visualization.vtk_tools import vtk_display_actors
-
-    n_points = G.nodes_coords.shape[0]
-
-    topomesh = vertex_topomesh(dict(zip(range(n_points), G.nodes_coords)))
-
-    if normalized:
-        vectors = G.direction_gradient_on_Fiedler_scaled
-    if normalized is False:
-        vectors = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
-
-    topomesh.update_wisp_property('vector', 0, dict(zip(range(n_points), vectors)))
-
-    actors = []
-
-    vector_actor = VtkActorTopomesh(topomesh, degree=0, property_name='vector')
-    vector_actor.vector_glyph = 'arrow'
-    vector_actor.glyph_scale = scale
-    vector_actor.update(colormap='Reds', value_range=(0,0))
-    actors += [vector_actor.actor]
-
-    # Change of background
-    vtk_display_actors(actors, background=(0.9, 0.9, 0.9))
-
-    vtk_display_actors(actors)
-
-def export_clustering_labels_on_point_cloud(G, filename="pcd_clustered.txt"):
-    pcd_clusters = np.concatenate([G.nodes_coords, G.clustering_labels], axis=1)
-    np.savetxt(filename, pcd_clusters, delimiter=",")
-    print("Export du nuage avec les labels de cluster")
-
-def export_anything_on_point_cloud(G, filename="pcd_attribute.txt", attribute = "attribute"):
-    pcd_attribute = np.concatenate([G.nodes_coords, attribute], axis=1)
-    np.savetxt(filename, pcd_attribute, delimiter=",")
-    print("Export du nuage avec les attributs demandés")
-
-def export_gradient_of_Fiedler_vector_on_pointcloud(G, filename="pcd_vp2_grad.txt"):
-    pcd_vp2_grad = np.concatenate([G.nodes_coords, G.gradient_on_Fiedler], axis=1)
-    np.savetxt(filename, pcd_vp2_grad, delimiter=",")
-    print("Export du nuage avec gradient du vecteur propre 2")
-
-def export_Fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
-    vp2 = G.keigenvec[:, 1]
-    pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    np.savetxt(filename, pcd_vp2, delimiter=",")
-    print("Export du nuage avec le vecteur propre 2")
-
-def export_figure_graph_of_Fiedler_vector(G, filename="Fiedler_vector", sorted_by_fiedler_vector=True):
-    vp2 = G.keigenvec[:, 1]
-    pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    pcd_vp2_sort_by_vp2 = pcd_vp2[pcd_vp2[:, 3].argsort()]
-    figure = plt.figure(0)
-    figure.clf()
-    figure.gca().set_title("Fiedler vector")
-    # figure.gca().plot(range(len(vec)),vec,color='blue')
-    if sorted_by_fiedler_vector:
-        figure.gca().scatter(range(len(pcd_vp2_sort_by_vp2)), pcd_vp2_sort_by_vp2[:, 3], color='blue')
-    if sorted_by_fiedler_vector is False:
-        figure.gca().scatter(range(len(pcd_vp2)), pcd_vp2[:, 3], color='blue')
-    figure.set_size_inches(10, 10)
-    figure.subplots_adjust(wspace=0, hspace=0)
-    figure.tight_layout()
-    figure.savefig(filename)
-    print("Export du vecteur propre 2")
-
-def export_figure_graph_of_gradient_of_Fiedler_vector(G, filename="Gradient_of_Fiedler_vector", sorted_by_fiedler_vector=True, sorted_by_gradient=False):
-    vp2 = G.keigenvec[:, 1]
-    pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    pcd_vp2_grad_vp2 = np.concatenate([pcd_vp2, G.gradient_on_Fiedler], axis=1)
-    pcd_vp2_grad_vp2_sort_by_vp2 = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 3].argsort()]
-    pcd_vp2_grad_vp2_sort_by_grad = pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, 4].argsort()]
-
-    figure = plt.figure(1)
-    figure.clf()
-    figure.gca().set_title("Gradient of Fiedler vector")
-    plt.autoscale(enable=True, axis='both', tight=None)
-    # figure.gca().plot(range(len(vec)),vec,color='blue')
-    if sorted_by_fiedler_vector and sorted_by_gradient is False:
-        figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, 4], color='blue')
-    if sorted_by_fiedler_vector is False and sorted_by_gradient is False:
-        figure.gca().scatter(range(len(pcd_vp2_grad_vp2)), pcd_vp2_grad_vp2[:, 4], color='blue')
-
-    if sorted_by_gradient:
-        figure.gca().scatter(range(len(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_grad[:, 4], color='blue')
-
-
-    figure.set_size_inches(10, 10)
-    figure.subplots_adjust(wspace=0, hspace=0)
-    figure.tight_layout()
-    figure.savefig(filename)
-    print("Export du gradient")
 
 def simple_graph_to_test_methods():
     G = nx.Graph()
     G.add_nodes_from([0,1,2,3,4])
     G.add_weighted_edges_from([(0,1,10),(0,2,30),(0,3,40),(0,4,50),(1,2,20),(1,3,40),(1,4,60)])
+
     L = nx.laplacian_matrix(G, weight='weight')
     keigenval, keigenvec = sgk.graph_spectrum(G, k=2)
 
@@ -443,12 +389,14 @@ def simple_graph_to_test_methods():
 ######### Main
 
 if __name__ == '__main__':
+    import open3d as open3d
 
     pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenopode_propre.ply")
     r = 18
-    G = PointCloudGraph_init_with_pcd(point_cloud=pcd, method='knn', nearest_neighbors=r)
+    G = sgk.create_connected_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
+    G = PointCloudGraph(G)
     G.compute_graph_eigenvectors()
-    G.compute_gradient_of_Fiedler_vector(method='by_Fiedler_weight')
+    G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
     #G.compute_angles_from_gradient_directions(angle_computed='angle_variance')
     #kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_variance', filename='angle_variance.txt')
     G.compute_angles_from_gradient_directions(angle_computed='angle_median')
@@ -461,14 +409,14 @@ if __name__ == '__main__':
     kQG.export_some_graph_attributes_on_point_cloud(G, graph_attribute='angle_mean', filename='angle_mean.txt')
 
 
-    #X = G.gradient_on_Fiedler * G.direction_gradient_on_Fiedler_scaled
+    #X = G.gradient_on_fiedler * G.direction_gradient_on_fiedler_scaled
     #G.clustering_by_fiedler_and_agglomerative(number_of_clusters=45, criteria=X)
     #export_clustering_labels_on_point_cloud(G)
-    #export_gradient_of_Fiedler_vector_on_pointcloud(G)
-    #export_figure_graph_of_gradient_of_Fiedler_vector(G=G, sorted_by_gradient=True)
-    #export_figure_graph_of_Fiedler_vector(G)
+    #export_gradient_of_fiedler_vector_on_pointcloud(G)
+    #display_and_export_graph_of_gradient_of_fiedler_vector(G=G, sorted_by_gradient=True)
+    #display_and_export_graph_of_fiedler_vector(G)
     display_gradient_vector_field(G, normalized=False, scale= 10000.)
-    #kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_Fiedler_scaled)
+    #kmeans = skc.KMeans(n_clusters=15, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(G.direction_gradient_on_fiedler_scaled)
     #export_anything_on_point_cloud(G, attribute=kmeans.labels_[:, np.newaxis], filename='kmeans_clusters.txt')
 
     #

@@ -25,8 +25,6 @@ from spectral_clustering.split_and_merge import *
 
 from importlib import reload
 
-
-
 pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Older_Cheno.ply", format='ply')
 r = 18
 G = sgk.create_connected_pointcloudgraph(point_cloud=pcd, method='knn', nearest_neighbors=r)
@@ -48,7 +46,7 @@ define_and_optimize_topological_energy(quotient_graph=QG,
 
 QG.rebuild_quotient_graph(QG.point_cloud_graph)
 
-segment_each_cluster_by_optics_using_directions(quotientgraph=QG, leaves_out=True)
+segment_each_cluster_by_optics(quotientgraph=QG, leaves_out=True)
 
 
 define_and_optimize_topological_energy(quotient_graph=QG,

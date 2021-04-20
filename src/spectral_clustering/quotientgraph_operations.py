@@ -4,6 +4,24 @@ import networkx as nx
 
 
 def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_node=50):
+    """Compute a new clustering by treating one node of the QuotientGraph after the other and changing the class of the
+    underlying nodes of the PointCloudGraph associated.
+
+    Parameters
+    ----------
+    quotientgraph : QuotientGraph class object.
+    min_number_of_element_in_a_quotient_node
+
+    Returns
+    -------
+    Nothing
+    Update the quotientgraph by deleting the nodes with intra_class_node_number < min_number_of_element_in_a_quotient_node
+    Update the PointCloudGraph associated to the QuotientGraph by changing the points from the small class to the most
+    bigger adjacent class.
+
+    """
+
+
     G = quotientgraph.point_cloud_graph
     nodes_to_remove = []
     for u in quotientgraph.nodes:

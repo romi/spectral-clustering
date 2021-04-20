@@ -10,6 +10,28 @@ def define_and_optimize_topological_energy(quotient_graph,
                                            formulae='improved',
                                            number_of_iteration=1000,
                                            choice_of_node_to_change='max_energy'):
+    """Compute the topological scores of each node of the PointCloudGraph with the init_topo_scores function. Then
+    optimize the topological energy with optimization_topo_scores.
+
+
+    Parameters
+    ----------
+    G : PointCloudGraph
+    The associated distance-based graph
+    exports : Boolean
+    Precise if the user want to export the scores values on the point cloud in a .txt file and the scores on a
+    matplotlib picture .png of the quotient graph.
+    formulae : 'improved' or 'old' is the way to compute topological energy for a node.
+    number_of_iteration : int
+    choice_of_node_to_change : the method used to select a node which is going to change cluster options are
+    'max_energy', 'random_proba_energy', 'max_energy_and_select'
+
+    Returns
+    -------
+    Nothing
+    Update the attribute 'quotient_graph_node' on each node of the PointCloudGraph object according to the optimization
+    of topological energy.
+    """
 
     init_topo_scores(quotient_graph=quotient_graph,
                      point_cloud_graph=point_cloud_graph,
@@ -35,8 +57,8 @@ def init_topo_scores(quotient_graph, point_cloud_graph, exports=True, formulae='
 
     Parameters
     ----------
-    G : PointCloudGraph
-    The associated distance-based graph
+    quotient_graph : QuotientGraph class object.
+    point_cloud_graph : PointCloudGraph class. The associated distance-based graph.
     exports : Boolean
     Precise if the user want to export the scores values on the point cloud in a .txt file and the scores on a
     matplotlib picture .png of the quotient graph.

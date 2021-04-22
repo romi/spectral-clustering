@@ -71,6 +71,7 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
     G = create_riemannian_graph(pcd=point_cloud, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
 
     if nx.is_connected(G) is False:
+        print('not connected')
         largest_cc = max(nx.connected_components(G), key=len)
         # creating the new pcd point clouds
         coords = np.zeros((len(largest_cc), 3))
@@ -82,8 +83,9 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
         pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
 
         G = create_riemannian_graph(pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
+        pcd = pcd2
 
-    return G
+    return G, pcd2
 
 # affichage via open3D
 # En entrée : p nuage de points

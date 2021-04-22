@@ -14,6 +14,7 @@ import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
 import spectral_clustering.utils.angle as utilsangle
 import spectral_clustering.quotient_graph as kQG
+from spectral_clustering.display_and_export import *
 
 ########### Définition classe
 
@@ -23,14 +24,17 @@ class PointCloudGraph(nx.Graph):
     the graph was constructed.
     """
     #def __init__(self, method='knn', nearest_neighbors=1, radius=1.):
-    def __init__(self, G):
+    def __init__(self, G=None):
         super().__init__(G)
         # self.method = method
         # self.nearest_neighbors = nearest_neighbors
         # self.radius = radius
 
         # self.normals = None
-        self.nodes_coords = np.array(list(dict(self.nodes(data='pos')).values()))
+        if G is not None:
+            self.nodes_coords = np.array(list(dict(self.nodes(data='pos')).values()))
+        else:
+            self.nodes_coords = None
 
         self.laplacian = None
         self.keigenvec = None
@@ -82,13 +86,13 @@ class PointCloudGraph(nx.Graph):
         nx.set_node_attributes(self, nodes_coordinates_Z, 'Z_coordinate')
 
     def compute_graph_laplacian(self, laplacian_type='classical'):
-        L = graph_laplacian(self, laplacian_type)
+        L = graph_laplacian(nx.Graph(self), laplacian_type)
         self.laplacian = L
 
     def compute_graph_eigenvectors(self, is_sparse=True, k=50, smallest_first=True, laplacian_type='classical'):
         if self.laplacian is None:
             self.compute_graph_laplacian(laplacian_type=laplacian_type)
-        keigenval, keigenvec = graph_spectrum(self, sparse=is_sparse, k=k, smallest_first=smallest_first,
+        keigenval, keigenvec = graph_spectrum(nx.Graph(self), sparse=is_sparse, k=k, smallest_first=smallest_first,
                                               laplacian_type=laplacian_type, laplacian=self.laplacian)
         self.keigenvec = keigenvec
         self.keigenval = keigenval
@@ -264,6 +268,21 @@ class PointCloudGraph(nx.Graph):
         clustering_labels = clustering.labels_[:, np.newaxis]
         for i in range(len(self.nodes)):
             self.nodes[i]['optics_label'] = clustering_labels[i]
+
+    def clustering_by_fiedler(self, method='agglomerative', number_of_clusters=2, criteria=[], name_attribute='clustering_label'):
+        X = criteria
+
+        if method=='agglomerative':
+            A = nx.adjacency_matrix(self)
+            clustering = skc.AgglomerativeClustering(affinity='euclidean', connectivity=A, linkage='ward',
+                                                     n_clusters=number_of_clusters).fit(X)
+        if method=='optics':
+            clustering = skc.OPTICS(min_samples=100).fit(X)
+
+        clustering_labels = clustering.labels_[:, np.newaxis]
+        for i in range(len(self.nodes)):
+            self.nodes[i][name_attribute] = clustering_labels[i]
+        self.clustering_labels
 
     def clustering_by_kmeans_in_four_clusters_using_gradient_norm(self, export_in_labeled_point_cloud=False):
         kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(

@@ -3,6 +3,7 @@ import operator
 import sklearn.cluster as skc
 import numpy as np
 from spectral_clustering.display_and_export import *
+import time
 
 
 def opti_energy_dot_product_old(quotientgraph, energy_to_stop=0.13, leaves_out=False, list_graph_node_to_work=[], export_iter=True):
@@ -120,25 +121,56 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, energy_to_stop=0
     list_of_new_quotient_graph_nodes = list(set(list_quotient_node_to_work))
     SQG = create_a_subgraph_copy(quotientgraph, list_of_new_quotient_graph_nodes)
     SQG.point_cloud_graph = SG
+    SQG.compute_direction_info(list_leaves=[])
 
     while energy_min < energy_to_stop:
         # compute energy on nodes
-        SQG.compute_direction_info(list_leaves=[])
-
+        start1 = time.time()
+        end1 = time.time()
+        time1 = end1-start1
+        print(time1)
         # selection of the edge that bears the less energy
+        start2 = time.time()
         energy_per_edges = nx.get_edge_attributes(SQG, 'energy_dot_product')
         edge_to_delete = min(energy_per_edges.items(), key=operator.itemgetter(1))[0]
         print(edge_to_delete)
         print(energy_per_edges[edge_to_delete])
         energy_min = energy_per_edges[edge_to_delete]
+        end2 = time.time()
+        time2 = end2-start2
+        print(time2)
+
+        # Update node direction mean and intra class node number
+        m1 = SQG.nodes[edge_to_delete[0]]['dir_gradient_mean']
+        m2 = SQG.nodes[edge_to_delete[1]]['dir_gradient_mean']
+        n1 = SQG.nodes[edge_to_delete[0]]['intra_class_node_number']
+        n2 = SQG.nodes[edge_to_delete[1]]['intra_class_node_number']
+        SQG.nodes[edge_to_delete[0]]['dir_gradient_mean'] = (1 / (1 + n2 / n1)) * m1 + (1 / (1 + n1 / n2)) * m2
+        SQG.nodes[edge_to_delete[0]]['intra_class_node_number'] = n1 + n2
 
         # one cluster is merged into the other one, change of labels on the sub pointcloudgraph label
+        start3 = time.time()
         list_of_nodes = [x for x, y in SG.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
         for j in range(len(list_of_nodes)):
             SG.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+        end3 = time.time()
+        time3 = end3 - start3
+        print(time3)
+        start4 = time.time()
+
         # Update subgraph_quotient structure
         SQG = nx.contracted_nodes(SQG, edge_to_delete[0], edge_to_delete[1], self_loops=False)
         SQG.point_cloud_graph = SG
+        end4 = time.time()
+        time4 = end4-start4
+        # Update dot energies
+        for e in SQG.edges(edge_to_delete[0]):
+            v1 = SQG.nodes[e[0]]['dir_gradient_mean']
+            v2 = SQG.nodes[e[1]]['dir_gradient_mean']
+            dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+            energy_dot_product = 1 - dot
+            SQG.edges[e]['energy_dot_product'] = energy_dot_product
+        print(time4)
         print('end loop')
 
 
@@ -195,23 +227,31 @@ def oversegment_part(quotientgraph, subgraph_riemannian, average_size_cluster=20
     SG = subgraph_riemannian
 
     # get all the x,y,z coordinates in an np.array
-    Xcoord = np.zeros((len(list(SG.nodes)), 3))
-    for i in range(len(list(SG.nodes))):
-        Xcoord[i] = SG.nodes[list(SG.nodes)[i]]['pos']
-
+    t1 = time.time()
+    Xcoord = np.zeros((len(SG), 3))
+    for u in range(len(SG)):
+        Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
+    t2 = time.time()
+    print(t2-t1)
     # determine a number of cluster we would like to have
-    number_of_points = len(list(SG.nodes))
+    number_of_points = len(SG)
     number_of_clusters = number_of_points /average_size_cluster
 
+    t3 = time.time()
     # clustering via Kmeans to obtain new labels
     clustering = skc.KMeans(n_clusters=int(number_of_clusters), init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xcoord)
     clustering_labels = clustering.labels_[:, np.newaxis] + max(quotientgraph.nodes) + 1
-
+    t4 = time.time()
+    print(t4-t3)
     # Integration of the new labels in the quotient graph and updates
-    for i in range(len(list(SG.nodes))):
-        SG.nodes[list(SG.nodes)[i]]['quotient_graph_node'] = clustering_labels[i]
+    t5 = time.time()
+    num = 0
+    for i in SG.nodes:
+        SG.nodes[i]['quotient_graph_node'] = clustering_labels[num]
+        num += 1
     quotientgraph.rebuild(quotientgraph.point_cloud_graph)
-
+    t6 = time.time()
+    print(t6-t5)
 
 
 def create_subgraphs_to_work(quotientgraph, list_quotient_node_to_work=[]):

@@ -42,6 +42,7 @@ rt = 5
 t = Tree()
 t.add_attribute_to_id('nx_label',rt)
 list_of_nodes = [rt]
+
 def increment_spanning_tree(t , root_label , list_of_nodes):
     for children in st_tree.neighbors(root_label):
         if children not in list_of_nodes:
@@ -50,10 +51,12 @@ def increment_spanning_tree(t , root_label , list_of_nodes):
             list_of_nodes.append(children)
             increment_spanning_tree(s, children, list_of_nodes)
             t.add_subtree(s)
+
 increment_spanning_tree(t , rt , list_of_nodes)
 
-def add_attributes_to_spanning_tree(t)
-dict = t.dict_of_ids()
-for node in t.list_of_ids():
-    st_node = dict[node]['attributes']['nx_label']
-    t.add_attribute_to_id('linearity', st_tree.nodes[st_node]['linearity'], node)
+def add_attributes_to_spanning_tree(t, list_att=[]):
+    dict = t.dict_of_ids()
+    for node in t.list_of_ids():
+        st_node = dict[node]['attributes']['nx_label']
+        for att in list_att:
+            t.add_attribute_to_id(att, st_tree.nodes[st_node][att], node)

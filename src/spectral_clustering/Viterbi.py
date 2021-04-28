@@ -3,60 +3,42 @@ from treex.simulation import *
 from treex.simulation.galton_watson import __discrete_distribution  # only for generating discrete observations
 
 
-initial_distribution = [0.7, 0.1, 0.1, 0.1]
+def read_pointcloudgraph_into_treex(pointcloudgraph):
+    mst=pointcloudgraph
+    save_object(mst, 'test_spanning_tree_attributes.p')
+    st_tree = read_object('test_spanning_tree_attributes.p')
+    return st_tree
 
-transition_matrix = [[0.7, 0.1, 0.1, 0.1], [0.1, 0.1, 0.1, 0.7], [0.2, 0.1, 0.6, 0.1], [0.1, 0.6, 0.2, 0.1]]
-
-continuous_obs = False
-
-parameters = [[0.5, 0.3, 0.2], [0.2, 0.6, 0.2], [0.2, 0.3, 0.5]]
-
-def gen_emission(k, parameters):  # Discrete emission
-    return __discrete_distribution('', parameters[k])
-
-
-
-save_object(mst, 'test_spanning_tree_attributes')
-st_tree = read_object('test_spanning_tree_attributes')
-
-rt = 5
-
-t = Tree()
-t.add_attribute_to_id('nx_label',rt)
-
-list_of_nodes = [rt]
-
-
-def increment_spanning_tree(t , list_of_nodes):
-    for children in st_tree.neighbors(rt):
-        if children not in list_of_nodes:
+def increment_spanning_tree(st_tree, root, t , list_of_nodes, list_att):
+    for neighbor in st_tree.neighbors(root):
+        if neighbor not in list_of_nodes:
             s = Tree()
-            s.add_attribute_to_id('nx_label',children)
-            list_of_nodes.append(children)
-            increment_spanning_tree(s , list_of_nodes)
+            s.add_attribute_to_id('nx_label', neighbor)
+            for att in list_att:
+                s.add_attribute_to_id(att, st_tree.nodes[neighbor][att])
+            list_of_nodes.append(neighbor)
+            increment_spanning_tree(st_tree, neighbor, s, list_of_nodes, list_att)
             t.add_subtree(s)
 
 
-st_tree.nodes
-rt = 5
-t = Tree()
-t.add_attribute_to_id('nx_label',rt)
-list_of_nodes = [rt]
+def build_spanning_tree(st_tree, root_label, list_att=['planarity', 'linearity', 'scattering']):
+    t = Tree()
+    t.add_attribute_to_id('nx_label', root_label)
+    for att in list_att:
+        t.add_attribute_to_id(att, st_tree.nodes[root_label][att])
+    list_of_nodes=[root_label]
+    increment_spanning_tree(st_tree, root_label, t, list_of_nodes, list_att)
+    return t
 
-def increment_spanning_tree(t , root_label , list_of_nodes):
-    for children in st_tree.neighbors(root_label):
-        if children not in list_of_nodes:
-            s = Tree()
-            s.add_attribute_to_id('nx_label', children)
-            list_of_nodes.append(children)
-            increment_spanning_tree(s, children, list_of_nodes)
-            t.add_subtree(s)
 
-increment_spanning_tree(t , rt , list_of_nodes)
-
-def add_attributes_to_spanning_tree(t, list_att=[]):
+def add_attributes_to_spanning_tree(t, list_att=['planarity', 'linearity', 'scattering']):
     dict = t.dict_of_ids()
     for node in t.list_of_ids():
         st_node = dict[node]['attributes']['nx_label']
         for att in list_att:
             t.add_attribute_to_id(att, st_tree.nodes[st_node][att], node)
+
+
+st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t)
+rt = 40
+t = build_spanning_tree(st_tree, rt)

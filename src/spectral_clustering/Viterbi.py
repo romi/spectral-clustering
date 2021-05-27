@@ -1,7 +1,9 @@
 from treex import *
 from treex.simulation import *
 from treex.simulation.galton_watson import __discrete_distribution  # only for generating discrete observations
-
+from spectral_clustering.Original_TreeX import *
+from spectral_clustering.display_and_export import *
+import networkx as nx
 
 def read_pointcloudgraph_into_treex(pointcloudgraph):
     mst=pointcloudgraph
@@ -26,12 +28,12 @@ def build_spanning_tree(st_tree, root_label, list_att=['planarity', 'linearity',
     t.add_attribute_to_id('nx_label', root_label)
     for att in list_att:
         t.add_attribute_to_id(att, st_tree.nodes[root_label][att])
-    list_of_nodes=[root_label]
+    list_of_nodes = [root_label]
     increment_spanning_tree(st_tree, root_label, t, list_of_nodes, list_att)
     return t
 
 
-def add_attributes_to_spanning_tree(t, list_att=['planarity', 'linearity', 'scattering']):
+def add_attributes_to_spanning_tree(st_tree, t, list_att=['planarity', 'linearity', 'scattering']):
     dict = t.dict_of_ids()
     for node in t.list_of_ids():
         st_node = dict[node]['attributes']['nx_label']
@@ -39,6 +41,62 @@ def add_attributes_to_spanning_tree(t, list_att=['planarity', 'linearity', 'scat
             t.add_attribute_to_id(att, st_tree.nodes[st_node][att], node)
 
 
-st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t)
-rt = 40
-t = build_spanning_tree(st_tree, rt)
+def add_viterbi_results_to_quotient_graph(quotientgraph, t, list_semantics=['leaf', 'stem', 'NSP']):
+    dict = t.dict_of_ids()
+    for n in t.list_of_ids():
+        qg_node = dict[n]['attributes']['nx_label']
+        quotientgraph.nodes[qg_node]['viterbi_class'] = dict[n]['attributes']['viterbi_type']
+
+
+QG_toy = nx.Graph()
+mutige = 1
+sigmatige = 0.1
+mupet = 3
+sigmapet = 0.1
+muf = 2
+sigmaf = 0.1
+QG_toy.add_nodes_from([
+    (1, {"observation": random.gauss(mutige, sigmatige)}),
+    (2, {"observation": random.gauss(mupet, sigmapet)}),
+    (3, {"observation": random.gauss(muf, sigmaf)}),
+    (4, {"observation": random.gauss(mupet, sigmapet)}),
+    (5, {"observation": random.gauss(muf, sigmaf)}),
+    (6, {"observation": random.gauss(mupet, sigmapet)}),
+    (7, {"observation": random.gauss(muf, sigmaf)}),
+    (8, {"observation": random.gauss(mupet, sigmapet)}),
+    (9, {"observation": random.gauss(muf, sigmaf)})
+])
+
+QG_toy.add_edges_from([(1, 2), (2, 3), (1, 4), (4, 5), (1, 6), (6, 7), (1, 8), (8, 9)])
+
+st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_toy)
+rt = 1
+t = build_spanning_tree(st_tree, rt, list_att=['observation'])
+
+
+
+#########################################################################
+
+initial_distribution = [0.3, 0.3, 0.4]
+transition_matrix = [[0, 0.01, 0.99], [0.01, 0, 0.99], [0.5, 0.5, 0]]
+continuous_obs = True
+
+if continuous_obs:  # observations are Gaussian
+    parameters = [[3.0, 20], [1.0, 20], [2.0, 20]]
+    def gen_emission(k, parameters):  # Gaussian emission
+        return random.gauss(parameters[k][0], parameters[k][1])
+
+    def pdf_emission(x, k, parameters):  # Gaussian emission
+        return 1.0 / (parameters[k][1] * math.sqrt(2 * math.pi)) * math.exp(
+            -1.0 / (2 * parameters[k][1] ** 2) * (x - parameters[k][0]) ** 2)
+
+viterbi(t, 'observation', initial_distribution, transition_matrix, pdf_emission, parameters)
+
+
+add_viterbi_results_to_quotient_graph(QG_toy, t, list_semantics=['leaf', 'stem', 'NSP'])
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG_toy, node_sizes=20, filename="quotient_graph_observation", data_on_nodes='observation', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG_toy, node_sizes=20, filename="quotient_graph_viterbi", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+
+export_quotient_graph_attribute_on_point_cloud(QG, attribute = 'viterbi_class')
+
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='linearity')

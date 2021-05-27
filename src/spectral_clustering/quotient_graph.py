@@ -24,7 +24,7 @@ class QuotientGraph(nx.Graph):
         self.point_cloud_graph = None
         self.nodes_coordinates = None
 
-    def build_from_pointcloudgraph(self, G, labels_from_cluster):
+    def build_from_pointcloudgraph(self, G, labels_from_cluster, region_growing=True):
         """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
         of the points. Each region becomes a node of que quotient graph.
 
@@ -53,7 +53,7 @@ class QuotientGraph(nx.Graph):
         seed_kmeans_labels = []
         # This line has been added to obtain particular colors when the initial clustering is done with four clusters
         # especially kmeans.
-        lablist = kmeans_labels.tolist()
+        lablist = list(kmeans_labels[:])
         my_count = pd.Series(lablist).value_counts()
         # if len(my_count) == 4:
         #     #cluster_colors = ['#0000FF', '#00FF00', '#FFFF00', '#FF0000']
@@ -68,38 +68,45 @@ class QuotientGraph(nx.Graph):
         queue = []
 
         # Region growing algorithm to extract connected components made of the same k-means class.
+        if region_growing:
+            for i in range(kmeans_labels.shape[0]):
 
-        for i in range(kmeans_labels.shape[0]):
+                # Find a seed to initialize the seed fill process.
 
-            # Find a seed to initialize the seed fill process.
+                if visited[i] == 0:
+                    seed = i
+                    visited[i] = 1
+                    queue.append(i)
+                    seed_kmeans_labels.append(kmeans_labels[seed])
+                    seed_colors.append('glasbey_'+ str(kmeans_labels[seed][0]%256))
+                    # if len(my_count) == 4:
+                    #     seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
+                    # else:
+                    #     seed_colors.append(cluster_colors[list_labels.index(kmeans_labels[seed][0])][:])
+                    current_cc_size = 0
 
-            if visited[i] == 0:
-                seed = i
-                visited[i] = 1
-                queue.append(i)
-                seed_kmeans_labels.append(kmeans_labels[seed])
-                seed_colors.append('glasbey_'+str(kmeans_labels[seed][0]%256))
-                # if len(my_count) == 4:
-                #     seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
-                # else:
-                #     seed_colors.append(cluster_colors[list_labels.index(kmeans_labels[seed][0])][:])
-                current_cc_size = 0
+                    # Region growing from the specified seed.
 
-                # Region growing from the specified seed.
+                    while len(queue) != 0:
 
-                while len(queue) != 0:
+                        current = queue.pop(0)
+                        connected_component_labels[current] = label_count
+                        current_cc_size += 1
 
-                    current = queue.pop(0)
-                    connected_component_labels[current] = label_count
-                    current_cc_size += 1
+                        for n in G[current]:
+                            if kmeans_labels[n] == kmeans_labels[seed] and visited[n] == 0:
+                                queue.append(n)
+                                visited[n] = 1
 
-                    for n in G[current]:
-                        if kmeans_labels[n] == kmeans_labels[seed] and visited[n] == 0:
-                            queue.append(n)
-                            visited[n] = 1
-
-                connected_component_size.append(current_cc_size)
-                label_count += 1
+                    connected_component_size.append(current_cc_size)
+                    label_count += 1
+        else:
+            # To correct/finish, it doesn't work for now
+            list_kmeans_labels = [kmeans_labels[i][0] for i in range(len(kmeans_labels))]
+            label_count = len(list(set(list_kmeans_labels)))
+            for i in range(kmeans_labels.shape[0]):
+                seed_colors.append('glasbey_'+ str(kmeans_labels[i][0]%256))
+                seed_kmeans_labels.append(kmeans_labels[i])
 
         # Create quotient graph nodes.
 
@@ -605,6 +612,7 @@ if __name__ == '__main__':
     list_of_nodes_to_work = QG.oversegment_part(list_quotient_node_to_work=[10], average_size_cluster=50)
     QG.compute_direction_info(list_leaves=[])
     QG.opti_energy_dot_product(energy_to_stop=0.29, leaves_out=False, list_graph_node_to_work=list_of_nodes_to_work)
+
 
 
 

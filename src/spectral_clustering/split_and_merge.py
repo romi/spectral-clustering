@@ -107,9 +107,10 @@ def create_a_subgraph_copy(G, list_of_nodes=[]):
     SG.graph.update(G.graph)
     return SG
 
-def opti_energy_dot_product(quotientgraph, subgraph_riemannian, energy_to_stop=0.13,
+def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30,
                             export_iter=True):
 
+    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
     # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
     energy_min = 0
     i = 0

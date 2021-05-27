@@ -69,7 +69,7 @@ def create_riemannian_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
 
 def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbors=1, radius=1.):
     G = create_riemannian_graph(pcd=point_cloud, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
-
+    pcd2=point_cloud
     if nx.is_connected(G) is False:
         print('not connected')
         largest_cc = max(nx.connected_components(G), key=len)

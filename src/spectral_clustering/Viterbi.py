@@ -82,13 +82,19 @@ transition_matrix = [[0, 0.01, 0.99], [0.01, 0, 0.99], [0.5, 0.5, 0]]
 continuous_obs = True
 
 if continuous_obs:  # observations are Gaussian
+    parameterstot = [[[3.0, 0.1], [3.0, 0.1], [3.0, 0.1]][][]]
     parameters = [[3.0, 20], [1.0, 20], [2.0, 20]]
     def gen_emission(k, parameters):  # Gaussian emission
         return random.gauss(parameters[k][0], parameters[k][1])
 
-    def pdf_emission(x, k, parameters):  # Gaussian emission
-        return 1.0 / (parameters[k][1] * math.sqrt(2 * math.pi)) * math.exp(
-            -1.0 / (2 * parameters[k][1] ** 2) * (x - parameters[k][0]) ** 2)
+    def pdf_emission_dim1(x, moy, sd):  # Gaussian emission
+        return 1.0 / (sd * math.sqrt(2 * math.pi)) * math.exp(
+            -1.0 / (2 * sd ** 2) * (x - moy) ** 2)
+    def pdf_emission_dim3(x, k, parameterstot):
+        p = 1
+        for i in range(3):
+            p *= pdf_emission_dim1(x[i], moy=parameterstot[k][i][0], sd=parameterstot[k][i][1])
+        return p
 
 viterbi(t, 'observation', initial_distribution, transition_matrix, pdf_emission, parameters)
 

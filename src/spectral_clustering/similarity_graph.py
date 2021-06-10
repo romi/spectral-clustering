@@ -2,6 +2,7 @@ import open3d
 import networkx as nx
 import numpy as np
 import scipy.sparse as spsp
+import os
 # from mayavi import mlab
 import scipy.cluster.vq as vq
 # from sklearn.cluster import DBSCAN
@@ -80,7 +81,8 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
             coords[i, :] = G.nodes[node]['pos']
             i += 1
         np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
-        pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
+        path = os.getcwd()
+        pcd2 = open3d.read_point_cloud(path+"/New_pcd_connected.txt", format='xyz')
 
         G = create_riemannian_graph(pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)
         pcd = pcd2

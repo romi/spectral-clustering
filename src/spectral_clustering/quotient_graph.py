@@ -283,7 +283,7 @@ class QuotientGraph(nx.Graph):
         self.remove_nodes_from(to_remove)
         print(to_remove)
 
-    def compute_local_descriptors(self, method='each_point', data='coords'):
+    def compute_local_descriptors(self, method='all_qg_cluster', data='coords'):
         G = self.point_cloud_graph
         # compute the descriptor for all the point in a quotient graph node
         if method == 'all_qg_cluster' and data == 'coords':
@@ -456,104 +456,7 @@ class QuotientGraph(nx.Graph):
                 energy_dot_product = 1-dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
 
-    def define_leaves_by_topo(self):
-        G = self.point_cloud_graph
-        # Put the "end" nodes in a list
-        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
 
-        # Pick the node with the most average norm gradient (most likely to be part of the stem)
-        max_norm = 0
-        max_norm_node = -1
-        for l in list_leaves:
-            self.nodes[l]['norm_gradient_mean'] = 0
-            list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
-            for n in list_of_nodes_in_qnode:
-                self.nodes[l]['norm_gradient_mean'] += G.nodes[n]['norm_gradient']
-            self.nodes[l]['norm_gradient_mean'] /= len(list_of_nodes_in_qnode)
-            if self.nodes[l]['norm_gradient_mean'] > max_norm:
-                max_norm = self.nodes[l]['norm_gradient_mean']
-                max_norm_node = l
-
-        # Finally I chose randomly the root among the leaves but I could choose the max_norm_node
-        root = np.random.choice(list_leaves)
-        # cluster again the branches by following a path
-        #to_cluster = []
-        #for n in self:
-        #    if n not in list_leaves:
-        #       to_cluster.append(n)
-
-        #self.segment_several_nodes_using_attribute(G=self.point_cloud_graph, list_quotient_node_to_work=to_cluster,
-        #                                          algo='OPTICS', para_clustering_meth=100, attribute='direction_gradient')
-        #self.delete_small_clusters(min_number_of_element_in_a_quotient_node=100)
-
-    def define_semantic_classes(self):
-
-        # leaves : one adjacency
-        list_leaves = [x for x in self.nodes() if self.degree(x) == 1]
-
-        # the node with the most number of neighborhood is the stem
-        degree_sorted = sorted(self.degree, key=lambda x: x[1], reverse=True)
-        stem = [degree_sorted[0][0]]
-
-        # the rest is defined as branches
-        for n in self.nodes:
-            if n in list_leaves:
-                self.nodes[n]['semantic_label'] = 'leaf'
-            if n in stem:
-                self.nodes[n]['semantic_label'] = 'stem'
-            elif n not in list_leaves and n not in stem:
-                self.nodes[n]['semantic_label'] = 'petiole'
-
-    def define_semantic_scores(self, method='similarity_dist'):
-        self.compute_local_descriptors(self.point_cloud_graph, method='all_qg_cluster', data='coords')
-        self.compute_silhouette()
-        degree_sorted = sorted(self.degree, key=lambda x: x[1], reverse=True)
-        stem = [degree_sorted[0][0]]
-
-        if method == 'condition_list':
-            for n in self.nodes:
-                score_vector_leaf = [self.nodes[n]['planarity'] > 0.5, self.nodes[n]['linearity'] < 0.5, self.degree(n) == 1]
-                score_vector_petiole = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == 2, self.nodes[n]['silhouette'] > 0.2]
-                score_vector_stem = [self.nodes[n]['planarity'] < 0.5, self.nodes[n]['linearity'] > 0.5, self.degree(n) == degree_sorted[0][1]]
-                self.nodes[n]['score_leaf'] = score_vector_leaf.count(True)/len(score_vector_leaf)
-                self.nodes[n]['score_petiole'] = score_vector_petiole.count(True)/len(score_vector_petiole)
-                self.nodes[n]['score_stem'] = score_vector_stem.count(True)/len(score_vector_stem)
-
-        if method == 'similarity_dist':
-            def smoothstep(x):
-                if x <= 0:
-                    res = 0
-                elif x >= 1:
-                    res = 1
-                else:
-                    res = 3 * pow(x, 2) - 2 * pow(x, 3)
-
-                return res
-
-            def identity(x):
-                if x <= 0:
-                    res = 0
-                elif x >= 1:
-                    res = 1
-                else:
-                    res = x
-
-                return res
-
-            score_vector_leaf_ref = [0.81, 0, -0.1]
-            score_vector_linea_ref = [0, 1, 0.3]
-            for n in QG.nodes:
-                # score_vector_n = sk.preprocessing.normalize(np.asarray([QG.nodes[n]['planarity'], QG.nodes[n]['linearity']]).reshape(1,len(score_vector_leaf_ref)), norm='l2')
-                score_vector_n = [QG.nodes[n]['planarity'], QG.nodes[n]['linearity'], QG.nodes[n]['silhouette']]
-                print(score_vector_n)
-                d1_leaf = sp.spatial.distance.euclidean(score_vector_leaf_ref, score_vector_n)
-                # print(d1_leaf)
-                d2_linea = sp.spatial.distance.euclidean(score_vector_linea_ref, score_vector_n)
-                # print(d2_leaf)
-                f1 = 1 - d1_leaf
-                f2 = 1 - d2_linea
-                QG.nodes[n]['score_leaf'] = identity(f1)
-                QG.nodes[n]['score_petiole'] = identity(f2)
 
 
 

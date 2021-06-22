@@ -167,3 +167,12 @@ def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_p
     list_of_clusters = list(set(list))
 
     return list_of_clusters
+
+def compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='clustering_labels'):
+    for n in QG.nodes:
+        moy = 0
+        list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
+        for e in list_of_nodes:
+            moy += G.nodes[e][attribute]
+        QG.nodes[n][attribute+'_mean'] = moy/len(list_of_nodes)
+

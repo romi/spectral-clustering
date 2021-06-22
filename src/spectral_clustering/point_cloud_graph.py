@@ -284,8 +284,8 @@ class PointCloudGraph(nx.Graph):
             self.nodes[i][name_attribute] = clustering_labels[i]
         self.clustering_labels
 
-    def clustering_by_kmeans_in_four_clusters_using_gradient_norm(self, export_in_labeled_point_cloud=False):
-        kmeans = skc.KMeans(n_clusters=4, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
+    def clustering_by_kmeans_using_gradient_norm(self, export_in_labeled_point_cloud=False, number_of_clusters=4):
+        kmeans = skc.KMeans(n_clusters=number_of_clusters, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
             self.gradient_on_fiedler)
 
         if export_in_labeled_point_cloud is True:

@@ -89,6 +89,25 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
 
     return G, pcd2
 
+
+def add_label_from_pcd_file(G, file="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/peuplier_seg.txt"):
+    label = np.loadtxt(file, delimiter=',')
+    l = label[:, 3].astype('int32')
+    G.clustering_labels = l.reshape((len(l), 1))
+    j = 0
+    for n in G.nodes:
+        G.nodes[n]['clustering_labels'] = l[j]
+        j += 1
+
+def add_label_from_separate_file(G, file="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/rawLabels_Arabido_0029.txt"):
+    label = np.loadtxt(file, delimiter=',')
+    l = label.astype('int32')
+    G.clustering_labels = l.reshape((len(l), 1))
+    j = 0
+    for n in G.nodes:
+        G.nodes[n]['clustering_labels'] = l[j]
+        j += 1
+
 # affichage via open3D
 # En entrée : p nuage de points
 def draw_graph_open3d(pcd, G):

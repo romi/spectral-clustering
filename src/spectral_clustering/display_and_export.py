@@ -222,7 +222,7 @@ def display_gradient_vector_field(G, normalized=True, scale= 1., filename="gradi
     vector_actor.vector_glyph = 'arrow'
     vector_actor.glyph_scale = scale
     vector_actor.update(colormap='Reds', value_range=(0,0))
-    actors += [vector_actor.actor]
+    actors += [vector_actor]
 
     # Change of background
     ren, _, _ = vtk_display_actors(actors, background=(0.9, 0.9, 0.9))

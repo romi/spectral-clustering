@@ -45,6 +45,7 @@ class PointCloudGraph(nx.Graph):
         self.clusters_leaves = None
         self.kmeans_labels_gradient = None
         self.minimum_local = None
+        self.pcd = None
 
     # def build_from_pointcloud(self, point_cloud):
     #     """Initialize the graph.

@@ -1,0 +1,97 @@
+########### Imports
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import pandas as pd
+from treex import *
+
+import scipy.sparse as spsp
+import scipy as sp
+import sklearn as sk
+import spectral_clustering.similarity_graph as sgk
+import open3d as open3d
+import spectral_clustering.point_cloud_graph as kpcg
+
+import time
+
+from collections import Counter
+
+from spectral_clustering.point_cloud_graph import *
+from spectral_clustering.quotient_graph import *
+from spectral_clustering.topological_energy import *
+from spectral_clustering.segmentation_algorithms import *
+from spectral_clustering.split_and_merge import *
+from spectral_clustering.display_and_export import *
+from spectral_clustering.quotientgraph_semantics import *
+
+
+from importlib import reload
+
+begin = time.time()
+
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
+r = 18
+SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
+G = PointCloudGraph(SimG)
+G.pcd = pcdfinal
+
+
+G.compute_graph_eigenvectors()
+G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
+
+G.clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud=True, number_of_clusters=4)
+
+
+QG = QuotientGraph()
+QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
+export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+                                            graph_attribute="quotient_graph_node",
+                                            filename="pcd_attribute.txt")
+
+
+sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[0])
+SG = sub
+Xcoord = np.zeros((len(SG), 3))
+for u in range(len(SG)):
+    Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
+Xnorm = np.zeros((len(SG), 3))
+for u in range(len(SG)):
+    Xnorm[u] = SG.nodes[list(SG.nodes)[u]]['norm_gradient']
+wss = []
+for i in range(8):
+    clustering = skc.KMeans(n_clusters=int(i+1), init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xnorm)
+    new_labels = np.zeros((len(SG.nodes), 4))
+    new_labels[:, 0:3] = Xcoord
+    for pt in range(len(SG.nodes)):
+        new_labels[pt, 3] = clustering.labels_[pt]
+    wss.append(clustering.inertia_)
+
+    np.savetxt('pcd_new_labels_'+ str(i) +'.txt', new_labels, delimiter=",")
+
+plt.clf()
+figure = plt.figure(1)
+figure.clf()
+figure.gca().set_title("wss")
+plt.autoscale(enable=True, axis='x', tight=False)
+plt.ylim(bottom=min(wss), top=max(wss))
+figure.gca().scatter(range(len(wss)), wss, color='blue')
+figure.savefig('wss')
+
+for n in G.edges:
+    G.edges[n]['dist'] =  1 / G.edges[n]['weight']
+time1 = time.time()
+#dictweight = dict(nx.all_pairs_dijkstra_path_length(G, cutoff=6, weight='dist'))
+time2 = time.time()
+
+timeshortestpaths = time2 - time1
+
+#QG.compute_silhouette(method='all_qg_cluster', data='norm_gradient_vector_fiedler')
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='silhouette')
+
+"""
+#### test essai split branches et tiges
+lqg = [x for x, y in QG.nodes(data=True) if y['kmeans_labels'] != 0]
+sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=lqg)
+oversegment_part(quotientgraph=QG, subgraph_riemannian=sub, average_size_cluster=150)
+"""

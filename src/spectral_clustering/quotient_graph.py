@@ -10,6 +10,7 @@ import sklearn as sk
 import pandas as pd
 
 import spectral_clustering.point_cloud_graph as kpcg
+from spectral_clustering.similarity_graph import *
 
 
 ########### Définition classe
@@ -283,7 +284,7 @@ class QuotientGraph(nx.Graph):
         self.remove_nodes_from(to_remove)
         print(to_remove)
 
-    def compute_local_descriptors(self, method='all_qg_cluster', data='coords'):
+    def compute_local_descriptors(self, method='all_qg_cluster', data='coords', neighborhood='radius', scale = 10):
         G = self.point_cloud_graph
         # compute the descriptor for all the point in a quotient graph node
         if method == 'all_qg_cluster' and data == 'coords':
@@ -306,8 +307,12 @@ class QuotientGraph(nx.Graph):
                 self.nodes[qnode]['lambda2'] = eigenval[1]
                 self.nodes[qnode]['lambda3'] = eigenval[0]
 
-        if method == 'each_point' and data == 'coords':
-            # compute each decriptor for each point of the point cloud and its neighborhood
+        if method == 'each_point' and data == 'coords' and neighborhood == 'radius':
+            # compute a new pointcloudgraph with the neighborhood wanted
+            NewG = create_riemannian_graph(G.pcd, method=neighborhood, nearest_neighbors= neighborhood, radius=scale)
+
+        if method == 'each_point' and data == 'coords' and neighborhood == 'pointcloudgraph':
+            # compute each descriptor for each point of the point cloud and its neighborhood
             for p in G:
                 mat = np.zeros((len(G[p]), 3))
                 i = 0
@@ -321,7 +326,6 @@ class QuotientGraph(nx.Graph):
                 G.nodes[p]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
                 G.nodes[p]['scattering'] = eigenval[0] / eigenval[2]
                 G.nodes[p]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])
-
             # compute mean value for the qnode
             for qnode in self:
                 list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]

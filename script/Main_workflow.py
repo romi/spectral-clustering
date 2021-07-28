@@ -30,10 +30,11 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/chenopode_propre.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_B_2021_04_19.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
+G.pcd = pcdfinal
 
 
 G.compute_graph_eigenvectors()
@@ -47,6 +48,12 @@ QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_attribute.txt")
+
+#### test essai split branches et tiges
+lqg = [x for x, y in QG.nodes(data=True) if y['kmeans_labels'] != 0]
+sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=lqg)
+oversegment_part(quotientgraph=QG, subgraph_riemannian=sub, average_size_cluster=150)
+
 
 
 #draw_quotientgraph_cellcomplex(pcd, QG_t, G, color_attribute='quotient_graph_node', filename="graph_and_quotientgraph_3d.png")
@@ -87,12 +94,16 @@ display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, f
 export_quotient_graph_attribute_on_point_cloud(QG, 'planarity')
 export_quotient_graph_attribute_on_point_cloud(QG, 'linearity')
 export_quotient_graph_attribute_on_point_cloud(QG, 'scattering')
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_final", data_on_nodes='intra_class_node_number', data=False, attributekmeans4clusters = False)
 
 QG_t2 = minimum_spanning_tree_quotientgraph_semantics(QG)
 #QG_t2 = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='inverse_inter_class_edge_weight')
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG_t2, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='quotient_graph_node', data=True, attributekmeans4clusters = False)
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG_t2, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='quotient_graph_node', data=True, attributekmeans4clusters = False)
 
 end = time.time()
 
 timefinal = end-begin
+
+compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='norm_gradient')
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='lambda2')

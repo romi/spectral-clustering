@@ -49,22 +49,45 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_attribute.txt")
 
+#select clusters "leaves" to work with
+list_leaves = [x for x in QG.nodes() if QG.degree(x) == 1]
+for i in list_leaves:
+    sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[0])
+    SG = sub
+    Xcoord = np.zeros((len(SG), 3))
+    for u in range(len(SG)):
+        Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
+    Xnorm = np.zeros((len(SG), 3))
+    for u in range(len(SG)):
+        Xnorm[u] = SG.nodes[list(SG.nodes)[u]]['norm_gradient']
 
-sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[0])
-SG = sub
-Xcoord = np.zeros((len(SG), 3))
-for u in range(len(SG)):
-    Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
-Xnorm = np.zeros((len(SG), 3))
-for u in range(len(SG)):
-    Xnorm[u] = SG.nodes[list(SG.nodes)[u]]['norm_gradient']
+    from sklearn.cluster import KMeans
+    from yellowbrick.cluster import KElbowVisualizer
+
+    # Instantiate the clustering model and visualizer
+    model = KMeans()
+    visualizer = KElbowVisualizer(model, k=(1,10))
+
+    visualizer.fit(Xnorm)        # Fit the data to the visualizer
+    visualizer.show()        # Finalize and render the figure
+    k_opt = visualizer.elbow_value_
+
+    clustering = skc.KMeans(n_clusters=k_opt, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xnorm)
+    new_labels = np.zeros((len(SG.nodes), 4))
+    new_labels[:, 0:3] = Xcoord
+    for pt in range(len(SG.nodes)):
+        new_labels[pt, 3] = clustering.labels_[pt]
+        #penser à intégrer dans le nuage de points en numérotant les nouveaux clusters au delà de max(QG.nodes)
+        #actualisation uniquement à la fin de QG.
+    np.savetxt('pcd_new_labels_'+ str(i) +'.txt', new_labels, delimiter=",")
+
 wss = []
 for i in range(8):
     clustering = skc.KMeans(n_clusters=int(i+1), init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xnorm)
     new_labels = np.zeros((len(SG.nodes), 4))
     new_labels[:, 0:3] = Xcoord
     for pt in range(len(SG.nodes)):
-        new_labels[pt, 3] = clustering.labels_[pt]
+        new_labels[pt, 3] = clustering.labels_[pt] + max(QG.nodes)
     wss.append(clustering.inertia_)
 
     np.savetxt('pcd_new_labels_'+ str(i) +'.txt', new_labels, delimiter=",")
@@ -79,7 +102,7 @@ figure.gca().scatter(range(len(wss)), wss, color='blue')
 figure.savefig('wss')
 
 for n in G.edges:
-    G.edges[n]['dist'] =  1 / G.edges[n]['weight']
+    G.edges[n]['dist'] = 1 / G.edges[n]['weight']
 time1 = time.time()
 #dictweight = dict(nx.all_pairs_dijkstra_path_length(G, cutoff=6, weight='dist'))
 time2 = time.time()

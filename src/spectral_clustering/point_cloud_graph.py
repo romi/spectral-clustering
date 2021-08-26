@@ -299,6 +299,8 @@ class PointCloudGraph(nx.Graph):
             zip(np.asarray(self.nodes()), np.transpose(np.asarray(self.kmeans_labels_gradient))[0]))
         nx.set_node_attributes(self, kmeans_labels_gradient_dict, 'kmeans_labels')
 
+        return kmeans.cluster_centers_
+
     def find_local_minimum_of_gradient_norm(self):
         min_local = []
         for i in self:

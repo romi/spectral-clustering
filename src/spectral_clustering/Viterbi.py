@@ -83,12 +83,12 @@ if __name__ == '__main__':
     #################################
 
     st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t2)
-    rt = 15
+    rt = 31
     #t = build_spanning_tree(st_tree, rt, list_att=['observation'])
 
-    t = build_spanning_tree(st_tree, rt, list_att=['planarity', 'linearity', 'scattering'])
+    t = build_spanning_tree(st_tree, rt, list_att=['planarity', 'linearity'])
 
-    def create_observation_list(t, list_obs=['planarity', 'linearity', 'scattering']):
+    def create_observation_list(t, list_obs=['planarity', 'linearity']):
         dict = t.dict_of_ids()
         for node in t.list_of_ids():
             obs = []
@@ -103,13 +103,16 @@ if __name__ == '__main__':
 
     #########################################################################
 
-    initial_distribution = [1, 0, 0]
-    transition_matrix = [[0.2, 0, 0.8], [0, 0.8, 0.2], [0, 0.8, 0.2]]
+    #initial_distribution = [1, 0, 0]
+    initial_distribution = [1, 0]
+    transition_matrix = [[0.2, 0.8], [0, 1]]
+    #transition_matrix = [[0.2, 0, 0.8], [0, 0.8, 0.2], [0, 0.8, 0.2]]
     #transition_matrix = [[0, 0, 1], [0, 0, 0], [0, 1, 0]]
     continuous_obs = True
 
     if continuous_obs:  # observations are Gaussian
-        parameterstot = [[[0.3, 0.2], [0.8, 0.2], [0.0, 0.05]], [[0.8, 0.2], [0.3, 0.2], [0.1, 0.2]], [[0.30, 0.30], [0.8, 0.2], [0.20, 0.1]]]
+        parameterstot = [[[0, 0.2], [1, 0.2]], [[0.6, 0.2], [0.5, 0.2]]]
+        #parameterstot = [[[0.3, 0.2], [0.8, 0.2], [0.0, 0.05]], [[0.8, 0.2], [0.3, 0.2], [0.1, 0.2]], [[0.30, 0.30], [0.8, 0.2], [0.20, 0.1]]]
         #parameterstot = [[[0.73, 0.1], [0.25, 0.1], [0.03, 0.05]], [[0.66, 0.04], [0.33, 0.05], [0.0001, 0.1]],
         #                 [[0.10, 0.20], [0.6, 0.35], [0.20, 0.1]]]
         #parameterstot = [[[0.8, 0.6], [0.2, 0.3], [0.8, 0.2]]]

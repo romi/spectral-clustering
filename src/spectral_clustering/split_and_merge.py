@@ -3,6 +3,7 @@ import operator
 import sklearn.cluster as skc
 import numpy as np
 from spectral_clustering.display_and_export import *
+from spectral_clustering.quotientgraph_operations import *
 import time
 
 
@@ -108,7 +109,7 @@ def create_a_subgraph_copy(G, list_of_nodes=[]):
     return SG
 
 def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30,
-                            export_iter=True):
+                            export_iter=True, list_leaves=[]):
 
     energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
     # take the edge of higher energy and fuse the two nodes involved, then rebuilt the graph, export and redo
@@ -122,7 +123,7 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30
     list_of_new_quotient_graph_nodes = list(set(list_quotient_node_to_work))
     SQG = create_a_subgraph_copy(quotientgraph, list_of_new_quotient_graph_nodes)
     SQG.point_cloud_graph = SG
-    SQG.compute_direction_info(list_leaves=[])
+    SQG.compute_direction_info(list_leaves=list_leaves)
 
     while energy_min < energy_to_stop:
         # compute energy on nodes
@@ -189,7 +190,7 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30
     quotientgraph.rebuild(G=quotientgraph.point_cloud_graph)
     export_some_graph_attributes_on_point_cloud(pointcloudgraph=quotientgraph.point_cloud_graph,
                                                 graph_attribute='quotient_graph_node',
-                                                filename='final_split_and_merge.txt')
+                                                filename='final_opti_energy_dot_product.txt')
 
 
 def oversegment_part_return_list(quotientgraph, list_quotient_node_to_work=[], average_size_cluster=20):
@@ -267,3 +268,57 @@ def create_subgraphs_to_work(quotientgraph, list_quotient_node_to_work=[]):
     subgraph_riemannian = nx.subgraph(G, lpcd)
 
     return subgraph_riemannian
+
+# RESEGMENTATION VIA ELBOW METHOD
+
+def select_minimum_centroid_class(clusters_centers):
+    mincluster = np.where(clusters_centers == np.amin(clusters_centers))
+    labelmincluster = mincluster[0][0]
+    return labelmincluster
+
+def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpointcloudgraph):
+    # Select clusters that were associated with the smallest value of kmeans centroid.
+    compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='kmeans_labels')
+    list_leaves = [x for x in QG.nodes() if QG.nodes[x]['kmeans_labels_mean'] == labelpointcloudgraph]
+    return list_leaves
+
+
+def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
+                                      attribute='norm_gradient'):
+    G = QG.point_cloud_graph
+    num = max(QG.nodes) + 1
+    for i in QG_nodes_to_rework:
+        sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[i])
+        SG = sub
+        list_nodes = list(SG.nodes)
+        # creation of matrices to work with in the elbow_method package
+        if len(SG.nodes) > number_of_cluster_tested:
+            Xcoord = np.zeros((len(SG), 3))
+            for u in range(len(SG)):
+                Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
+            Xnorm = np.zeros((len(SG), 3))
+            for u in range(len(SG)):
+                Xnorm[u] = SG.nodes[list(SG.nodes)[u]][attribute]
+
+            from sklearn.cluster import KMeans
+            from yellowbrick.cluster import KElbowVisualizer
+
+            # Instantiate the clustering model and visualizer
+            model = KMeans()
+            visualizer = KElbowVisualizer(model, k=(1, number_of_cluster_tested))
+
+            visualizer.fit(Xnorm)  # Fit the data to the visualizer
+            # visualizer.show()        # Finalize and render the figure
+            # Resegment and actualize the pointcloudgraph
+            k_opt = visualizer.elbow_value_
+            if k_opt > 1:
+                clustering = skc.KMeans(n_clusters=k_opt, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
+                    Xnorm)
+                new_labels = np.zeros((len(SG.nodes), 4))
+                new_labels[:, 0:3] = Xcoord
+                for pt in range(len(list_nodes)):
+                    new_labels[pt, 3] = clustering.labels_[pt] + num
+                    G.nodes[list_nodes[pt]]['quotient_graph_node'] = new_labels[pt, 3]
+                num += k_opt + len(list_nodes)
+                np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
+            #print(i, ' divided in ', k_opt)

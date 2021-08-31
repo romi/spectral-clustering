@@ -30,7 +30,7 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_B_2021_04_19.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
@@ -40,7 +40,7 @@ G.pcd = pcdfinal
 G.compute_graph_eigenvectors()
 G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
 
-G.clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud=True, number_of_clusters=4)
+clusters_centers = G.clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud=True, number_of_clusters=4)
 
 
 QG = QuotientGraph()
@@ -48,11 +48,22 @@ QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_attribute.txt")
-
+time1 = time.time()
+# resegment leaves according to norm
+label_leaves = select_minimum_centroid_class(clusters_centers)
+list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
+resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_leaves, number_of_cluster_tested = 10, attribute='norm_gradient')
+QG.rebuild(QG.point_cloud_graph)
+export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+                                            graph_attribute="quotient_graph_node",
+                                            filename="pcd_attribute_after_resegment_leaves.txt")
+time2 = time.time()
+end = time2-time1
+print(end)
 #### test essai split branches et tiges
-lqg = [x for x, y in QG.nodes(data=True) if y['kmeans_labels'] != 0]
-sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=lqg)
-oversegment_part(quotientgraph=QG, subgraph_riemannian=sub, average_size_cluster=150)
+#lqg = [x for x, y in QG.nodes(data=True) if y['kmeans_labels'] != 0]
+#sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=lqg)
+#oversegment_part(quotientgraph=QG, subgraph_riemannian=sub, average_size_cluster=150)
 
 
 
@@ -81,9 +92,9 @@ define_and_optimize_topological_energy(quotient_graph=QG,
                                        choice_of_node_to_change='max_energy')
 QG.rebuild(QG.point_cloud_graph)
 
-
-QG.compute_direction_info(list_leaves=[])
-opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30,export_iter=True)
+list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
+QG.compute_direction_info(list_leaves=list_leaves)
+opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=True, list_leaves=list_leaves)
 
 
 QG.compute_nodes_coordinates()

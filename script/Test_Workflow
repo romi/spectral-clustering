@@ -42,64 +42,24 @@ G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
 
 clusters_centers = G.clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud=True, number_of_clusters=4)
 
-#select cluster with smallest variance
-
-mincluster = np.where(clusters_centers == np.amin(clusters_centers))
-labelmincluster = mincluster[0][0]
-
-
+label_leaves = select_minimum_centroid_class(clusters_centers)
 
 QG = QuotientGraph()
 QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_attribute.txt")
-# Select clusters that were associated with the smallest value of kmeans centroid.
-compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='kmeans_labels')
-list_leaves = [x for x in QG.nodes() if QG.nodes[x]['kmeans_labels_mean'] == labelmincluster]
+list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
 
 
 time1 = time.time()
-print('débutboucle')
-num_cluster_tests = 10
-num = max(QG.nodes) + 1
-for i in list_leaves:
-    sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[i])
-    SG = sub
-    list_nodes = list(SG.nodes)
-    if len(SG.nodes) > num_cluster_tests :
-        Xcoord = np.zeros((len(SG), 3))
-        for u in range(len(SG)):
-            Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
-        Xnorm = np.zeros((len(SG), 3))
-        for u in range(len(SG)):
-            Xnorm[u] = SG.nodes[list(SG.nodes)[u]]['norm_gradient']
+resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_leaves, number_of_cluster_tested = 10, attribute='norm_gradient')
 
-        from sklearn.cluster import KMeans
-        from yellowbrick.cluster import KElbowVisualizer
-
-        # Instantiate the clustering model and visualizer
-        model = KMeans()
-        visualizer = KElbowVisualizer(model, k=(1, num_cluster_tests))
-
-        visualizer.fit(Xnorm)        # Fit the data to the visualizer
-        #visualizer.show()        # Finalize and render the figure
-        k_opt = visualizer.elbow_value_
-        if k_opt > 1 :
-            clustering = skc.KMeans(n_clusters=k_opt, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(Xnorm)
-            new_labels = np.zeros((len(SG.nodes), 4))
-            new_labels[:, 0:3] = Xcoord
-            for pt in range(len(list_nodes)):
-                new_labels[pt, 3] = clustering.labels_[pt] + num
-                G.nodes[list_nodes[pt]]['quotient_graph_node'] = new_labels[pt, 3]
-            num += k_opt + len(list_nodes)
-            np.savetxt('pcd_new_labels_'+ str(i) +'.txt', new_labels, delimiter=",")
-        print(i)
 
 QG.rebuild(QG.point_cloud_graph)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
-                                            filename="pcd_attribute.txt")
+                                            filename="pcd_attribute_after_resegment_leaves.txt")
 
 time2 = time.time()
 

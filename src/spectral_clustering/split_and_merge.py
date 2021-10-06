@@ -1,6 +1,7 @@
 import networkx as nx
 import operator
 import sklearn.cluster as skc
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 from spectral_clustering.display_and_export import *
 from spectral_clustering.quotientgraph_operations import *
@@ -276,15 +277,15 @@ def select_minimum_centroid_class(clusters_centers):
     labelmincluster = mincluster[0][0]
     return labelmincluster
 
-def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpointcloudgraph):
+def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpointcloudgraph, attribute='kmeans_labels'):
     # Select clusters that were associated with the smallest value of kmeans centroid.
-    compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='kmeans_labels')
+    compute_quotientgraph_mean_attribute_from_points(G, QG, attribute=attribute)
     list_leaves = [x for x in QG.nodes() if QG.nodes[x]['kmeans_labels_mean'] == labelpointcloudgraph]
     return list_leaves
 
 
 def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
-                                      attribute='norm_gradient'):
+                                      attribute='norm_gradient', number_attribute = 1,  standardization = False):
     G = QG.point_cloud_graph
     num = max(QG.nodes) + 1
     for i in QG_nodes_to_rework:
@@ -296,9 +297,14 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
             Xcoord = np.zeros((len(SG), 3))
             for u in range(len(SG)):
                 Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
-            Xnorm = np.zeros((len(SG), 3))
+            Xnorm = np.zeros((len(SG), number_attribute))
             for u in range(len(SG)):
                 Xnorm[u] = SG.nodes[list(SG.nodes)[u]][attribute]
+
+            if standardization==True:
+                sc = StandardScaler()
+                Xnorm = sc.fit_transform(Xnorm)
+
 
             from sklearn.cluster import KMeans
             from yellowbrick.cluster import KElbowVisualizer

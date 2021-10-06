@@ -183,9 +183,10 @@ def affichesegm(pcd, segmentdict, c):
     Gaffichage = nx.Graph()
     pts = np.array(pcd.points)
     N = len(pcd.points)
-    for i in range(N): Gaffichage.add_node(i, pos = pts[i])
+    for i in range(N):
+        Gaffichage.add_node(i, pos = pts[i])
     for i in range(1, c):
-        Gaffichage.add_path(segmentdict[i])
+        nx.add_path(Gaffichage, segmentdict[i])
     edgelist = Gaffichage.edges
     print(Gaffichage.edges)
     cloption = open3d.visualization.RenderOption()

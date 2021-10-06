@@ -1,5 +1,6 @@
 import networkx as nx
-
+import operator
+from spectral_clustering.display_and_export import *
 
 def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_node=50):
     """Compute a new clustering by treating one node of the QuotientGraph after the other and changing the class of the
@@ -175,4 +176,52 @@ def compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='clusterin
         for e in list_of_nodes:
             moy += G.nodes[e][attribute]
         QG.nodes[n][attribute+'_mean'] = moy/len(list_of_nodes)
+
+def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
+    G = QG.point_cloud_graph
+    energy_similarity = 0
+    for e in QG.edges():
+        v1 = QG.nodes[e[0]][attribute]
+        v2 = QG.nodes[e[1]][attribute]
+        if v1 == v2:
+            QG.edges[e]['similarity_class'] = 1
+        else:
+            QG.edges[e]['similarity_class'] = 0
+        energy_similarity += QG.edges[e]['similarity_class']
+
+    energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
+    edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+    energy_max = energy_per_edges[edge_to_delete]
+    while energy_max != 0:
+        n1 = QG.nodes[edge_to_delete[0]]['intra_class_node_number']
+        n2 = QG.nodes[edge_to_delete[1]]['intra_class_node_number']
+        viterbi = QG.nodes[edge_to_delete[0]][attribute]
+        list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
+        for j in range(len(list_of_nodes)):
+            G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+
+        QG = nx.contracted_nodes(QG, edge_to_delete[0], edge_to_delete[1], self_loops=False)
+        QG.point_cloud_graph = G
+        QG.nodes[edge_to_delete[0]]['intra_class_node_number'] = n1 + n2
+        QG.nodes[edge_to_delete[0]][attribute] = viterbi
+        for e in QG.edges(edge_to_delete[0]):
+            v1 = QG.nodes[e[0]][attribute]
+            v2 = QG.nodes[e[1]][attribute]
+            if v1 == v2:
+                QG.edges[e]['similarity_class'] = 1
+            else:
+                QG.edges[e]['similarity_class'] = 0
+
+        energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
+        edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+        energy_max = energy_per_edges[edge_to_delete]
+    #QG.rebuild(G=G)
+    if export is True:
+        export_some_graph_attributes_on_point_cloud(pointcloudgraph=QG.point_cloud_graph,
+                                                    graph_attribute='quotient_graph_node',
+                                                    filename='Merge_after_viterbi.txt')
+        display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
+                                                     filename="merge_quotient_graph_viterbi", data_on_nodes='viterbi_class',
+                                                     data=True, attributekmeans4clusters=False)
+    return QG
 

@@ -218,6 +218,8 @@ class PointCloudGraph(nx.Graph):
                                 (self.nodes[n]['pos'] - self.nodes[v]['pos']) / np.linalg.norm(self.nodes[n]['pos'] - self.nodes[v]['pos'])
                     self.nodes[n]['norm_gradient'] = np.linalg.norm(grad)
                     self.nodes[n]['direction_gradient'] = grad / np.linalg.norm(grad)
+                    self.nodes[n]['vector_gradient'] = grad
+                    self.nodes[n]['vector_gradient4'] = np.append(self.nodes[n]['direction_gradient'], self.nodes[n]['norm_gradient'])
                     vp2grad[line] = self.nodes[n]['norm_gradient']
                     vp2dir[line, :] = self.nodes[n]['direction_gradient']
                     line += 1

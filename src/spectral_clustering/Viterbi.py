@@ -83,18 +83,18 @@ if __name__ == '__main__':
     #################################
 
     st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t2)
-    rt = 31
+    rt = 8
     #t = build_spanning_tree(st_tree, rt, list_att=['observation'])
 
-    t = build_spanning_tree(st_tree, rt, list_att=['planarity', 'linearity'])
+    t = build_spanning_tree(st_tree, rt, list_att=['planarity2', 'linearity', 'intra_class_node_number'])
 
-    def create_observation_list(t, list_obs=['planarity', 'linearity']):
-        dict = t.dict_of_ids()
-        for node in t.list_of_ids():
-            obs = []
-            for att in list_obs:
-                obs.append(dict[node]['attributes'][att])
-            t.add_attribute_to_id('observations', obs, node)
+    #def create_observation_list(t, list_obs=['planarity2', 'linearity']):
+    #   dict = t.dict_of_ids()
+    #    for node in t.list_of_ids():
+    #        obs = []
+    #        for att in list_obs:
+    #            obs.append(dict[node]['attributes'][att])
+    #        t.add_attribute_to_id('observations', obs, node)
 
 
     create_observation_list(t)
@@ -103,19 +103,23 @@ if __name__ == '__main__':
 
     #########################################################################
 
-    #initial_distribution = [1, 0, 0]
     initial_distribution = [1, 0]
+    #initial_distribution = [1, 0, 0]
     transition_matrix = [[0.2, 0.8], [0, 1]]
     #transition_matrix = [[0.2, 0, 0.8], [0, 0.8, 0.2], [0, 0.8, 0.2]]
     #transition_matrix = [[0, 0, 1], [0, 0, 0], [0, 1, 0]]
+    # insertion bruit
+    #transition_matrix = [[0.2, 0.7, 0.1], [0, 0.9, 0.1], [0.3, 0.3, 0.4]]
     continuous_obs = True
 
     if continuous_obs:  # observations are Gaussian
-        parameterstot = [[[0, 0.2], [1, 0.2]], [[0.6, 0.2], [0.5, 0.2]]]
+        parameterstot = [[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]]
         #parameterstot = [[[0.3, 0.2], [0.8, 0.2], [0.0, 0.05]], [[0.8, 0.2], [0.3, 0.2], [0.1, 0.2]], [[0.30, 0.30], [0.8, 0.2], [0.20, 0.1]]]
         #parameterstot = [[[0.73, 0.1], [0.25, 0.1], [0.03, 0.05]], [[0.66, 0.04], [0.33, 0.05], [0.0001, 0.1]],
         #                 [[0.10, 0.20], [0.6, 0.35], [0.20, 0.1]]]
         #parameterstot = [[[0.8, 0.6], [0.2, 0.3], [0.8, 0.2]]]
+        # insertion bruit
+        #parameterstot = [[[0.2, 0.2], [0.8, 0.2], [1000, 10000]], [[0.6, 0.2], [0.3, 0.2], [1000, 10000]], [[0.5, 1], [0.5, 1], [110, 100]]]
         def gen_emission(k, parameters):  # Gaussian emission
             return random.gauss(parameters[k][0], parameters[k][1])
 
@@ -143,3 +147,4 @@ if __name__ == '__main__':
     export_quotient_graph_attribute_on_point_cloud(QG, attribute = 'viterbi_class')
 
     #export_quotient_graph_attribute_on_point_cloud(QG, attribute='linearity')
+

@@ -300,6 +300,7 @@ class QuotientGraph(nx.Graph):
                 eigenval, eigenvec = np.linalg.eigh(covmat)
 
                 self.nodes[qnode]['planarity'] = (eigenval[1] - eigenval[0]) / eigenval[2]
+                self.nodes[qnode]['planarity2'] = (eigenval[1] - eigenval[0]) / eigenval[1]
                 self.nodes[qnode]['linearity'] = (eigenval[2] - eigenval[1]) / eigenval[2]
                 self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
                 self.nodes[qnode]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])

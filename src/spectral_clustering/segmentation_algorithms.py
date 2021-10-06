@@ -107,7 +107,7 @@ def segment_several_nodes_using_attribute(quotientgraph, list_quotient_node_to_w
     quotientgraph.point_cloud_graph = G
     
     
-def segment_each_cluster_by_optics(quotientgraph, leaves_out=True, attribute_to_work='direction_gradient'):
+def segment_each_cluster_by_optics(quotientgraph, list_leaves= [],leaves_out=True, attribute_to_work='direction_gradient'):
     """Compute a new clustering by treating one node of the QuotientGraph after the other and changing the class of the
     underlying nodes of the PointCloudGraph associated.
 
@@ -126,7 +126,6 @@ def segment_each_cluster_by_optics(quotientgraph, leaves_out=True, attribute_to_
 
     """
     # Put the "end" nodes in a list
-    list_leaves = [x for x in quotientgraph.nodes() if quotientgraph.degree(x) == 1]
     for n in quotientgraph:
         if leaves_out:
             if n not in list_leaves and quotientgraph.nodes[n]['intra_class_node_number'] > 100:

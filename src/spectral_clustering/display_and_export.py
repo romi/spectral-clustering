@@ -144,7 +144,7 @@ def display_and_export_graph_of_gradient_of_fiedler_vector(G, filename="Gradient
     print("Export du gradient")
 
 
-def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number', data=True, attributekmeans4clusters = False):
+def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, filename="quotient_graph_matplotlib", data_on_nodes='intra_class_node_number', data=True, attributekmeans4clusters = False, round = False):
 
     figure = plt.figure(0)
     figure.clf()
@@ -181,7 +181,8 @@ def display_and_export_quotient_graph_matplotlib(quotient_graph, node_sizes=20, 
         # Rounding the data to allow an easy display
         for dict_value in labels_from_attributes:
             if data_on_nodes != 'semantic_label':
-                labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
+                if round is True:
+                    labels_from_attributes[dict_value] = round(labels_from_attributes[dict_value], 2)
         nx.drawing.nx_pylab.draw_networkx(quotient_graph,
                                           ax=figure.gca(),
                                           pos=graph_layout,

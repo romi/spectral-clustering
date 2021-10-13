@@ -161,11 +161,31 @@ def check_connectivity_of_modified_cluster(pointcloudgraph, old_cluster, new_clu
 
 def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_points=[]):
     G = quotient_graph.point_cloud_graph
-    list = []
+    listi = []
     for node in list_of_points:
-        list.pop(G.nodes[node]['quotient_graph_node'])
+        listi.append(G.nodes[node]['quotient_graph_node'])
 
-    list_of_clusters = list(set(list))
+    list_of_clusters = list(set(listi))
+
+    return list_of_clusters
+
+def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, list_of_points=[]):
+    G = quotient_graph.point_cloud_graph
+    listi = []
+
+    for qgnode in quotient_graph.nodes:
+        countyes = 0
+        countno = 0
+        list_of_nodes_each = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qgnode]
+        for n in list_of_nodes_each:
+            if n in list_of_points:
+                countyes += 1
+            else:
+                countno += 1
+        if countyes > countno:
+            listi.append(qgnode)
+
+    list_of_clusters = list(set(listi))
 
     return list_of_clusters
 

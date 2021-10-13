@@ -31,7 +31,7 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_virtuel.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_B_2021_04_19.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
@@ -58,6 +58,11 @@ time1 = time.time()
 label_leaves = select_minimum_centroid_class(clusters_centers)
 
 list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
+list_leaves_point = []
+for qnode in list_leaves:
+    list_of_nodes_each = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == qnode]
+    list_leaves_point += list_of_nodes_each
+
 resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_leaves, number_of_cluster_tested = 10, attribute='norm_gradient', number_attribute=1, standardization=False)
 QG.rebuild(QG.point_cloud_graph)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -86,7 +91,8 @@ define_and_optimize_topological_energy(quotient_graph=QG,
                                        choice_of_node_to_change='max_energy')
 
 QG.rebuild(QG.point_cloud_graph)
-list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
+list_leaves = collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph=QG, list_of_points=list_leaves_point)
+
 """
 segment_each_cluster_by_optics(quotientgraph=QG,list_leaves=list_leaves, leaves_out=True)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -115,7 +121,7 @@ define_and_optimize_topological_energy(quotient_graph=QG,
                                        choice_of_node_to_change='max_energy')
 QG.rebuild(QG.point_cloud_graph)
 
-list_leaves = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
+list_leaves = collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph=QG, list_of_points=list_leaves_point)
 QG.compute_direction_info(list_leaves=list_leaves)
 opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=True, list_leaves=list_leaves)
 
@@ -151,7 +157,7 @@ export_quotient_graph_attribute_on_point_cloud(QG, 'intra_class_node_number')
 ######################### VITERBI ################################################"
 st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t2)
 # manual choice of root : QG node number of the lower stem cluster
-rt = 8
+rt = 90
 t = build_spanning_tree(st_tree, rt, list_att=['planarity2', 'linearity', 'intra_class_node_number'])
 create_observation_list(t, list_obs=['planarity2', 'linearity'], name='observations')
 
@@ -205,8 +211,9 @@ opti_energy_dot_product(quotientgraph=QG,
                         list_leaves=list_of_leaves)
 """
 # Détermination tige et attribution d'un numéro
-def determination_main_stem(QG = QG, list_of_linear_QG_nodes=list_of_linear):
+def determination_main_stem_shortest_paths(QG = QG, list_of_linear_QG_nodes=list_of_linear):
     sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
+    G = QG.point_cloud_graph
     segmsource, ptsource, ptarrivee = initdijkstra(sub_riemanian)
     list_clusters_qg_traversed = []
     for i in segmsource:
@@ -220,21 +227,59 @@ def determination_main_stem(QG = QG, list_of_linear_QG_nodes=list_of_linear):
             G.nodes[i]['viterbi_class'] = 3
     return final_list_stem
 
-list_of_stem = determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear)
+def determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemroot = rt, list_leaves=list_of_leaves, angle_to_stop=45):
+    QG.compute_direction_info(list_leaves=list_leaves)
+    G = QG.point_cloud_graph
+    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
+    keepgoing = True
+    node_stem = stemroot
+    list_stem = []
+    list_stem.append(node_stem)
+    while keepgoing:
+        list_energies = []
+        list_nodes = []
+        print(node_stem)
+        for n in QG[node_stem]:
+            if n not in list_stem:
+                list_energies.append(QG.edges[(n, node_stem)]['energy_dot_product'])
+                list_nodes.append(n)
+        node = list_energies.index(min(list_energies))
+        node_stem = list_nodes[node]
+        if list_nodes:
+            if min(list_energies) > energy_to_stop or node_stem not in list_of_linear_QG_nodes:
+                keepgoing = False
+            else:
+                list_stem.append(node_stem)
+        else:
+            keepgoing is False
+
+    for n in list_stem:
+        QG.nodes[n]['viterbi_class'] = 3
+        list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
+        for i in list_gnode:
+            G.nodes[i]['viterbi_class'] = 3
+
+
+
+#list_of_stem = determination_main_stem_shortest_paths(QG=QG, list_of_linear_QG_nodes=list_of_linear)
 
 #compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='viterbi_class')
+#resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = [rt], number_of_cluster_tested = 10, attribute='direction_gradient', number_attribute=3, standardization=False)
+determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemroot = rt, list_leaves=list_of_leaves, angle_to_stop=45)
+
 
 export_some_graph_attributes_on_point_cloud(pointcloudgraph=QG.point_cloud_graph,
                                             graph_attribute='viterbi_class',
                                             filename='add_stem_class.txt')
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class')
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='afteraddstem')
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                             filename="add_stem_class", data_on_nodes='viterbi_class',
                                             data=True, attributekmeans4clusters=False)
-
+"""
 # Fusion des clusters
 
 
 
 
 # Contrôle enchainement tige, pétiole, feuille
+"""

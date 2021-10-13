@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from visu_core.matplotlib import glasbey
 
-def export_quotient_graph_attribute_on_point_cloud(QG, attribute):
+def export_quotient_graph_attribute_on_point_cloud(QG, attribute, name=''):
     labels_from_qg = np.zeros((len(QG.point_cloud_graph), 4))
     i = 0
     G = QG.point_cloud_graph
@@ -15,7 +15,7 @@ def export_quotient_graph_attribute_on_point_cloud(QG, attribute):
         labels_from_qg[i, 0:3] = G.nodes[n]['pos']
         labels_from_qg[i, 3] = QG.nodes[G.nodes[n]['quotient_graph_node']][attribute]
         i += 1
-    np.savetxt('pcd_' + attribute + '.txt', labels_from_qg, delimiter=",")
+    np.savetxt('pcd_' + attribute + name + '.txt', labels_from_qg, delimiter=",")
 
 
 def export_clustering_labels_on_point_cloud(G, filename="pcd_clustered.txt"):

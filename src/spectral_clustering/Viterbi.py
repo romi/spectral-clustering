@@ -56,6 +56,57 @@ def create_observation_list(t, list_obs=['planarity', 'linearity', 'scattering']
             obs.append(dict[node]['attributes'][att])
         t.add_attribute_to_id(name, obs, node)
 
+def viterbi_workflow(minimum_spanning_tree,
+                     quotient_graph,
+                     root = 8,
+                     observation_list_import = ['planarity2', 'linearity', 'intra_class_node_number'],
+                     initial_distribution=[1, 0],
+                     transition_matrix=[[0.2, 0.8], [0, 1]],
+                     parameters_emission=[[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]]):
+    st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=minimum_spanning_tree)
+    rt = root
+    t = build_spanning_tree(st_tree, rt, list_att=observation_list_import)
+    create_observation_list(t, list_obs=observation_list_import)
+    #########################################################################
+    initial_distribution = initial_distribution
+    # initial_distribution = [1, 0, 0]
+    transition_matrix = transition_matrix
+    # transition_matrix = [[0.2, 0, 0.8], [0, 0.8, 0.2], [0, 0.8, 0.2]]
+    # transition_matrix = [[0, 0, 1], [0, 0, 0], [0, 1, 0]]
+    # insertion bruit
+    # transition_matrix = [[0.2, 0.7, 0.1], [0, 0.9, 0.1], [0.3, 0.3, 0.4]]
+    continuous_obs = True
+
+    if continuous_obs:  # observations are Gaussian
+        parameterstot = parameters_emission
+        def gen_emission(k, parameters):  # Gaussian emission
+            return random.gauss(parameters[k][0], parameters[k][1])
+
+        def pdf_emission_dim1(x, moy, sd):  # Gaussian emission
+            return 1.0 / (sd * math.sqrt(2 * math.pi)) * math.exp(
+                -1.0 / (2 * sd ** 2) * (x - moy) ** 2)
+
+        def pdf_emission_dimn(x, k, parameterstot):
+            p = 1
+            if len(parameterstot) == 1:
+                p = pdf_emission_dim1(x, moy=parameterstot[0][k][0], sd=parameterstot[0][k][1])
+                return p
+            else:
+                for i in range(len(parameterstot[0])):
+                    p *= pdf_emission_dim1(x[i], moy=parameterstot[k][i][0], sd=parameterstot[k][i][1])
+                return p
+
+    viterbi(t, 'observations', initial_distribution, transition_matrix, pdf_emission_dimn, parameterstot)
+
+    add_viterbi_results_to_quotient_graph(minimum_spanning_tree, t, list_semantics=['leaf', 'stem', 'NSP'])
+    add_viterbi_results_to_quotient_graph(quotient_graph, t, list_semantics=['leaf', 'stem', 'NSP'])
+    # display_and_export_quotient_graph_matplotlib(quotient_graph=QG_t, node_sizes=20, filename="quotient_graph_observation", data_on_nodes='observations', data=True, attributekmeans4clusters = False)
+    display_and_export_quotient_graph_matplotlib(quotient_graph=minimum_spanning_tree, node_sizes=20, filename="quotient_graph_viterbi",
+                                                 data_on_nodes='viterbi_class', data=True,
+                                                 attributekmeans4clusters=False)
+    export_quotient_graph_attribute_on_point_cloud(quotient_graph, attribute='viterbi_class')
+
+
 ######### Main
 
 if __name__ == '__main__':

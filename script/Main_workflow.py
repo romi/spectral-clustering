@@ -31,12 +31,14 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_B_2021_04_19.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_virtuel.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
 G.pcd = pcdfinal
-
+# LOWER POINT, USER INPUT
+root_point_riemanian = 2284
+# In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()
 """
@@ -109,6 +111,8 @@ oversegment_part(quotientgraph=QG, subgraph_riemannian=sub_lin, average_size_clu
 """
 resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_of_linear, number_of_cluster_tested = 10, attribute='direction_gradient', number_attribute=3, standardization=False)
 QG.rebuild(QG.point_cloud_graph)
+#resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = [G.nodes[root_point_riemanian]['quotient_graph_node']], number_of_cluster_tested = 10, attribute='direction_gradient', number_attribute=3, standardization=False)
+#QG.rebuild(QG.point_cloud_graph)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="reseg_linear.txt")
@@ -153,38 +157,15 @@ for i in QG.nodes:
 e = np.percentile(list_attribute, 50)
 export_quotient_graph_attribute_on_point_cloud(QG, 'intra_class_node_number')
 
-
+rt = G.nodes[root_point_riemanian]['quotient_graph_node']
 ######################### VITERBI ################################################"
-st_tree = read_pointcloudgraph_into_treex(pointcloudgraph=QG_t2)
-# manual choice of root : QG node number of the lower stem cluster
-rt = 90
-t = build_spanning_tree(st_tree, rt, list_att=['planarity2', 'linearity', 'intra_class_node_number'])
-create_observation_list(t, list_obs=['planarity2', 'linearity'], name='observations')
-
-initial_distribution = [1, 0]
-transition_matrix = [[0.2, 0.8], [0, 1]]
-parameterstot = [[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]]
-def gen_emission(k, parameters):  # Gaussian emission
-    return random.gauss(parameters[k][0], parameters[k][1])
-def pdf_emission_dim1(x, moy, sd):  # Gaussian emission
-    return 1.0 / (sd * math.sqrt(2 * math.pi)) * math.exp(
-        -1.0 / (2 * sd ** 2) * (x - moy) ** 2)
-def pdf_emission_dimn(x, k, parameterstot):
-    p = 1
-    if len(parameterstot) == 1:
-        p = pdf_emission_dim1(x, moy=parameterstot[0][k][0], sd=parameterstot[0][k][1])
-        return p
-    else:
-        for i in range(len(parameterstot[0])):
-            p *= pdf_emission_dim1(x[i], moy=parameterstot[k][i][0], sd=parameterstot[k][i][1])
-        return p
-
-viterbi(t, 'observations', initial_distribution, transition_matrix, pdf_emission_dimn, parameterstot)
-
-add_viterbi_results_to_quotient_graph(QG_t2, t, list_semantics=['leaf', 'stem', 'NSP'])
-add_viterbi_results_to_quotient_graph(QG, t, list_semantics=['leaf', 'stem', 'NSP'])
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG_t2, node_sizes=20, filename="quotient_graph_viterbi", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class')
+viterbi_workflow(minimum_spanning_tree=QG_t2,
+                 quotient_graph=QG,
+                 root=rt,
+                 observation_list_import=['planarity2', 'linearity'],
+                 initial_distribution=[1, 0],
+                 transition_matrix=[[0.2, 0.8], [0, 1]],
+                 parameters_emission=[[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]])
 
 #######################
 
@@ -227,7 +208,7 @@ def determination_main_stem_shortest_paths(QG = QG, list_of_linear_QG_nodes=list
             G.nodes[i]['viterbi_class'] = 3
     return final_list_stem
 
-def determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemroot = rt, list_leaves=list_of_leaves, angle_to_stop=45):
+def determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemroot = rt, list_leaves=list_of_leaves, angle_to_stop=45, new_viterbi_class_number=3):
     QG.compute_direction_info(list_leaves=list_leaves)
     G = QG.point_cloud_graph
     energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
@@ -254,10 +235,10 @@ def determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemr
             keepgoing is False
 
     for n in list_stem:
-        QG.nodes[n]['viterbi_class'] = 3
+        QG.nodes[n]['viterbi_class'] = new_viterbi_class_number
         list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
         for i in list_gnode:
-            G.nodes[i]['viterbi_class'] = 3
+            G.nodes[i]['viterbi_class'] = new_viterbi_class_number
 
 
 
@@ -275,11 +256,63 @@ export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', na
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
                                             filename="add_stem_class", data_on_nodes='viterbi_class',
                                             data=True, attributekmeans4clusters=False)
-"""
+
 # Fusion des clusters
-
-
-
+QG_merge = deepcopy(QG)
+QG_merge = merge_similar_class_QG_nodes(QG_merge, attribute='viterbi_class', export=True)
+export_quotient_graph_attribute_on_point_cloud(QG_merge, attribute='viterbi_class', name='merge_class')
 
 # Contrôle enchainement tige, pétiole, feuille
-"""
+
+def topology_control(quotient_graph, viterbi_class_stem = 0, viterbi_class_petiols = 1 , viterbi_class_leaves = 2, viterbi_error_norm = 5, viterbi_error_dir=6):
+    QG = quotient_graph
+    # check leaves connected to stem
+    stem = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == viterbi_class_stem]
+    for n in QG[stem[0]]:
+        if QG.nodes[n]['viterbi_class'] == viterbi_class_leaves:
+            QG.nodes[n]['viterbi_class'] = viterbi_error_norm
+
+    end_nodes = [x for x in QG.nodes() if QG.degree(x) == 1]
+    for n in end_nodes:
+        if QG.nodes[n]['viterbi_class'] != viterbi_class_leaves:
+            QG.nodes[n]['viterbi_class'] = viterbi_error_dir
+
+topology_control(quotient_graph=QG_merge)
+export_some_graph_attributes_on_point_cloud(pointcloudgraph=QG_merge.point_cloud_graph,
+                                            graph_attribute='viterbi_class',
+                                            filename='G_detection_erreurs_topologiques.txt')
+
+def treat_topology_error(quotient_graph, viterbi_error = 5, way_to_treat='direction'):
+    QG = quotient_graph
+    nodes_to_treat = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == viterbi_error]
+
+    if way_to_treat == 'direction':
+        resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=nodes_to_treat, number_of_cluster_tested=10,
+                                          attribute='direction_gradient', number_attribute=3, standardization=False)
+    elif way_to_treat == 'norm':
+        resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=nodes_to_treat, number_of_cluster_tested=10,
+                                          attribute='norm_gradient', number_attribute=1, standardization=False)
+treat_topology_error(quotient_graph=QG_merge, viterbi_error=5, way_to_treat='norm')
+QG_merge.rebuild(G=QG_merge.point_cloud_graph)
+
+export_some_graph_attributes_on_point_cloud(pointcloudgraph=QG_merge.point_cloud_graph,
+                                            graph_attribute='quotient_graph_node',
+                                            filename='G_après_correction_erreurs_topo.txt')
+
+
+delete_small_clusters(quotientgraph=QG_merge, min_number_of_element_in_a_quotient_node=50)
+QG_merge.compute_local_descriptors()
+QG_t2 = minimum_spanning_tree_quotientgraph_semantics(QG_merge)
+rt = QG_merge.point_cloud_graph.nodes[root_point_riemanian]['quotient_graph_node']
+######################### VITERBI ################################################"
+viterbi_workflow(minimum_spanning_tree=QG_t2,
+                 quotient_graph=QG_merge,
+                 root=rt,
+                 observation_list_import=['planarity2', 'linearity'],
+                 initial_distribution=[1, 0, 0],
+                 transition_matrix=[[0, 1, 0], [0, 0.2, 0.8], [0, 0, 1]],
+                 parameters_emission=[[[0.4, 0.4], [0.8, 0.2]], [[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]])
+
+#######################
+
+export_quotient_graph_attribute_on_point_cloud(QG_merge, attribute='viterbi_class', name='QG_after_corr_topo')

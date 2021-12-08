@@ -245,3 +245,81 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
                                                      data=True, attributekmeans4clusters=False)
     return QG
 
+def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
+    G = QG.point_cloud_graph
+    energy_similarity = 0
+    for e in QG.edges():
+        v1 = QG.nodes[e[0]][attribute]
+        v2 = QG.nodes[e[1]][attribute]
+        if v1 == v2 and v1 in viterbiclass :
+            QG.edges[e]['similarity_class'] = 1
+        else:
+            QG.edges[e]['similarity_class'] = 0
+        energy_similarity += QG.edges[e]['similarity_class']
+
+    energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
+    edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+    energy_max = energy_per_edges[edge_to_delete]
+    while energy_max == 1:
+        n1 = QG.nodes[edge_to_delete[0]]['intra_class_node_number']
+        n2 = QG.nodes[edge_to_delete[1]]['intra_class_node_number']
+        viterbi = QG.nodes[edge_to_delete[0]][attribute]
+        list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == edge_to_delete[1]]
+        for j in range(len(list_of_nodes)):
+            G.nodes[list_of_nodes[j]]['quotient_graph_node'] = edge_to_delete[0]
+
+        QG = nx.contracted_nodes(QG, edge_to_delete[0], edge_to_delete[1], self_loops=False)
+        QG.point_cloud_graph = G
+        QG.nodes[edge_to_delete[0]]['intra_class_node_number'] = n1 + n2
+        QG.nodes[edge_to_delete[0]][attribute] = viterbi
+        for e in QG.edges(edge_to_delete[0]):
+            v1 = QG.nodes[e[0]][attribute]
+            v2 = QG.nodes[e[1]][attribute]
+            if v1 == v2 and v1 in viterbiclass:
+                QG.edges[e]['similarity_class'] = 1
+            else:
+                QG.edges[e]['similarity_class'] = 0
+
+        energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
+        edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
+        energy_max = energy_per_edges[edge_to_delete]
+    # QG.rebuild(G=G)
+
+    return QG
+
+
+def quotient_graph_compute_direction_mean(quotient_graph):
+    G = quotient_graph.point_cloud_graph
+    for l in quotient_graph:
+        quotient_graph.nodes[l]['dir_gradient_mean'] = 0
+        list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
+        for n in list_of_nodes_in_qnode:
+            quotient_graph.nodes[l]['dir_gradient_mean'] += G.nodes[n]['direction_gradient']
+        quotient_graph.nodes[l]['dir_gradient_mean'] /= len(list_of_nodes_in_qnode)
+
+
+def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='dir_gradient_mean'):
+    G = quotient_graph.point_cloud_graph
+    for l in quotient_graph:
+        quotient_graph.nodes[l]['dir_gradient_angle_mean'] = 0
+        quotient_graph.nodes[l]['dir_gradient_stdv'] = 0
+        list_of_nodes_in_qnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == l]
+        for n in list_of_nodes_in_qnode:
+            v1 = quotient_graph.nodes[l][mean]
+            v2 = G.nodes[n]['direction_gradient']
+            G.nodes[n]['dir_gradient_angle'] = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+            quotient_graph.nodes[l]['dir_gradient_angle_mean'] += G.nodes[n]['dir_gradient_angle']
+        quotient_graph.nodes[l]['dir_gradient_angle_mean'] /= len(list_of_nodes_in_qnode)
+        for n in list_of_nodes_in_qnode:
+            v1 = quotient_graph.nodes[l][mean]
+            v2 = G.nodes[n]['direction_gradient']
+            quotient_graph.nodes[l]['dir_gradient_stdv'] += np.power(quotient_graph.nodes[l]['dir_gradient_angle_mean'] - G.nodes[n]['dir_gradient_angle'], 2)
+        quotient_graph.nodes[l]['dir_gradient_stdv'] /= len(list_of_nodes_in_qnode)
+
+
+def transfer_quotientgraph_infos_on_riemanian_graph(QG,info='viterbi_class'):
+    G = QG.point_cloud_graph
+    for n in G.nodes:
+        G.nodes[n][info] = QG.nodes[G.nodes[n]['quotient_graph_node']][info]
+
+

@@ -285,9 +285,9 @@ def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpoin
 
 
 def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
-                                      attribute='norm_gradient', number_attribute = 1,  standardization = False):
+                                      attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1):
     G = QG.point_cloud_graph
-    num = max(QG.nodes) + 1
+    num = max(QG.nodes) + numer
     for i in QG_nodes_to_rework:
         sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[i])
         SG = sub

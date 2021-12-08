@@ -2,6 +2,7 @@ import scipy as sp
 import numpy as np
 import networkx as nx
 
+from spectral_clustering.split_and_merge import *
 from spectral_clustering.quotientgraph_operations import *
 
 def define_leaves_by_topo(quotientgraph):
@@ -114,3 +115,61 @@ def minimum_spanning_tree_quotientgraph_semantics(quotientgraph):
     QG_t2 = nx.minimum_spanning_tree(quotientgraph, algorithm='kruskal', weight='semantic_weight')
 
     return QG_t2
+
+
+
+def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear_QG_nodes, angle_to_stop=45, minimumpoint=5):
+    import copy
+    sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
+    G = QG.point_cloud_graph
+    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
+
+    dict = nx.single_source_dijkstra_path_length(sub_riemanian, ptsource, weight='weight')
+    ptarrivee = max(dict.items(), key=operator.itemgetter(1))[0]
+    segmsource = nx.dijkstra_path(sub_riemanian, ptsource, ptarrivee, weight='weight')
+    list_clusters_qg_traversed = []
+    for i in segmsource:
+        n = G.nodes[i]['quotient_graph_node']
+        list_clusters_qg_traversed.append(n)
+
+    def count_to_dict(lst):
+        return {k: lst.count(k) for k in lst}
+    dict = count_to_dict(list_clusters_qg_traversed)
+    list_stem2=[]
+    for key, value in dict.items():
+        if value > minimumpoint:
+            list_stem2.append(key)
+    list_stem1 = list(dict.fromkeys(list_clusters_qg_traversed))
+
+    quotient_graph_compute_direction_mean(QG)
+    quotient_graph_compute_direction_standard_deviation(QG)
+    final_list_stem = copy.deepcopy(list_stem2)
+    for node in list_stem2:
+      if QG.nodes[node]['dir_gradient_angle_mean'] < np.cos(np.radians(angle_to_stop)):
+          final_list_stem.remove(node)
+          QG.nodes[node]['viterbi_class'] = -1
+
+    nodi = 0
+    final_list_stem_clean = []
+    while nodi <= (len(final_list_stem)-2):
+        e = (final_list_stem[nodi], final_list_stem[nodi + 1])
+        v1 = QG.nodes[e[0]]['dir_gradient_mean']
+        v2 = QG.nodes[e[1]]['dir_gradient_mean']
+        dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+        energy = 1 - dot
+        print(e)
+        print(energy)
+        if energy > energy_to_stop:
+            final_list_stem_clean = final_list_stem[:nodi+1]
+            nodi = len(final_list_stem) + 2
+        else:
+            final_list_stem_clean = final_list_stem
+            nodi += 1
+
+    final_list_stem_clean.insert(0, G.nodes[ptsource]['quotient_graph_node'])
+    for n in final_list_stem_clean:
+        QG.nodes[n]['viterbi_class'] = 3
+
+    transfer_quotientgraph_infos_on_riemanian_graph(QG=QG, info='viterbi_class')
+
+    return final_list_stem_clean

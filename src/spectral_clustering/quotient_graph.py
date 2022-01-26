@@ -236,6 +236,13 @@ class QuotientGraph(nx.Graph):
         #     j += 1
         self.nodes_coordinates = nodes_coords_moy
 
+        for nodes in self.nodes:
+            self.nodes[nodes]['centroide_coordinates'] = np.nan
+        i = 0
+        for nodes in self.nodes:
+            self.nodes[nodes]['centroide_coordinates'] = nodes_coords_moy[i, :]
+            i += 1
+
     # def update_quotient_graph(self, G):
     #     labels_qg = [k for k in dict(G.nodes(data='quotient_graph_node')).values()]
     #     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]

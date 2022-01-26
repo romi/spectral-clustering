@@ -168,118 +168,11 @@ export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', na
 # selection des feuilles
 list_of_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
 list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
-def transfer_quotientgraph_infos_on_riemanian_graph(QG=QG,info='viterbi_class'):
-    G = QG.point_cloud_graph
-    for n in G.nodes:
-        G.nodes[n][info] = QG.nodes[G.nodes[n]['quotient_graph_node']][info]
+
 
 transfer_quotientgraph_infos_on_riemanian_graph(QG=QG,info='viterbi_class')
 
 # Détermination tige et attribution d'un numéro
-def determination_main_stem_shortest_paths(QG = QG, list_of_linear_QG_nodes=list_of_linear):
-    sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
-    G = QG.point_cloud_graph
-    segmsource, ptsource, ptarrivee = initdijkstra(sub_riemanian)
-    list_clusters_qg_traversed = []
-    for i in segmsource:
-        n = G.nodes[i]['quotient_graph_node']
-        list_clusters_qg_traversed.append(n)
-    final_list_stem = list(set(list_clusters_qg_traversed))
-    for n in final_list_stem:
-        QG.nodes[n]['viterbi_class'] = 3
-        list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
-        for i in list_gnode:
-            G.nodes[i]['viterbi_class'] = 3
-    return final_list_stem
-
-def determination_main_stem_shortest_paths_improved(QG = QG, ptsource=0, list_of_linear_QG_nodes=list_of_linear, angle_to_stop=45, minimumpoint=5):
-    import copy
-    sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
-    G = QG.point_cloud_graph
-    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
-
-    dict = nx.single_source_dijkstra_path_length(sub_riemanian, ptsource, weight='weight')
-    ptarrivee = max(dict.items(), key=operator.itemgetter(1))[0]
-    segmsource = nx.dijkstra_path(sub_riemanian, ptsource, ptarrivee, weight='weight')
-    list_clusters_qg_traversed = []
-    for i in segmsource:
-        n = G.nodes[i]['quotient_graph_node']
-        list_clusters_qg_traversed.append(n)
-
-    def count_to_dict(lst):
-        return {k: lst.count(k) for k in lst}
-    dict = count_to_dict(list_clusters_qg_traversed)
-    list_stem2=[]
-    for key, value in dict.items():
-        if value > minimumpoint:
-            list_stem2.append(key)
-    list_stem1 = list(dict.fromkeys(list_clusters_qg_traversed))
-
-    quotient_graph_compute_direction_mean(QG)
-    quotient_graph_compute_direction_standard_deviation(QG)
-    final_list_stem = copy.deepcopy(list_stem2)
-    for node in list_stem2:
-      if QG.nodes[node]['dir_gradient_angle_mean'] < np.cos(np.radians(angle_to_stop)):
-          final_list_stem.remove(node)
-          QG.nodes[node]['viterbi_class'] = -1
-
-    nodi = 0
-    final_list_stem_clean = []
-    while nodi <= (len(final_list_stem)-2):
-        e = (final_list_stem[nodi], final_list_stem[nodi + 1])
-        v1 = QG.nodes[e[0]]['dir_gradient_mean']
-        v2 = QG.nodes[e[1]]['dir_gradient_mean']
-        dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-        energy = 1 - dot
-        print(e)
-        print(energy)
-        if energy > energy_to_stop:
-            final_list_stem_clean = final_list_stem[:nodi+1]
-            nodi = len(final_list_stem) + 2
-        else:
-            final_list_stem_clean = final_list_stem
-            nodi += 1
-
-    final_list_stem_clean.insert(0, G.nodes[ptsource]['quotient_graph_node'])
-    for n in final_list_stem_clean:
-        QG.nodes[n]['viterbi_class'] = 3
-
-    transfer_quotientgraph_infos_on_riemanian_graph(QG=QG, info='viterbi_class')
-
-    return final_list_stem_clean
-
-def determination_main_stem(QG=QG, list_of_linear_QG_nodes=list_of_linear, stemroot = rt, list_leaves=list_of_leaves, angle_to_stop=45, new_viterbi_class_number=3):
-    QG.compute_direction_info(list_leaves=list_leaves)
-    G = QG.point_cloud_graph
-    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
-    keepgoing = True
-    node_stem = stemroot
-    list_stem = []
-    list_stem.append(node_stem)
-    while keepgoing:
-        list_energies = []
-        list_nodes = []
-        print(node_stem)
-        for n in QG[node_stem]:
-            if n not in list_stem:
-                list_energies.append(QG.edges[(n, node_stem)]['energy_dot_product'])
-                list_nodes.append(n)
-        node = list_energies.index(min(list_energies))
-        node_stem = list_nodes[node]
-        if list_nodes:
-            if min(list_energies) > energy_to_stop or node_stem not in list_of_linear_QG_nodes:
-                keepgoing = False
-            else:
-                list_stem.append(node_stem)
-        else:
-            keepgoing is False
-
-    for n in list_stem:
-        QG.nodes[n]['viterbi_class'] = new_viterbi_class_number
-        list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
-        for i in list_gnode:
-            G.nodes[i]['viterbi_class'] = new_viterbi_class_number
-
 
 
 list_of_stem = determination_main_stem_shortest_paths_improved(QG=QG, ptsource=root_point_riemanian, list_of_linear_QG_nodes=list_of_linear, angle_to_stop=45)

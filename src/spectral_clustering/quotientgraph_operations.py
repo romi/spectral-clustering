@@ -283,7 +283,7 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
         energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
         edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
         energy_max = energy_per_edges[edge_to_delete]
-    # QG.rebuild(G=G)
+     # QG.rebuild(G=G)
 
     return QG
 
@@ -307,7 +307,7 @@ def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='di
         for n in list_of_nodes_in_qnode:
             v1 = quotient_graph.nodes[l][mean]
             v2 = G.nodes[n]['direction_gradient']
-            G.nodes[n]['dir_gradient_angle'] = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+            G.nodes[n]['dir_gradient_angle'] = abs(v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2])
             quotient_graph.nodes[l]['dir_gradient_angle_mean'] += G.nodes[n]['dir_gradient_angle']
         quotient_graph.nodes[l]['dir_gradient_angle_mean'] /= len(list_of_nodes_in_qnode)
         for n in list_of_nodes_in_qnode:

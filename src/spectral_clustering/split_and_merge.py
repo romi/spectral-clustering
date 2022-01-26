@@ -170,9 +170,13 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30
         for e in SQG.edges(edge_to_delete[0]):
             v1 = SQG.nodes[e[0]]['dir_gradient_mean']
             v2 = SQG.nodes[e[1]]['dir_gradient_mean']
-            dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-            energy_dot_product = 1 - dot
-            SQG.edges[e]['energy_dot_product'] = energy_dot_product
+            if e[0] in list_leaves or e[1] in list_leaves:
+                SQG.edges[e]['energy_dot_product'] = 4
+            else:
+                dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
+                energy_dot_product = 1-dot
+                SQG.edges[e]['energy_dot_product'] = energy_dot_product
+
         print(time4)
         print('end loop')
 
@@ -280,7 +284,7 @@ def select_minimum_centroid_class(clusters_centers):
 def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpointcloudgraph, attribute='kmeans_labels'):
     # Select clusters that were associated with the smallest value of kmeans centroid.
     compute_quotientgraph_mean_attribute_from_points(G, QG, attribute=attribute)
-    list_leaves = [x for x in QG.nodes() if QG.nodes[x]['kmeans_labels_mean'] == labelpointcloudgraph]
+    list_leaves = [x for x in QG.nodes() if QG.nodes[x][attribute + '_mean'] == labelpointcloudgraph]
     return list_leaves
 
 

@@ -116,9 +116,56 @@ def minimum_spanning_tree_quotientgraph_semantics(quotientgraph):
 
     return QG_t2
 
+def determination_main_stem(QG, list_of_linear_QG_nodes, stemroot, list_leaves, angle_to_stop=45, new_viterbi_class_number=3):
+    QG.compute_direction_info(list_leaves=list_leaves)
+    G = QG.point_cloud_graph
+    energy_to_stop = 1 - np.cos(np.radians(angle_to_stop))
+    keepgoing = True
+    node_stem = stemroot
+    list_stem = []
+    list_stem.append(node_stem)
+    while keepgoing:
+        list_energies = []
+        list_nodes = []
+        print(node_stem)
+        for n in QG[node_stem]:
+            if n not in list_stem:
+                list_energies.append(QG.edges[(n, node_stem)]['energy_dot_product'])
+                list_nodes.append(n)
+        node = list_energies.index(min(list_energies))
+        node_stem = list_nodes[node]
+        if list_nodes:
+            if min(list_energies) > energy_to_stop or node_stem not in list_of_linear_QG_nodes:
+                keepgoing = False
+            else:
+                list_stem.append(node_stem)
+        else:
+            keepgoing is False
+
+    for n in list_stem:
+        QG.nodes[n]['viterbi_class'] = new_viterbi_class_number
+        list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
+        for i in list_gnode:
+            G.nodes[i]['viterbi_class'] = new_viterbi_class_number
+
+def determination_main_stem_shortest_paths(QG, list_of_linear_QG_nodes):
+    sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
+    G = QG.point_cloud_graph
+    segmsource, ptsource, ptarrivee = initdijkstra(sub_riemanian)
+    list_clusters_qg_traversed = []
+    for i in segmsource:
+        n = G.nodes[i]['quotient_graph_node']
+        list_clusters_qg_traversed.append(n)
+    final_list_stem = list(set(list_clusters_qg_traversed))
+    for n in final_list_stem:
+        QG.nodes[n]['viterbi_class'] = 3
+        list_gnode = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
+        for i in list_gnode:
+            G.nodes[i]['viterbi_class'] = 3
+    return final_list_stem
 
 
-def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear_QG_nodes, angle_to_stop=45, minimumpoint=5):
+def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear_QG_nodes, angle_to_stop=45, minimumpoint=5, classnumberstem=3, classnumberanomaly=3):
     import copy
     sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
     G = QG.point_cloud_graph
@@ -147,7 +194,7 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
     for node in list_stem2:
       if QG.nodes[node]['dir_gradient_angle_mean'] < np.cos(np.radians(angle_to_stop)):
           final_list_stem.remove(node)
-          QG.nodes[node]['viterbi_class'] = -1
+          QG.nodes[node]['viterbi_class'] = classnumberanomaly
 
     nodi = 0
     final_list_stem_clean = []
@@ -168,7 +215,7 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
 
     final_list_stem_clean.insert(0, G.nodes[ptsource]['quotient_graph_node'])
     for n in final_list_stem_clean:
-        QG.nodes[n]['viterbi_class'] = 3
+        QG.nodes[n]['viterbi_class'] = classnumberstem
 
     transfer_quotientgraph_infos_on_riemanian_graph(QG=QG, info='viterbi_class')
 

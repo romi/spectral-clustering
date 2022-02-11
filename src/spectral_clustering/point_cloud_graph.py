@@ -46,6 +46,7 @@ class PointCloudGraph(nx.Graph):
         self.kmeans_labels_gradient = None
         self.minimum_local = None
         self.pcd = None
+        self.extrem_local_fiedler = None
 
     # def build_from_pointcloud(self, point_cloud):
     #     """Initialize the graph.
@@ -313,6 +314,26 @@ class PointCloudGraph(nx.Graph):
                 min_local.append(i)
 
         self.min_local = min_local
+
+    def find_local_extremum_of_Fiedler(self):
+        extrem_local = []
+        for i in self.nodes:
+            self.nodes[i]['extrem_local_Fiedler']=0
+            val = self.nodes[i]['eigenvector_2']
+            max = True
+            min = True
+            for vois in self[i]:
+                if self.nodes[vois]['eigenvector_2'] > val:
+                    max = False
+                elif self.nodes[vois]['eigenvector_2'] < val:
+                    min = False
+            if max or min:
+                extrem_local.append(i)
+                self.nodes[i]['extrem_local_Fiedler'] = 1
+        self.extrem_local_fiedler = extrem_local
+
+
+
 
 
 

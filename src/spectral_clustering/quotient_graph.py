@@ -248,6 +248,17 @@ class QuotientGraph(nx.Graph):
     #     labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
     #     self.build_from_pointcloudgraph(G, labels_qg_re)
 
+    def ponderate_with_coordinates_of_points(self):
+        self.compute_nodes_coordinates()
+        # Calcul des poids
+        for e in self.edges:
+            n1 = e[0]
+            n2 = e[1]
+            c1 = self.nodes[n1]['centroide_coordinates']
+            c2 = self.nodes[n2]['centroide_coordinates']
+            dist = np.linalg.norm(c1 - c2)
+            self.edges[e]['distance_centroides'] = dist
+
     def rebuild(self, G, clear=True):
         """
 
@@ -467,6 +478,15 @@ class QuotientGraph(nx.Graph):
                 dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
                 energy_dot_product = 1-dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
+
+    def count_local_extremum_of_Fiedler(self):
+        G = self.point_cloud_graph
+        G.find_local_extremum_of_Fiedler()
+        for c in self.nodes():
+            self.nodes[c]['number_of_local_Fiedler_extremum'] = 0
+            list_of_nodes_r = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == c]
+            for pt in list_of_nodes_r:
+                self.nodes[c]['number_of_local_Fiedler_extremum'] += G.nodes[pt]['extrem_local_Fiedler']
 
 
 

@@ -220,3 +220,44 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
     transfer_quotientgraph_infos_on_riemanian_graph(QG=QG, info='viterbi_class')
 
     return final_list_stem_clean
+
+def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_point_riemanian):
+    calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
+    G = QG.point_cloud_graph
+    list_length = []
+    for leaf in list_leaves3:
+        sub_qg = nx.subgraph(QG, list_of_linear + [leaf])
+        display_and_export_quotient_graph_matplotlib(quotient_graph=sub_qg, node_sizes=20,
+                                                     filename="sub_graphsclass_feuilles_sur_noeuds"+str(leaf),
+                                                     data_on_nodes='viterbi_class', data=True,
+                                                     attributekmeans4clusters=False)
+
+        if nx.has_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"]):
+            path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
+                                    weight='distance_centroides')
+        else:
+            path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
+                                    weight='distance_centroides')
+        pathleafquantity = []
+        for p in path:
+            pathleafquantity.append(QG.nodes[p]['quotite_feuille_n'])
+        lengthpath = sum(list(set(pathleafquantity)))
+        list_length.append(lengthpath)
+
+    leafend = list_leaves3[list_length.index(max(list_length))]
+
+    list_stem = nx.dijkstra_path(QG, leafend, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+
+    for n in list_stem:
+        if n not in list_leaves3:
+            QG.nodes[n]["viterbi_class"] = 3
+
+    export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_')
+    return list_stem
+
+def differenciate_apex_limb(QG, attribute_class = 'viterbi_class', number_leaves_limb = 1, new_apex_class = 4):
+    QG.count_local_extremum_of_Fiedler()
+    list_limbs = [x for x, y in QG.nodes(data=True) if y[attribute_class] == number_leaves_limb]
+    for l in list_limbs:
+        if QG.nodes[l]['number_of_local_Fiedler_extremum'] > 1:
+            QG.nodes[l][attribute_class] = new_apex_class

@@ -323,3 +323,25 @@ def transfer_quotientgraph_infos_on_riemanian_graph(QG,info='viterbi_class'):
         G.nodes[n][info] = QG.nodes[G.nodes[n]['quotient_graph_node']][info]
 
 
+def calcul_quotite_feuilles(QG, list_leaves, list_of_linear, root_point_riemanian):
+    G = QG.point_cloud_graph
+    for e in QG.edges:
+        QG.edges[e]['quotite_feuille_e'] = 0
+        QG.edges[e]['useful_path'] = 50
+    for n in QG.nodes:
+        QG.nodes[n]['quotite_feuille_n'] = 0
+
+    for leaf in list_leaves:
+        sub_qg = nx.subgraph(QG, list_of_linear + [leaf])
+        if nx.has_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"]):
+            path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+        else:
+            path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+        for n in path:
+            QG.nodes[n]['quotite_feuille_n'] += 1
+        for i in range(len(path) - 1):
+            e = (path[i], path[i + 1])
+            QG.edges[e]['quotite_feuille_e'] += 1
+            QG.edges[e]['useful_path'] = 0
+
+

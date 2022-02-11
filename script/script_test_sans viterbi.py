@@ -33,13 +33,13 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_virtuel.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
 G.pcd = pcdfinal
 # LOWER POINT, USER INPUT
-root_point_riemanian = 7365
+root_point_riemanian = 36847
 # In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()
@@ -261,6 +261,32 @@ for n in selected_nodes_isolated:
 export_quotient_graph_attribute_on_point_cloud(QG2, attribute='viterbi_class', name='isolated_nodes')
 
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm3')
+
+
+G.find_local_extremum_of_Fiedler()
+export_some_graph_attributes_on_point_cloud(G,
+                                            graph_attribute="extrem_local_Fiedler",
+                                            filename="pcd_exttrem_local.txt")
+
+QG.count_local_extremum_of_Fiedler()
+
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='number_of_local_Fiedler_extremum', name='number_extrema_QG_cluster')
+
+def differenciate_apex_limb(QG):
+    QG.count_local_extremum_of_Fiedler()
+    list_limbs = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
+    for l in list_limbs:
+        if QG.nodes[l]['number_of_local_Fiedler_extremum'] > 1:
+            QG.nodes[l]['viterbi_class'] = 4
+
+differenciate_apex_limb(QG2)
+
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb')
+
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="apex_classlqg2", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+                                            graph_attribute="quotient_graph_node",
+                                            filename="pcd_seg.txt")
 
 """
 

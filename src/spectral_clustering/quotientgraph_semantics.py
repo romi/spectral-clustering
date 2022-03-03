@@ -246,7 +246,18 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_po
 
     leafend = list_leaves3[list_length.index(max(list_length))]
 
-    list_stem = nx.dijkstra_path(QG, leafend, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+    list_stem_full = nx.dijkstra_path(QG, G.nodes[root_point_riemanian]["quotient_graph_node"], leafend, weight='distance_centroides')
+    list_stem = list_stem_full
+    previous = 0
+    """
+    maxim = QG.nodes[G.nodes[root_point_riemanian]["quotient_graph_node"]]['quotite_feuille_n']
+    for n in list_stem_full:
+        if maxim >= QG.nodes[n]['quotite_feuille_n']:
+            maxim = QG.nodes[n]['quotite_feuille_n']
+            prev = n
+        else:
+            list_stem.pop(prev)
+    """
 
     for n in list_stem:
         if n not in list_leaves3:
@@ -261,3 +272,27 @@ def differenciate_apex_limb(QG, attribute_class = 'viterbi_class', number_leaves
     for l in list_limbs:
         if QG.nodes[l]['number_of_local_Fiedler_extremum'] > 1:
             QG.nodes[l][attribute_class] = new_apex_class
+
+def topology_control(quotient_graph, attribute_class_control ='viterbi_class', class_stem = 3, class_petiols = 5, class_limb = 1, class_apex= 4, error_norm = 10, error_dir=11):
+    QG = quotient_graph
+    # check leaves connected to stem
+    stem = [x for x, y in QG.nodes(data=True) if y[attribute_class_control] == class_stem]
+    for n in QG[stem[0]]:
+        if QG.nodes[n][attribute_class_control] == class_limb or QG.nodes[n][attribute_class_control] == class_apex:
+            QG.nodes[n][attribute_class_control] = error_norm
+
+    petiols = [x for x, y in QG.nodes(data=True) if y[attribute_class_control] == class_petiols]
+    for n in petiols:
+        if QG.degree(n) >= 3:
+            QG.nodes[n][attribute_class_control] = error_dir
+
+def treat_topology_error(quotient_graph, attribute_class_control='viterbi_class',error = 5, way_to_treat='direction', number_of_cluster_tested=20):
+    QG = quotient_graph
+    nodes_to_treat = [x for x, y in QG.nodes(data=True) if y[attribute_class_control] == error]
+
+    if way_to_treat == 'direction':
+        resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=nodes_to_treat, number_of_cluster_tested=number_of_cluster_tested,
+                                          attribute='direction_gradient', number_attribute=3, standardization=False)
+    elif way_to_treat == 'norm':
+        resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=nodes_to_treat, number_of_cluster_tested=number_of_cluster_tested,
+                                          attribute='norm_gradient', number_attribute=1, standardization=False, numer = 1000)

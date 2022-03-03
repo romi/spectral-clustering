@@ -33,13 +33,13 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_virtuel.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
 G.pcd = pcdfinal
 # LOWER POINT, USER INPUT
-root_point_riemanian = 36847
+root_point_riemanian = 7365
 # In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()
@@ -67,7 +67,8 @@ for n in QG.nodes:
     if n not in list_leaves1:
         list_of_linear.append(n)
         QG.nodes[n]["viterbi_class"] = 0
-list_leaves1.remove(G.nodes[root_point_riemanian]["quotient_graph_node"])
+if G.nodes[root_point_riemanian]["quotient_graph_node"] in list_leaves1:
+    list_leaves1.remove(G.nodes[root_point_riemanian]["quotient_graph_node"])
 list_of_linear.append(G.nodes[root_point_riemanian]["quotient_graph_node"])
 G.nodes[root_point_riemanian]["viterbi_class"] = 0
 
@@ -105,7 +106,8 @@ for n in QG.nodes:
     if n not in list_leaves2:
         list_of_linear.append(n)
         QG.nodes[n]["viterbi_class"] = 0
-list_leaves2.remove(G.nodes[root_point_riemanian]["quotient_graph_node"])
+if G.nodes[root_point_riemanian]["quotient_graph_node"] in list_leaves2:
+    list_leaves2.remove(G.nodes[root_point_riemanian]["quotient_graph_node"])
 list_of_linear.append(G.nodes[root_point_riemanian]["quotient_graph_node"])
 G.nodes[root_point_riemanian]["viterbi_class"] = 0
 
@@ -140,25 +142,6 @@ list_leaves3 = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
 list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
 
 
-calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
-
-#Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
-stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_point_riemanian)
-
-QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
-QG.point_cloud_graph = G
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-
-list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
-list_notleaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] != 1]
-calcul_quotite_feuilles(QG, list_leaves, list_notleaves, root_point_riemanian)
-for n in list_leaves:
-    QG.nodes[n]["quotite_feuille_n"] = -1
-
-
-
 G.find_local_extremum_of_Fiedler()
 export_some_graph_attributes_on_point_cloud(G,
                                             graph_attribute="extrem_local_Fiedler",
@@ -176,6 +159,30 @@ display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, f
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_seg.txt")
+
+
+
+calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
+
+#Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
+list_apex = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 4]
+stem_detection_with_quotite_leaves(QG, list_apex, list_of_linear, root_point_riemanian)
+
+QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
+QG.point_cloud_graph = G
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+
+list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
+list_notleaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] != 1]
+calcul_quotite_feuilles(QG, list_leaves, list_notleaves, root_point_riemanian)
+for n in list_leaves:
+    QG.nodes[n]["quotite_feuille_n"] = -1
+
+
+
+
 
 def weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0, class_apex=4,
                          weight_limb_limb=10000, weight_apex_apex=10000, weight_apex_mainstem=10000,
@@ -207,13 +214,22 @@ def weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, c
         if set(l) == set([class_linear, class_mainstem]):
             QG.edges[e]['weight_sem_paths'] = weight_linear_mainstem
 
+
 def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_limb=1, class_linear=0, class_mainstem=3, new_class_petiol=5):
+    for e in QG.edges():
+        QG.edges[e]['useful_path_shortest'] = False
     list_limb = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_limb]
     for leaf in list_limb:
         path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight=weight)
         for n in path:
             if QG.nodes[n][class_attribute] == class_linear:
                 QG.nodes[n][class_attribute] = new_class_petiol
+        for i in range(len(path) - 1):
+            if QG.has_edge(path[i], path[i + 1]):
+                e = (path[i], path[i + 1])
+            else:
+                e = (path[i + 1], path[i])
+            QG.edges[e]['useful_path_shortest'] = True
 
 
 weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0, class_apex=4,
@@ -244,6 +260,12 @@ def shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribut
         for n in path:
             if QG.nodes[n][class_attribute] == class_branch:
                 QG.nodes[n][class_attribute] = new_class_branch
+        for i in range(len(path) - 1):
+            if QG.has_edge(path[i], path[i + 1]):
+                e = (path[i], path[i + 1])
+            else:
+                e = (path[i + 1], path[i])
+            QG.edges[e]['useful_path_shortest'] = True
 
 maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_petiol=5, class_apex=4,
                          weight_petiol_petiol=0, weight_petiol_apex=10000)
@@ -253,52 +275,94 @@ shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribute='v
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches')
 
+
+
 def merge_remaining_clusters(quotientgraph, remaining_clusters_class=0, class_attribute='viterbi_class'):
-    list_clusters = [x for x, y in QG.nodes(data=True) if y[class_attribute] == remaining_clusters_class]
-
+    list_clusters = [x for x, y in quotientgraph.nodes(data=True) if y[class_attribute] == remaining_clusters_class]
+    print(list_clusters)
     G = quotientgraph.point_cloud_graph
-    nodes_to_remove = []
+
     for u in list_clusters:
-        adjacent_clusters = [n for n in quotientgraph[u]]
-        max_number_of_connections = 0
-        for i in range(len(adjacent_clusters)):
-            if quotientgraph.nodes[adjacent_clusters[i]]['intra_class_node_number'] > max_number_of_nodes_in_adjacent_clusters:
-                max_number_of_nodes_in_adjacent_clusters = quotientgraph.nodes[adjacent_clusters[i]]['intra_class_node_number']
-                new_cluster = adjacent_clusters[i]
-            # Opération de fusion du petit cluster avec son voisin le plus conséquent.
-            # Mise à jour des attributs de la grande classe et suppression de la petite classe
-            quotientgraph.nodes[new_cluster]['intra_class_node_number'] += quotientgraph.nodes[u][
-                'intra_class_node_number']
-            quotientgraph.nodes[new_cluster]['intra_class_edge_weight'] += (
-                        quotientgraph.nodes[u]['intra_class_edge_weight']
-                        + quotientgraph.edges[new_cluster, u][
-                            'inter_class_edge_weight'])
-            quotientgraph.nodes[new_cluster]['intra_class_edge_number'] += (
-                        quotientgraph.nodes[u]['intra_class_edge_number']
-                        + quotientgraph.edges[new_cluster, u][
-                            'inter_class_edge_number'])
+        count = quotientgraph.compute_quotientgraph_metadata_on_a_node_interclass(u)
+        max_class_o = max(count, key=count.get)
+        max_class = max_class_o
+        # deal with possibility of max_class_ another class to merge. In that case, second best linked is chosent
+        # if only linked to another class to merge, merge with this one.
+        while max_class in list_clusters and bool(count):
+            count.pop(max_class)
+            max_class = max(count, key=count.get)
+        #if bool(count) is False:
+        #    max_class = max_class_o
 
-        # Mise à jour du lien avec le PointCloudGraph d'origine
-        for v in G.nodes:
-            if G.nodes[v]['quotient_graph_node'] == u:
-                G.nodes[v]['quotient_graph_node'] = new_cluster
+        new_cluster = max_class
+        print(new_cluster)
+        list_G_nodes_to_change = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == u]
+        for g in list_G_nodes_to_change:
+            G.nodes[g]['quotient_graph_node'] = new_cluster
 
-        # Mise à jour des edges
-        for i in range(len(adjacent_clusters)):
-            if quotientgraph.has_edge(new_cluster, adjacent_clusters[i]) is False:
-                quotientgraph.add_edge(new_cluster, adjacent_clusters[i],
-                                       inter_class_edge_weight=quotientgraph.edges[u, adjacent_clusters[i]][
-                                           'inter_class_edge_weight'],
-                                       inter_class_edge_number=quotientgraph.edges[u, adjacent_clusters[i]][
-                                           'inter_class_edge_number'])
-            elif quotientgraph.has_edge(new_cluster, adjacent_clusters[i]) and new_cluster != adjacent_clusters[i]:
-                quotientgraph.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
-                    quotientgraph.edges[u, adjacent_clusters[i]]['inter_class_edge_weight']
-                quotientgraph.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
-                    quotientgraph.edges[u, adjacent_clusters[i]]['inter_class_edge_number']
-        nodes_to_remove.append(u)
+        dict1 = {}
+        for e in quotientgraph.edges(new_cluster):
+            dict1[e] = quotientgraph.edges[e]['useful_path_shortest']
+        quotientgraph = nx.contracted_nodes(quotientgraph, new_cluster, u, self_loops=False)
+        quotientgraph.point_cloud_graph = G
+        dict2 = {}
+        for e in quotientgraph.edges(new_cluster):
+            dict2[e] = quotientgraph.edges[e]['useful_path_shortest']
+            if e in dict1.keys():
+                quotientgraph.edges[e]['useful_path_shortest'] = dict1[e]
+        print(dict1)
+        print(dict2)
 
-    quotientgraph.remove_nodes_from(nodes_to_remove)
+    return quotientgraph
+
+
+QG = merge_remaining_clusters(quotientgraph=QG, remaining_clusters_class=0, class_attribute='viterbi_class')
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_delete0", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_delete0')
+
+
+def remove_edges_useful_paths(QG):
+    for e in QG.edges():
+        if QG.edges[e]['useful_path_shortest'] is False:
+            QG.remove_edge(*e)
+
+remove_edges_useful_paths(QG)
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_remove", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_remove')
+
+topology_control(QG, attribute_class_control ='viterbi_class',
+                 class_stem=3, class_petiols=5, class_limb=1,
+                 class_apex=4, error_norm=10, error_dir=11)
+
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
+treat_topology_error(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm', number_of_cluster_tested=20)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_reseg')
+export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+                                            graph_attribute="quotient_graph_node",
+                                            filename="pcd_seg.txt")
+
+def treat_topology_error2(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm_gradient', number_of_cluster_tested=20):
+    list_nodes_QG_to_work = [x for x, y in QG.nodes(data=True) if y[attribute_class_control] == error]
+
+    for node_QG in list_nodes_QG_to_work:
+        neighb = QG[node_QG]
+        edges_neighb = QG.edges(node_QG)
+        SG_node = create_subgraphs_to_work(QG, list_quotient_node_to_work=[node_QG])
+
+        resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=[node_QG], number_of_cluster_tested=number_of_cluster_tested,
+                                          attribute=way_to_treat, number_attribute=1, standardization=False, numer=1)
+
+        sub_QG = QuotientGraph()
+        sub_QG.rebuild(SG_node)
+        #sub-QG, rename the nodes to be sure they are not the same as QG.
+        maxi = max(QG.nodes)
+        H = nx.relabel_nodes(sub_QG, lambda x: x + maxi)
+        # Link sub-QG to QG.
+        # add neighbors to H ?
+        # add adjacent edges ?
+
+
 
 
 #def create_tree_with_semantic_weights_and_shortest_paths()
@@ -320,4 +384,40 @@ for n in selected_nodes_isolated:
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='isolated_nodes')
 
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm3')
+
+
+from sklearn.cluster import KMeans
+from yellowbrick.cluster import KElbowVisualizer
+i = 0
+number_attribute = 1
+attribute ='norm_gradient'
+sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[i])
+SG = sub
+list_nodes = list(SG.nodes)
+Xcoord = np.zeros((len(SG), 3))
+for u in range(len(SG)):
+    Xcoord[u] = SG.nodes[list(SG.nodes)[u]]['pos']
+Xnorm = np.zeros((len(SG), number_attribute))
+for u in range(len(SG)):
+    Xnorm[u] = SG.nodes[list(SG.nodes)[u]][attribute]
+sc = StandardScaler()
+Xnorm = sc.fit_transform(Xnorm)
+model = KMeans()
+visualizer = KElbowVisualizer(model, k=(2, 20), metric='distortion')
+visualizer.fit(Xnorm)  # Fit the data to the visualizer
+visualizer.show()        # Finalize and render the figure
+k_opt = visualizer.elbow_value_
+if k_opt > 1:
+    clustering = skc.KMeans(n_clusters=k_opt, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
+        Xnorm)
+    new_labels = np.zeros((len(SG.nodes), 4))
+    new_labels[:, 0:3] = Xcoord
+    for pt in range(len(list_nodes)):
+        new_labels[pt, 3] = clustering.labels_[pt]
+    np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
+export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+                                            graph_attribute="quotient_graph_node",
+                                            filename="pcd_seg.txt")
+
+
 """

@@ -291,7 +291,9 @@ def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpoin
 def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
                                       attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1):
     G = QG.point_cloud_graph
-    num = max(QG.nodes) + numer
+    qg_values = nx.get_node_attributes(G, 'quotient_graph_node')
+    maxi = max(qg_values.values())
+    num = maxi + numer
     for i in QG_nodes_to_rework:
         sub = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=[i])
         SG = sub
@@ -315,7 +317,7 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
 
             # Instantiate the clustering model and visualizer
             model = KMeans()
-            visualizer = KElbowVisualizer(model, k=(1, number_of_cluster_tested))
+            visualizer = KElbowVisualizer(model, k=(1, number_of_cluster_tested), metric='distortion')
 
             visualizer.fit(Xnorm)  # Fit the data to the visualizer
             # visualizer.show()        # Finalize and render the figure

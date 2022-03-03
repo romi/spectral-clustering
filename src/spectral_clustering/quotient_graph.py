@@ -278,6 +278,22 @@ class QuotientGraph(nx.Graph):
         labels_qg_re = np.asarray(labels_qg)[:, np.newaxis]
         self.build_from_pointcloudgraph(G, labels_qg_re)
 
+    def compute_quotientgraph_metadata_on_a_node_interclass(self, node):
+        G = self.point_cloud_graph
+        count = {}
+        for c in self[node]:
+            count[c] = 0
+
+        list_of_nodes_G = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == node]
+        for ng in list_of_nodes_G:
+            for neing in G[ng]:
+                if G.nodes[ng]['quotient_graph_node'] != G.nodes[neing]['quotient_graph_node']:
+                    count[G.nodes[neing]['quotient_graph_node']] += 1
+
+        return count
+
+
+
     def delete_empty_edges_and_nodes(self):
         """Delete edges from the quotient graph that do not represent any edges in the distance-based graph anymore.
         Delete nodes from the quotient graph that do not represent any nodes of the distance-based graph.

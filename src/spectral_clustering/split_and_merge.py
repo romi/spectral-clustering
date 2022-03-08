@@ -334,3 +334,6 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                 num += k_opt + len(list_nodes)
                 np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
             #print(i, ' divided in ', k_opt)
+                cluster_c = clustering.cluster_centers_[:, 0]
+
+    return cluster_c, num

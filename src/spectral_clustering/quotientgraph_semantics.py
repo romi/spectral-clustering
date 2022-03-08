@@ -296,3 +296,120 @@ def treat_topology_error(quotient_graph, attribute_class_control='viterbi_class'
     elif way_to_treat == 'norm':
         resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=nodes_to_treat, number_of_cluster_tested=number_of_cluster_tested,
                                           attribute='norm_gradient', number_attribute=1, standardization=False, numer = 1000)
+
+def weight_with_semantic(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0, class_apex=4,
+                         weight_limb_limb=10000, weight_apex_apex=10000, weight_apex_mainstem=10000,
+                         weight_limb_apex=10000, weight_limb_mainstem=10000, weight_linear_mainstem=0, weight_linear_linear=0,
+                         weight_linear_limb=0, weight_linear_apex=0):
+    for e in QG.edges():
+        QG.edges[e]['weight_sem_paths'] = np.nan
+        c1 = QG.nodes[e[0]][class_attribute]
+        c2 = QG.nodes[e[1]][class_attribute]
+        l = [c1,c2]
+        if set(l) == set([class_limb,class_limb]):
+            QG.edges[e]['weight_sem_paths']= weight_limb_limb
+        if set(l) == set([class_limb,class_mainstem]):
+            QG.edges[e]['weight_sem_paths']= weight_limb_mainstem
+        if set(l) == set([class_limb,class_apex]):
+            QG.edges[e]['weight_sem_paths']= weight_limb_apex
+        if set(l) == set([class_limb,class_linear]):
+            QG.edges[e]['weight_sem_paths']= weight_linear_limb
+
+        if set(l) == set([class_apex,class_apex]):
+            QG.edges[e]['weight_sem_paths']= weight_apex_apex
+        if set(l) == set([class_apex,class_mainstem]):
+            QG.edges[e]['weight_sem_paths']= weight_apex_mainstem
+        if set(l) == set([class_apex,class_linear]):
+            QG.edges[e]['weight_sem_paths']= weight_linear_apex
+
+        if set(l) == set([class_linear, class_linear]):
+            QG.edges[e]['weight_sem_paths'] = weight_linear_linear
+        if set(l) == set([class_linear, class_mainstem]):
+            QG.edges[e]['weight_sem_paths'] = weight_linear_mainstem
+
+
+def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_limb=1, class_linear=0, class_mainstem=3, new_class_petiol=5):
+    G = QG.point_cloud_graph
+    for e in QG.edges():
+        QG.edges[e]['useful_path_shortest'] = False
+    list_limb = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_limb]
+    for leaf in list_limb:
+        path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight=weight)
+        for n in path:
+            if QG.nodes[n][class_attribute] == class_linear:
+                QG.nodes[n][class_attribute] = new_class_petiol
+        for i in range(len(path) - 1):
+            if QG.has_edge(path[i], path[i + 1]):
+                e = (path[i], path[i + 1])
+            else:
+                e = (path[i + 1], path[i])
+            QG.edges[e]['useful_path_shortest'] = True
+
+def maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_petiol=5, class_apex=4,
+                         weight_petiol_petiol=0, weight_petiol_apex=10000):
+    for e in QG.edges():
+        c1 = QG.nodes[e[0]][class_attribute]
+        c2 = QG.nodes[e[1]][class_attribute]
+        l = [c1,c2]
+        if set(l) == set([class_petiol, class_apex]):
+            QG.edges[e]['weight_sem_paths']= weight_petiol_apex
+
+
+def shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_apex=4, class_branch=0, class_mainstem=3, new_class_branch=6):
+    G = QG.point_cloud_graph
+    list_apex = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_apex]
+    for leaf in list_apex:
+        path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight=weight)
+        print(path)
+        for n in path:
+            if QG.nodes[n][class_attribute] == class_branch:
+                QG.nodes[n][class_attribute] = new_class_branch
+        for i in range(len(path) - 1):
+            if QG.has_edge(path[i], path[i + 1]):
+                e = (path[i], path[i + 1])
+            else:
+                e = (path[i + 1], path[i])
+            QG.edges[e]['useful_path_shortest'] = True
+
+def merge_remaining_clusters(quotientgraph, remaining_clusters_class=0, class_attribute='viterbi_class'):
+    list_clusters = [x for x, y in quotientgraph.nodes(data=True) if y[class_attribute] == remaining_clusters_class]
+    print(list_clusters)
+    G = quotientgraph.point_cloud_graph
+
+    for u in list_clusters:
+        count = quotientgraph.compute_quotientgraph_metadata_on_a_node_interclass(u)
+        max_class_o = max(count, key=count.get)
+        max_class = max_class_o
+        # deal with possibility of max_class_ another class to merge. In that case, second best linked is chosent
+        # if only linked to another class to merge, merge with this one.
+        while max_class in list_clusters and bool(count):
+            count.pop(max_class)
+            max_class = max(count, key=count.get)
+        #if bool(count) is False:
+        #    max_class = max_class_o
+
+        new_cluster = max_class
+        print(new_cluster)
+        list_G_nodes_to_change = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == u]
+        for g in list_G_nodes_to_change:
+            G.nodes[g]['quotient_graph_node'] = new_cluster
+
+        dict1 = {}
+        for e in quotientgraph.edges(new_cluster):
+            dict1[e] = quotientgraph.edges[e]['useful_path_shortest']
+        quotientgraph = nx.contracted_nodes(quotientgraph, new_cluster, u, self_loops=False)
+        quotientgraph.point_cloud_graph = G
+        dict2 = {}
+        for e in quotientgraph.edges(new_cluster):
+            dict2[e] = quotientgraph.edges[e]['useful_path_shortest']
+            if e in dict1.keys():
+                quotientgraph.edges[e]['useful_path_shortest'] = dict1[e]
+        print(dict1)
+        print(dict2)
+
+    return quotientgraph
+
+def remove_edges_useful_paths(QG):
+    for e in QG.edges():
+        if QG.edges[e]['useful_path_shortest'] is False:
+            QG.remove_edge(*e)

@@ -221,7 +221,7 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
 
     return final_list_stem_clean
 
-def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_point_riemanian):
+def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_point_riemanian, new_class_stem=3):
     calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
     G = QG.point_cloud_graph
     list_length = []
@@ -261,7 +261,7 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_po
 
     for n in list_stem:
         if n not in list_leaves3:
-            QG.nodes[n]["viterbi_class"] = 3
+            QG.nodes[n]["viterbi_class"] = new_class_stem
 
     export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_')
     return list_stem
@@ -378,15 +378,16 @@ def merge_remaining_clusters(quotientgraph, remaining_clusters_class=0, class_at
 
     for u in list_clusters:
         count = quotientgraph.compute_quotientgraph_metadata_on_a_node_interclass(u)
+        print(count)
         max_class_o = max(count, key=count.get)
         max_class = max_class_o
         # deal with possibility of max_class_ another class to merge. In that case, second best linked is chosent
         # if only linked to another class to merge, merge with this one.
-        while max_class in list_clusters and bool(count):
+        while max_class in list_clusters and bool(count) and len(count)>1:
             count.pop(max_class)
             max_class = max(count, key=count.get)
-        #if bool(count) is False:
-        #    max_class = max_class_o
+        if bool(count) is False or len(count) == 1:
+            max_class = max_class_o
 
         new_cluster = max_class
         print(new_cluster)

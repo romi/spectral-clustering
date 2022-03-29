@@ -289,7 +289,7 @@ def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpoin
 
 
 def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
-                                      attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1):
+                                      attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1, G_mod = True):
     G = QG.point_cloud_graph
     qg_values = nx.get_node_attributes(G, 'quotient_graph_node')
     maxi = max(qg_values.values())
@@ -330,7 +330,8 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                 new_labels[:, 0:3] = Xcoord
                 for pt in range(len(list_nodes)):
                     new_labels[pt, 3] = clustering.labels_[pt] + num
-                    G.nodes[list_nodes[pt]]['quotient_graph_node'] = new_labels[pt, 3]
+                    if G_mod:
+                        G.nodes[list_nodes[pt]]['quotient_graph_node'] = new_labels[pt, 3]
                 num += k_opt + len(list_nodes)
                 np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
             #print(i, ' divided in ', k_opt)

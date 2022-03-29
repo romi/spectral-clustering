@@ -33,13 +33,13 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_C_2021_04_12.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
 G.pcd = pcdfinal
 # LOWER POINT, USER INPUT
-root_point_riemanian = 36847
+root_point_riemanian = 28870
 # In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()

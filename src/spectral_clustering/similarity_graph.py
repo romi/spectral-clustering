@@ -64,6 +64,7 @@ def create_riemannian_graph(pcd, method='knn', nearest_neighbors=1, radius=1.):
             if d != 0:
                 w = 1 / d
                 G.add_edge(i, idx, weight = w)
+                G.edges[(i, idx)]["distance"] = d
 
     return G
 

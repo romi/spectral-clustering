@@ -330,8 +330,7 @@ def weight_with_semantic(QG, class_attribute='viterbi_class', class_limb=1, clas
 
 def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_limb=1, class_linear=0, class_mainstem=3, new_class_petiol=5):
     G = QG.point_cloud_graph
-    for e in QG.edges():
-        QG.edges[e]['useful_path_shortest'] = False
+
     list_limb = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_limb]
     for leaf in list_limb:
         path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight=weight)
@@ -345,19 +344,21 @@ def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribu
                 e = (path[i + 1], path[i])
             QG.edges[e]['useful_path_shortest'] = True
 
-def maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_petiol=5, class_apex=4,
-                         weight_petiol_petiol=0, weight_petiol_apex=10000):
+def maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_petiol=5, class_apex=4, class_branch=6,
+                         weight_petiol_petiol=0, weight_petiol_apex=10000, weight_branch_limb=10000):
     for e in QG.edges():
         c1 = QG.nodes[e[0]][class_attribute]
         c2 = QG.nodes[e[1]][class_attribute]
         l = [c1,c2]
-        if set(l) == set([class_petiol, class_apex]):
-            QG.edges[e]['weight_sem_paths']= weight_petiol_apex
+        if set(l) == set([class_branch, class_limb]):
+            QG.edges[e]['weight_sem_paths'] = weight_branch_limb
 
 
 def shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_apex=4, class_branch=0, class_mainstem=3, new_class_branch=6):
     G = QG.point_cloud_graph
     list_apex = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_apex]
+    for e in QG.edges():
+        QG.edges[e]['useful_path_shortest'] = False
     for leaf in list_apex:
         path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight=weight)
         print(path)

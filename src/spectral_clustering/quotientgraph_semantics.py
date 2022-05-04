@@ -221,11 +221,11 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
 
     return final_list_stem_clean
 
-def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_point_riemanian, new_class_stem=3):
+def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3):
     calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
     G = QG.point_cloud_graph
     list_length = []
-    for leaf in list_leaves3:
+    for leaf in list_apex:
         sub_qg = nx.subgraph(QG, list_of_linear + [leaf])
         display_and_export_quotient_graph_matplotlib(quotient_graph=sub_qg, node_sizes=20,
                                                      filename="sub_graphsclass_feuilles_sur_noeuds"+str(leaf),
@@ -239,15 +239,23 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_po
             path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
                                     weight='distance_centroides')
         pathleafquantity = []
+        paths = []
         for p in path:
             pathleafquantity.append(QG.nodes[p]['quotite_feuille_n'])
+            paths.append(path)
+        print(pathleafquantity)
+        print(set(pathleafquantity))
         lengthpath = sum(list(set(pathleafquantity)))
         list_length.append(lengthpath)
+        print(path)
+        print(lengthpath)
 
-    leafend = list_leaves3[list_length.index(max(list_length))]
+    leafend = list_apex[list_length.index(max(list_length))]
+    #path_final = paths[]
 
     list_stem_full = nx.dijkstra_path(QG, G.nodes[root_point_riemanian]["quotient_graph_node"], leafend, weight='distance_centroides')
     list_stem = list_stem_full
+    print(list_stem)
     previous = 0
     """
     maxim = QG.nodes[G.nodes[root_point_riemanian]["quotient_graph_node"]]['quotite_feuille_n']
@@ -258,10 +266,11 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_of_linear, root_po
         else:
             list_stem.pop(prev)
     """
-
+    del list_stem[-1]
     for n in list_stem:
-        if n not in list_leaves3:
-            QG.nodes[n]["viterbi_class"] = new_class_stem
+        #if n not in list_leaves3:
+        QG.nodes[n]["viterbi_class"] = new_class_stem
+
 
     export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_')
     return list_stem

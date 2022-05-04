@@ -34,13 +34,13 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_A_2021_04_19.ply", format='ply')
+pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_virtuel2.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
 G.pcd = pcdfinal
 # LOWER POINT, USER INPUT
-root_point_riemanian = 36847
+root_point_riemanian = 7104
 # In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()
@@ -166,7 +166,8 @@ display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, f
 
 #Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
 list_apex = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 4]
-stem_detection_with_quotite_leaves(QG, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
+stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
+
 
 QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
 QG.point_cloud_graph = G
@@ -299,7 +300,7 @@ def obtain_tree_with_botanical(QG):
     # Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
     list_apex = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 4]
     list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
-    stem_detection_with_quotite_leaves(QG, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
+    stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
     QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
     QG.point_cloud_graph = G
     weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0,
@@ -327,11 +328,11 @@ def obtain_tree_with_botanical(QG):
 
 QG=obtain_tree_with_botanical(QG)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="semantic_end", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_end')
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="semantic_final", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_final')
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
-                                            filename="pcd_reseg_end.txt")
+                                            filename="instance_final.txt")
 
 time2 = time.time()
 

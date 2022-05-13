@@ -81,8 +81,9 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
         for node in largest_cc:
             coords[i, :] = G.nodes[node]['pos']
             i += 1
-        np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
         path = os.getcwd()
+        np.savetxt(path + 'New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
+
         pcd2 = open3d.read_point_cloud(path+"/New_pcd_connected.txt", format='xyz')
 
         G = create_riemannian_graph(pcd2, method=method, nearest_neighbors=nearest_neighbors, radius=radius)

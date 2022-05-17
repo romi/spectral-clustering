@@ -332,11 +332,14 @@ def calcul_quotite_feuilles(QG, list_leaves, list_of_linear, root_point_riemania
         QG.nodes[n]['quotite_feuille_n'] = 0
 
     for leaf in list_leaves:
-        sub_qg = nx.subgraph(QG, list_of_linear + [leaf])
+        print(leaf)
+        sub_qg = nx.subgraph(QG, list_of_linear + [leaf] + [G.nodes[root_point_riemanian]["quotient_graph_node"]])
         if nx.has_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"]):
             path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
         else:
+            print('else')
             path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+            print(path)
         for n in path:
             QG.nodes[n]['quotite_feuille_n'] += 1
         for i in range(len(path) - 1):

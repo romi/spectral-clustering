@@ -345,5 +345,7 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                         np.savetxt('pcd_new_labels_' + str(i) + str(v) + '.txt', arr, delimiter=",")
                         v += 1
 
+                return cluster_c
 
-    return cluster_c
+            else:
+                print("nothing to cluster")

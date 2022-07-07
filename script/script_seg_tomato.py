@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import pandas as pd
-# from treex import *
+from treex import *
 
 import scipy.sparse as spsp
 import scipy as sp
@@ -39,7 +39,7 @@ parser.add_argument("InputFileName")
 args = parser.parse_args()
 model_filename = args.InputFileName
 begin = time.time()
-#model_filename = '/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/chenopodes/chenopodium-4_s_1p60_d11.ply'
+#model_filename = '/Users/katiamirande/Documents/Données/Donnees_tests/Pheno4D/Tomato01/T01_0307_a.ply'
 filenamemod = os.path.splitext(os.path.basename(model_filename))[0]
 pcd = open3d.read_point_cloud(model_filename, format='ply')
 r = 18
@@ -54,12 +54,12 @@ def detect_lower_point(G):
     result = np.where(G.nodes_coords[:,2] == a)
     return result[0][0]
 root_point_riemanian = detect_lower_point(G)
-print(root_point_riemanian)
+#print(root_point_riemanian)
 # In cloudcompare : Edit > ScalarFields > Add point indexes on SF
 
 G.compute_graph_eigenvectors()
 
-export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt")
+#export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt")
 G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
 clusters_centers = G.clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud=True, number_of_clusters=4)
 QG = QuotientGraph()
@@ -130,7 +130,7 @@ G.nodes[root_point_riemanian]["viterbi_class"] = 0
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm2')
 
 QG.compute_direction_info(list_leaves=list_leaves2)
-opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=True, list_leaves=list_leaves2)
+opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=False, list_leaves=list_leaves2)
 QG.rebuild(QG.point_cloud_graph)
 G = QG.point_cloud_graph
 list_leaves3 = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
@@ -168,11 +168,11 @@ list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
 #export_quotient_graph_attribute_on_point_cloud(QG, attribute='number_of_local_Fiedler_extremum', name='number_extrema_QG_cluster')
 
 differenciate_apex_limb(QG, attribute_class = 'viterbi_class', number_leaves_limb = 1, new_apex_class = 4)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb')
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb')
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_classlqg2", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                            graph_attribute="quotient_graph_node",
-                                            filename="pcd_seg.txt")
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                            graph_attribute="quotient_graph_node",
+#                                            filename="pcd_seg.txt")
 
 
 
@@ -187,7 +187,7 @@ stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, 
 
 QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
 QG.point_cloud_graph = G
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 
 list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
 list_notleaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] != 1]
@@ -203,8 +203,8 @@ weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class
 
 shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_apex=4, class_branch=0, class_mainstem=3, new_class_branch=6)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches')
 
 
 
@@ -214,17 +214,17 @@ maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_ma
 
 shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_limb=1, class_linear=0, class_mainstem=3, new_class_petiol=5)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole')
 
 
 QG = merge_remaining_clusters(quotientgraph=QG, remaining_clusters_class=0, class_attribute='viterbi_class')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_delete0", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_delete0')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_delete0", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_delete0')
 
 remove_edges_useful_paths(QG)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_remove", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_remove')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_remove", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_remove')
 
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename=filenamemod+"_semantic_1", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name=filenamemod+'_semantic_1')
@@ -236,8 +236,8 @@ topology_control(QG, attribute_class_control ='viterbi_class',
                  class_stem=3, class_petiols=5, class_limb=1,
                  class_apex=4, error_norm=10, error_dir=11)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
 #treat_topology_error(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm', number_of_cluster_tested=20)
 #export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_reseg')
 #export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -294,16 +294,16 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                           graph_attribute="quotient_graph_node",
                                             filename="pcd_seg_norm.txt")
 treat_topology_error2(QG=QG,attribute_class_control='viterbi_class', number_attribute=3, class_limb = 1, class_linear = 0, error = 11, way_to_treat='direction_gradient', number_of_cluster_tested=20)
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                          graph_attribute="quotient_graph_node",
-                                            filename="pcd_seg_dir.txt")
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                          graph_attribute="quotient_graph_node",
+#                                            filename="pcd_seg_dir.txt")
 
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                            graph_attribute="quotient_graph_node",
-                                            filename="pcd_reseg.txt")
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                            graph_attribute="viterbi_class",
-                                            filename="pcd_reseg_semantic.txt")
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                            graph_attribute="quotient_graph_node",
+#                                            filename="pcd_reseg.txt")
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                            graph_attribute="viterbi_class",
+#                                            filename="pcd_reseg_semantic.txt")
 
 QG.rebuild(G)
 label_leaves = 1.0

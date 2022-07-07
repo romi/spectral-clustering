@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import pandas as pd
-# from treex import *
+from treex import *
 
 import scipy.sparse as spsp
 import scipy as sp
@@ -33,13 +33,13 @@ from spectral_clustering.evaluation import *
 import argparse
 
 from importlib import reload
-
+"""
 parser = argparse.ArgumentParser()
 parser.add_argument("InputFileName")
 args = parser.parse_args()
-model_filename = args.InputFileName
+model_filename = args.InputFileName"""
 begin = time.time()
-#model_filename = '/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/chenopodes/chenopodium-4_s_1p60_d11.ply'
+model_filename = '/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/petits_chenos/chenopodium-petit_s_1p40_d8rawPoints.ply'
 filenamemod = os.path.splitext(os.path.basename(model_filename))[0]
 pcd = open3d.read_point_cloud(model_filename, format='ply')
 r = 18
@@ -232,12 +232,12 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename=filenamemod+"_instance_1.txt")
 
-topology_control(QG, attribute_class_control ='viterbi_class',
-                 class_stem=3, class_petiols=5, class_limb=1,
-                 class_apex=4, error_norm=10, error_dir=11)
+#topology_control(QG, attribute_class_control ='viterbi_class',
+#                 class_stem=3, class_petiols=5, class_limb=1,
+#                 class_apex=4, error_norm=10, error_dir=11)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
 #treat_topology_error(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm', number_of_cluster_tested=20)
 #export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_reseg')
 #export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -288,15 +288,15 @@ def treat_topology_error2(QG, attribute_class_control='viterbi_class',number_att
         # add neighbors to H ?
         # add adjacent edges ?
 
-treat_topology_error2(QG=QG,attribute_class_control='viterbi_class',number_attribute=1, class_limb = 1, class_linear = 0, error = 10, way_to_treat='norm_gradient', number_of_cluster_tested=20)
+#treat_topology_error2(QG=QG,attribute_class_control='viterbi_class',number_attribute=1, class_limb = 1, class_linear = 0, error = 10, way_to_treat='norm_gradient', number_of_cluster_tested=20)
 
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                          graph_attribute="quotient_graph_node",
-                                            filename="pcd_seg_norm.txt")
-treat_topology_error2(QG=QG,attribute_class_control='viterbi_class', number_attribute=3, class_limb = 1, class_linear = 0, error = 11, way_to_treat='direction_gradient', number_of_cluster_tested=20)
-export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
-                                          graph_attribute="quotient_graph_node",
-                                            filename="pcd_seg_dir.txt")
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                          graph_attribute="quotient_graph_node",
+#                                            filename="pcd_seg_norm.txt")
+#treat_topology_error2(QG=QG,attribute_class_control='viterbi_class', number_attribute=3, class_limb = 1, class_linear = 0, error = 11, way_to_treat='direction_gradient', number_of_cluster_tested=20)
+#export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
+#                                          graph_attribute="quotient_graph_node",
+#                                            filename="pcd_seg_dir.txt")
 
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
@@ -304,6 +304,74 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="viterbi_class",
                                             filename="pcd_reseg_semantic.txt")
+
+
+def merge_to_fit_other_classes(quotiengraph):
+    class_limb = 1
+    class_mainstem = 3
+    class_petiol = 5
+    class_apex = 4
+    class_branch = 6
+    QG = quotiengraph
+    nodes_changes = []
+    # merge branches and mainstem
+    for u in QG.nodes:
+        if QG.nodes[u]['viterbi_class'] == class_branch:
+            QG.nodes[u]['viterbi_class'] = class_mainstem
+            nodes_changes.append(u)
+        elif QG.nodes[u]['viterbi_class'] == class_apex:
+            QG.nodes[u]['viterbi_class'] = class_limb
+            nodes_changes.append(u)
+
+    #merge_one_class_QG_nodes()
+
+    # merge limbs and apex
+
+
+def create_quotient_graph_from_groundtruth(quotientgraph=QG,
+                                file_ground_truth_coord="/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/petits_chenos/chenopodium-petit_s_1p40_d8rawPoints.xyz",
+                                file_ground_truth_labels="/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/petits_chenos/chenopodium-petit_s_1p40_d8rawLabels.txt",
+                                name_model='name_model'):
+
+    xt, yt, zt = np.loadtxt(fname=file_ground_truth_coord, delimiter=',', unpack=True)
+    labelst = np.loadtxt(fname=file_ground_truth_labels, delimiter=',', unpack=True)
+    exp = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelst[:, np.newaxis]), axis=1)
+
+    #change the groundtruth into quotient graph
+    pcd_gt = open3d.read_point_cloud(model_filename, format='ply')
+    r = 18
+    SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd_gt, method='knn', nearest_neighbors=r)
+    G_gt = PointCloudGraph(SimG)
+    G_gt.pcd = pcdfinal
+
+    QG_gt = QuotientGraph()
+    QG_gt.build_from_pointcloudgraph(G_gt, labelst[:, np.newaxis])
+    display_and_export_quotient_graph_matplotlib(quotient_graph=QG_gt, node_sizes=20, filename="QG_test",
+                                                 data=False,
+                                                 attributekmeans4clusters=False)
+    export_some_graph_attributes_on_point_cloud(QG_gt.point_cloud_graph,
+                                                graph_attribute="quotient_graph_node",
+                                                filename="pcd_gt_attribute.txt")
+
+    return QG_gt
+
+    # transformer G pour garder que les bons labels mainstem, petiole, limbe
+    #G = QG.point_cloud_graph
+    #for n in G.nodes():
+    #    if G.nodes[n]['viterbi_class'] == 6:
+    #        G.nodes[n]['viterbi_class'] = 3
+    #    if G.nodes[n]['viterbi_class'] == 4:
+    #        G.nodes[n]['viterbi_class'] = 1
+    #QG.rebuild(QG.point_cloud_graph)
+    #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_test_seg",
+    #                                             data=False,
+    #                                             attributekmeans4clusters=False)
+
+#To compare the two graphs with networkx
+#nx.graph_edit_distance(QG_gt, QG)
+
+
+
 
 QG.rebuild(G)
 label_leaves = 1.0
@@ -352,6 +420,8 @@ def obtain_tree_with_botanical(QG):
 
 QG=obtain_tree_with_botanical(QG)
 
+delete_small_clusters(QG)
+
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename=filenamemod+"_semantic_final", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name=filenamemod+'_semantic_final')
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -361,10 +431,20 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
 time2 = time.time()
 
 print(time2-time1)
+
+QG_gt = create_quotient_graph_from_groundtruth(quotientgraph=QG,
+                                file_ground_truth_coord="/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/petits_chenos/chenopodium-petit_s_1p40_d8rawPoints.xyz",
+                                file_ground_truth_labels="/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/petits_chenos/chenopodium-petit_s_1p40_d8rawLabels.txt",
+                                name_model='name_model')
+
+QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[5])
+dist = nx.graph_edit_distance(QG_gt, QG)
+
 #def create_tree_with_semantic_weights_and_shortest_paths()
 
 
 #def detect_anomalies()
+
 
 """
 # Plus courts chemins avec quotite feuille, remove les points par lesquels ça passe pas.

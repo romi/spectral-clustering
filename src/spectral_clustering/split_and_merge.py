@@ -323,6 +323,7 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
             # visualizer.show()        # Finalize and render the figure
             # Resegment and actualize the pointcloudgraph
             k_opt = visualizer.elbow_value_
+            print(k_opt)
             if k_opt > 1:
                 clustering = skc.KMeans(n_clusters=k_opt, init='k-means++', n_init=20, max_iter=300, tol=0.0001).fit(
                     Xnorm)
@@ -333,10 +334,11 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                     if G_mod:
                         G.nodes[list_nodes[pt]]['quotient_graph_node'] = new_labels[pt, 3]
                 num += k_opt + len(list_nodes)
-                np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
+
             #print(i, ' divided in ', k_opt)
-                cluster_c = clustering.cluster_centers_
+                #cluster_c = clustering.cluster_centers_
                 if export_div:
+                    np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
                     indices = np.argsort(new_labels[:, 3])
                     arr_temp = new_labels[indices]
                     np.array_split(arr_temp, np.where(np.diff(arr_temp[:, 3]) != 0)[0] + 1)
@@ -345,7 +347,7 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                         np.savetxt('pcd_new_labels_' + str(i) + str(v) + '.txt', arr, delimiter=",")
                         v += 1
 
-                return cluster_c
+                #return cluster_c
 
             else:
                 print("nothing to cluster")

@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import pandas as pd
-# from treex import *
+#from treex import *
 
 import scipy.sparse as spsp
 import scipy as sp
@@ -33,13 +33,14 @@ from spectral_clustering.evaluation import *
 import argparse
 
 from importlib import reload
-
+"""
 parser = argparse.ArgumentParser()
 parser.add_argument("InputFileName")
 args = parser.parse_args()
 model_filename = args.InputFileName
+"""
 begin = time.time()
-#model_filename = '/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/chenopodes/chenopodium-4_s_1p60_d11.ply'
+model_filename = '/Users/katiamirande/Documents/Données/Donnees_tests/ROMI-Cs/cheno_A_2021_04_19_clustered.ply'
 filenamemod = os.path.splitext(os.path.basename(model_filename))[0]
 pcd = open3d.read_point_cloud(model_filename, format='ply')
 r = 18
@@ -103,7 +104,7 @@ for n in QG.nodes:
 
 
 
-resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_of_linear, number_of_cluster_tested = 20, attribute='direction_gradient', number_attribute=3, standardization=False)
+resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_of_linear, number_of_cluster_tested = 20, attribute='direction_gradient', number_attribute=3, standardization=False, numer = 1, G_mod = True, export_div=True)
 QG.rebuild(QG.point_cloud_graph)
 
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -130,7 +131,7 @@ G.nodes[root_point_riemanian]["viterbi_class"] = 0
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm2')
 
 QG.compute_direction_info(list_leaves=list_leaves2)
-opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=True, list_leaves=list_leaves2)
+opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=25, export_iter=True, list_leaves=list_leaves2)
 QG.rebuild(QG.point_cloud_graph)
 G = QG.point_cloud_graph
 list_leaves3 = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
@@ -176,8 +177,8 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
 
 
 
-#calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
-#export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
+calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
 #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
 #
 #Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles

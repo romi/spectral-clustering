@@ -83,7 +83,7 @@ def create_connected_riemannian_graph(point_cloud, method='knn', nearest_neighbo
             i += 1
         path = os.getcwd()
         print(path)
-        np.savetxt(path + 'New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
+        np.savetxt(path + '/New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
 
         pcd2 = open3d.read_point_cloud(path+"/New_pcd_connected.txt", format='xyz')
 

@@ -1,6 +1,7 @@
 import scipy as sp
 import numpy as np
 import networkx as nx
+import copy as copy
 
 from spectral_clustering.split_and_merge import *
 from spectral_clustering.quotientgraph_operations import *
@@ -256,6 +257,7 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
 
     list_stem_full = nx.dijkstra_path(QG, G.nodes[root_point_riemanian]["quotient_graph_node"], leafend, weight='distance_centroides')
     list_stem = list_stem_full
+    print('list_stem')
     print(list_stem)
     previous = 0
     """
@@ -422,6 +424,8 @@ def merge_remaining_clusters(quotientgraph, remaining_clusters_class=0, class_at
     return quotientgraph
 
 def remove_edges_useful_paths(QG):
-    for e in QG.edges():
-        if QG.edges[e]['useful_path_shortest'] is False:
+    FG = copy.deepcopy(QG)
+    d = FG.edges()
+    for e in d:
+        if FG.edges[e]['useful_path_shortest'] is False:
             QG.remove_edge(*e)

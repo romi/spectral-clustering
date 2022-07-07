@@ -1,10 +1,11 @@
 import operator
+from sklearn import *
 from spectral_clustering.display_and_export import *
 from spectral_clustering.split_and_merge import *
 from random import choice
 from spectral_clustering.dijkstra_segmentation import *
 import copy
-
+from sklearn.metrics.cluster import rand_score
 #Evaluations functions
 
 def count_number_limbs_apex_etc(QG, class_apex=4, class_limb=1, attribute='viterbi_class'):
@@ -123,13 +124,14 @@ def resegment_apex_for_eval_and_export(QG, class_apex=4, attribute='viterbi_clas
 def compute_recall_precision_IoU(file_semantic_results="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/pcd_viterbi_classsemantic_final.txt",
                                  file_ground_truth_coord="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/cheno_virtuel_coordinates.txt",
                                  file_ground_truth_labels="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/cheno_virtuel_labels.txt",
+                                 name_model='name_model',
                                  limb_gt=2, cotyledon_gt=3, main_stem_gt=1, petiole_gt=4,
                                  class_limb=1, class_mainstem=3, class_petiol=5, class_branch=6, class_apex=4):
     xc, yc, zc, labelsc = np.loadtxt(fname = file_semantic_results, delimiter=',', unpack=True)
     xt, yt, zt = np.loadtxt(fname = file_ground_truth_coord, delimiter=',', unpack=True)
     labelst = np.loadtxt(fname = file_ground_truth_labels, delimiter=',', unpack=True)
     exp = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelst[:, np.newaxis]), axis=1)
-    np.savetxt('Ground_truth_virtual.txt', exp, delimiter=' ', fmt='%f')
+    np.savetxt('Ground_truth_virtual'+name_model+'.txt', exp, delimiter=' ', fmt='%f')
 
     #creation d'une liste ground truth correspondant aux labels.
     label_gt_end = copy.deepcopy(labelst)
@@ -140,30 +142,51 @@ def compute_recall_precision_IoU(file_semantic_results="/Users/katiamirande/Pych
             new = class_mainstem
         elif label_gt_end[i] == petiole_gt:
             new = class_petiol
+        #elif label_gt_end[i] == petiole_gt:
+        #    new = class_mainstem
         elif label_gt_end[i] == cotyledon_gt:
             new = class_limb
         label_gt_end[i] = new
 
+    gt_final = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], label_gt_end[:, np.newaxis]), axis=1)
+    np.savetxt('Ground_truth_final' + name_model + '.txt', gt_final, delimiter=' ', fmt='%f')
     #ici j'ai trop de différents labels par rapport à la vérité terrain, a enlever si c'est ok entre les deux
 
     for i in range(len(labelsc)):
         if labelsc[i] == class_branch:
-            new = class_petiol
+            new = class_mainstem
             labelsc[i] = new
         elif labelsc[i] == class_apex:
             new = class_limb
             labelsc[i] = new
+        #elif labelsc[i] == class_petiol:
+        #    new = class_mainstem
+        #    labelsc[i] = new
 
+    label_final = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelsc[:, np.newaxis]),axis=1)
+    np.savetxt('Label_final' + name_model + '.txt', label_final, delimiter=' ', fmt='%f')
 
-
+    mres = np.zeros((len(set(label_gt_end)) + 4, 8))
+    #mres[0, 1] = 'TP'
+    #mres[0, 2] = 'FN'
+    #mres[0, 3] = 'FP'
+    #mres[0, 4] = 'Re'
+    #mres[0, 5] = 'Pr'
+    #mres[0, 6] = 'IoU'
     #faire une vérification que les coordoonnées correspondent ?
     TP = dict()
     FN = dict()
     FP = dict()
+    TN = dict()
+    a = 1
     for i in set(label_gt_end):
         TP[i] = 0
         FN[i] = 0
         FP[i] = 0
+        TN[i] = 0
+        mres[a, 0] = i
+        a += 1
+
 
 
     for i in range(len(labelsc)):
@@ -174,6 +197,10 @@ def compute_recall_precision_IoU(file_semantic_results="/Users/katiamirande/Pych
         else:
             FP[labelgiven] += 1
             FN[labeltruth] += 1
+        for c in set(label_gt_end):
+            if c != labelsc[i] and c != label_gt_end[i]:
+                TN[c] += 1
+
 
     Re = dict()
     Pr = dict()
@@ -181,6 +208,7 @@ def compute_recall_precision_IoU(file_semantic_results="/Users/katiamirande/Pych
     TPtot = 0
     FNtot = 0
     FPtot = 0
+    TNtot = 0
     MIoU = 0
     for i in set(label_gt_end):
         Re[i] = (TP[i]) / (TP[i]+FN[i])
@@ -189,13 +217,208 @@ def compute_recall_precision_IoU(file_semantic_results="/Users/katiamirande/Pych
         TPtot += TP[i]
         FNtot += FN[i]
         FPtot += FP[i]
+        TNtot += TN[i]
         MIoU += IoU[i]
 
     MIoU /= len(set(label_gt_end))
-    totalacc = TPtot / (TPtot + FNtot + FPtot)
+    totalacc = (TPtot+TNtot) / (TPtot +TNtot + FPtot +FNtot)
+    f1_score = TPtot / (TPtot + 0.5*(FNtot + FPtot))
+
+    a = 1
+    for i in set(label_gt_end):
+        mres[a, 1] = TP[i]
+        mres[a, 2] = FN[i]
+        mres[a, 3] = FP[i]
+        mres[a, 4] = TN[i]
+        mres[a, 5] = Re[i]
+        mres[a, 6] = Pr[i]
+        mres[a, 7] = IoU[i]
+        a += 1
+    mres[len(set(label_gt_end)) + 1, 1] = TPtot
+    mres[len(set(label_gt_end)) + 1, 2] = FNtot
+    mres[len(set(label_gt_end)) + 1, 3] = FPtot
+    mres[len(set(label_gt_end)) + 1, 4] = TNtot
+    mres[len(set(label_gt_end)) + 1, 7] = MIoU
+    mres[len(set(label_gt_end)) + 2, 1] = totalacc
+    mres[len(set(label_gt_end)) + 3, 1] = f1_score
+
+    cm = metrics.confusion_matrix(label_gt_end, labelsc)
+    np.savetxt(name_model+'scikit_cm', cm, fmt='%.4e')
+    np.savetxt(name_model + 'eval.txt', mres, fmt='%.4e')
 
 
+def change_labels(file_semantic_results="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/pcd_viterbi_classsemantic_final.txt",
+                    name_model='name_model',
+                    class_limb=1, class_mainstem=3, class_petiol=5, class_branch=6, class_apex=4):
+
+    xc, yc, zc, labelsc = np.loadtxt(fname=file_semantic_results, delimiter=',', unpack=True)
+    for i in range(len(labelsc)):
+        if labelsc[i] == class_branch:
+            new = class_mainstem
+            labelsc[i] = new
+        elif labelsc[i] == class_apex:
+            new = class_limb
+            labelsc[i] = new
+        elif labelsc[i] == class_petiol:
+            new = class_mainstem
+            labelsc[i] = new
+
+    label_final = np.concatenate((xc[:, np.newaxis], yc[:, np.newaxis], zc[:, np.newaxis], labelsc[:, np.newaxis]),axis=1)
+    np.savetxt('Label_final' + name_model + '.txt', label_final, delimiter=' ', fmt='%f')
 
 
+def downsample_pcd(file_pcd="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/pcd_viterbi_classsemantic_final.txt",
+                    name_model='name_model'):
 
+    pcd = open3d.read_point_cloud(file_pcd, format='ply')
+    downpcd = open3d.voxel_down_sample_and_trace(input=pcd, voxel_size=1.0, approximate_class=True)
+    open3d.write_point_cloud(name_model+"down_sample.ply", downpcd)
+
+def compute_recall_precision_IoU_real_plants(file_semantic_results="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/pcd_viterbi_classsemantic_final.txt",
+                                             file_instance_results="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/pcd_viterbi_classsemantic_final.txt",
+                                 file_ground_truth="/Users/katiamirande/PycharmProjects/Spectral_clustering_0/script/cheno_virtuel_coordinates.txt",
+                                 name_model= "name",
+                                 class_limb=1, class_mainstem=3, class_petiol=5, class_branch=6, class_apex=4):
+    xc, yc, zc, labelsc = np.loadtxt(fname = file_semantic_results, delimiter=',', unpack=True)
+    xc, yc, zc, labelinstance = np.loadtxt(fname = file_instance_results, delimiter=',', unpack=True)
+    xt, yt, zt, labelst, np2,  c1,c2,c3 = np.loadtxt(fname = file_ground_truth, delimiter=',', unpack=True)
+    exp = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelst[:, np.newaxis]), axis=1)
+    np.savetxt('Ground_truth_'+name_model+'.txt', exp, delimiter=' ', fmt='%f')
+
+    rand = metrics.cluster.rand_score(labelst, labelinstance)
+    print("rand")
+    print(rand)
+    rand_adj = metrics.cluster.adjusted_rand_score(labelst, labelinstance)
+    print("rand_adjusted")
+    print(rand_adj)
+    mutual= metrics.adjusted_mutual_info_score(labelst, labelinstance)
+    print("adjusted_mutual_info_score")
+    print(mutual)
+    comp = metrics.completeness_score(labelst, labelinstance)
+    print("completeness_score")
+    print(comp)
+    fowlkes = metrics.fowlkes_mallows_score(labelst, labelinstance)
+    print("fowlkes_mallows_score")
+    print(fowlkes)
+    homogeneity = metrics.homogeneity_score(labelst, labelinstance)
+    print("homogeneity_score")
+    print(homogeneity)
+
+    #creation d'une liste ground truth correspondant aux labels.
+    label_gt_end = copy.deepcopy(labelst)
+    for i in range(len(label_gt_end)):
+        if 399 < label_gt_end[i] < 500:
+            new = class_limb
+        elif label_gt_end[i] == 0:
+            new = class_mainstem
+        elif 199 < label_gt_end[i] < 300:
+            new = class_petiol
+        elif 299 < label_gt_end[i] < 399:
+            new = class_apex
+        elif 99 < label_gt_end[i] < 199:
+            new = class_branch
+        elif 999 < label_gt_end[i]:
+            new = class_limb
+        label_gt_end[i] = new
+
+    gt_final = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], label_gt_end[:, np.newaxis]), axis=1)
+    np.savetxt('Ground_truth_final' + name_model + '.txt', gt_final, delimiter=' ', fmt='%f')
+    #ici j'ai trop de différents labels par rapport à la vérité terrain, a enlever si c'est ok entre les deux
+    """
+    for i in range(len(labelsc)):
+        if labelsc[i] == class_branch:
+            new = class_mainstem
+            labelsc[i] = new
+        elif labelsc[i] == class_apex:
+            new = class_limb
+            labelsc[i] = new
+        #elif labelsc[i] == class_petiol:
+        #    new = class_mainstem
+        #    labelsc[i] = new
+    """
+    label_final = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelsc[:, np.newaxis]),axis=1)
+    np.savetxt('Label_final' + name_model + '.txt', label_final, delimiter=' ', fmt='%f')
+
+    mres = np.zeros((len(set(label_gt_end)) + 4, 8))
+    #mres[0, 1] = 'TP'
+    #mres[0, 2] = 'FN'
+    #mres[0, 3] = 'FP'
+    #mres[0, 4] = 'Re'
+    #mres[0, 5] = 'Pr'
+    #mres[0, 6] = 'IoU'
+    #faire une vérification que les coordoonnées correspondent ?
+    TP = dict()
+    FN = dict()
+    FP = dict()
+    TN = dict()
+    a = 1
+    if set(label_gt_end) > set(labelsc):
+        list = set(label_gt_end)
+    else:
+        list = set(labelsc)
+    for i in list:
+        TP[i] = 0
+        FN[i] = 0
+        FP[i] = 0
+        TN[i] = 0
+        mres[a, 0] = i
+        a += 1
+
+
+    for i in range(len(labelsc)):
+        labelgiven = labelsc[i]
+        labeltruth = label_gt_end[i]
+        if labelsc[i] == label_gt_end[i]:
+            TP[labelgiven] += 1
+        else:
+            FP[labelgiven] += 1
+            FN[labeltruth] += 1
+        for c in set(label_gt_end):
+            if c != labelsc[i] and c != label_gt_end[i]:
+                TN[c] += 1
+
+
+    Re = dict()
+    Pr = dict()
+    IoU = dict()
+    TPtot = 0
+    FNtot = 0
+    FPtot = 0
+    TNtot = 0
+    MIoU = 0
+    for i in set(label_gt_end):
+        Re[i] = (TP[i]) / (TP[i]+FN[i])
+        Pr[i] = (TP[i]) / (TP[i]+FP[i])
+        IoU[i] = (TP[i]) / (TP[i]+FN[i]+FP[i])
+        TPtot += TP[i]
+        FNtot += FN[i]
+        FPtot += FP[i]
+        TNtot += TN[i]
+        MIoU += IoU[i]
+
+    MIoU /= len(set(label_gt_end))
+    totalacc = (TPtot+TNtot) / (TPtot +TNtot + FPtot +FNtot)
+    f1_score = TPtot / (TPtot + 0.5*(FNtot + FPtot))
+
+    a = 1
+    for i in set(label_gt_end):
+        mres[a, 1] = TP[i]
+        mres[a, 2] = FN[i]
+        mres[a, 3] = FP[i]
+        mres[a, 4] = TN[i]
+        mres[a, 5] = Re[i]
+        mres[a, 6] = Pr[i]
+        mres[a, 7] = IoU[i]
+        a += 1
+    mres[len(list) + 1, 1] = TPtot
+    mres[len(list) + 1, 2] = FNtot
+    mres[len(list) + 1, 3] = FPtot
+    mres[len(list) + 1, 4] = TNtot
+    mres[len(list) + 1, 7] = MIoU
+    mres[len(list) + 2, 1] = totalacc
+    mres[len(list) + 3, 1] = f1_score
+
+    cm = metrics.confusion_matrix(label_gt_end, labelsc)
+    np.savetxt(name_model+'scikit_cm', cm, fmt='%.4e')
+    np.savetxt(name_model + 'eval.txt', mres, fmt='%.4e')
 

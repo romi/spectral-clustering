@@ -289,7 +289,7 @@ def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpoin
 
 
 def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_cluster_tested=10,
-                                      attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1, G_mod = True, export_div=False):
+                                      attribute='norm_gradient', number_attribute = 1,  standardization = False, numer = 1, G_mod = True, export_div=False, ret=False):
     G = QG.point_cloud_graph
     qg_values = nx.get_node_attributes(G, 'quotient_graph_node')
     maxi = max(qg_values.values())
@@ -336,7 +336,6 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                 num += k_opt + len(list_nodes)
 
             #print(i, ' divided in ', k_opt)
-                #cluster_c = clustering.cluster_centers_
                 if export_div:
                     np.savetxt('pcd_new_labels_' + str(i) + '.txt', new_labels, delimiter=",")
                     indices = np.argsort(new_labels[:, 3])
@@ -346,8 +345,9 @@ def resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework= [], number_of_clus
                     for arr in arr_temp:
                         np.savetxt('pcd_new_labels_' + str(i) + str(v) + '.txt', arr, delimiter=",")
                         v += 1
-
-                #return cluster_c
+                if ret is True:
+                    cluster_c = clustering.cluster_centers_
+                    return cluster_c
 
             else:
                 print("nothing to cluster")

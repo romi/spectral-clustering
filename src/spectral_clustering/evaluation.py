@@ -336,10 +336,14 @@ def compute_recall_precision_IoU_real_plants(file_semantic_results="/Users/katia
         #    new = class_mainstem
         #    labelsc[i] = new
     """
+    if set(label_gt_end) > set(labelsc):
+        list = set(label_gt_end)
+    else:
+        list = set(labelsc)
     label_final = np.concatenate((xt[:, np.newaxis], yt[:, np.newaxis], zt[:, np.newaxis], labelsc[:, np.newaxis]),axis=1)
     np.savetxt('Label_final' + name_model + '.txt', label_final, delimiter=' ', fmt='%f')
 
-    mres = np.zeros((len(set(label_gt_end)) + 4, 8))
+    mres = np.zeros(((len(list)) + 4, 8))
     #mres[0, 1] = 'TP'
     #mres[0, 2] = 'FN'
     #mres[0, 3] = 'FP'
@@ -352,10 +356,7 @@ def compute_recall_precision_IoU_real_plants(file_semantic_results="/Users/katia
     FP = dict()
     TN = dict()
     a = 1
-    if set(label_gt_end) > set(labelsc):
-        list = set(label_gt_end)
-    else:
-        list = set(labelsc)
+
     for i in list:
         TP[i] = 0
         FN[i] = 0

@@ -33,14 +33,14 @@ from spectral_clustering.evaluation import *
 import argparse
 
 from importlib import reload
-"""
+
 parser = argparse.ArgumentParser()
 parser.add_argument("InputFileName")
 args = parser.parse_args()
 model_filename = args.InputFileName
-"""
+
 begin = time.time()
-model_filename = '/Users/katiamirande/Documents/Données/Donnees_tests/ROMI-Cs/cheno_A_2021_04_19_clustered.ply'
+#model_filename = '/Users/katiamirande/Documents/Données/Donnees_tests/ROMI-Cs/cheno_A_2021_04_19_clustered.ply'
 filenamemod = os.path.splitext(os.path.basename(model_filename))[0]
 pcd = open3d.read_point_cloud(model_filename, format='ply')
 r = 18
@@ -104,7 +104,7 @@ for n in QG.nodes:
 
 
 
-resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_of_linear, number_of_cluster_tested = 20, attribute='direction_gradient', number_attribute=3, standardization=False, numer = 1, G_mod = True, export_div=True)
+resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework = list_of_linear, number_of_cluster_tested = 20, attribute='direction_gradient', number_attribute=3, standardization=False, numer = 1, G_mod = True, export_div=False)
 QG.rebuild(QG.point_cloud_graph)
 
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -131,7 +131,7 @@ G.nodes[root_point_riemanian]["viterbi_class"] = 0
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm2')
 
 QG.compute_direction_info(list_leaves=list_leaves2)
-opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=25, export_iter=True, list_leaves=list_leaves2)
+opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=30, export_iter=True, list_leaves=list_leaves2)
 QG.rebuild(QG.point_cloud_graph)
 G = QG.point_cloud_graph
 list_leaves3 = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves)
@@ -148,6 +148,7 @@ if G.nodes[root_point_riemanian]["quotient_graph_node"] in list_leaves3:
     list_leaves3.remove(G.nodes[root_point_riemanian]["quotient_graph_node"])
 list_of_linear.append(G.nodes[root_point_riemanian]["quotient_graph_node"])
 G.nodes[root_point_riemanian]["viterbi_class"] = 0
+
 
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_from_norm3')
 
@@ -188,6 +189,7 @@ stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, 
 
 QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
 QG.point_cloud_graph = G
+
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 
 list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
@@ -232,13 +234,13 @@ export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', na
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename=filenamemod+"_instance_1.txt")
-
+delete_small_clusters(QG, min_number_of_element_in_a_quotient_node=50)
 topology_control(QG, attribute_class_control ='viterbi_class',
                  class_stem=3, class_petiols=5, class_limb=1,
                  class_apex=4, error_norm=10, error_dir=11)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
 #treat_topology_error(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm', number_of_cluster_tested=20)
 #export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_reseg')
 #export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
@@ -258,7 +260,7 @@ def treat_topology_error2(QG, attribute_class_control='viterbi_class',number_att
         SG_node = create_subgraphs_to_work(QG, list_quotient_node_to_work=[node_QG])
 
         clusters_centers = resegment_nodes_with_elbow_method(QG, QG_nodes_to_rework=[node_QG], number_of_cluster_tested=number_of_cluster_tested,
-                                          attribute=way_to_treat, number_attribute=number_attribute, standardization=False, numer=1)
+                                          attribute=way_to_treat, number_attribute=number_attribute, standardization=False, numer=1, ret = True)
 
         if way_to_treat == 'norm_gradient':
             print(clusters_centers)
@@ -310,11 +312,14 @@ QG.rebuild(G)
 label_leaves = 1.0
 list_leaves3 = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, label_leaves, attribute='viterbi_class')
 list_apex3 = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, 4.0, attribute='viterbi_class')
+list_stem = select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, 3.0, attribute='viterbi_class')
 for n in QG.nodes:
     if n in list_leaves3:
         QG.nodes[n]["viterbi_class"] = 1
     elif n in list_apex3:
         QG.nodes[n]["viterbi_class"] = 1
+    elif n in list_stem:
+        QG.nodes[n]["viterbi_class"] = 3
     else:
         list_of_linear.append(n)
         QG.nodes[n]["viterbi_class"] = 0
@@ -325,8 +330,8 @@ def obtain_tree_with_botanical(QG):
     # Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
     list_apex = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 4]
     list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
-    stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
-    QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
+    #stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian, new_class_stem=3)
+    #QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
     QG.point_cloud_graph = G
     weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0,
                          class_apex=4,
@@ -352,6 +357,7 @@ def obtain_tree_with_botanical(QG):
     return QG
 
 QG=obtain_tree_with_botanical(QG)
+QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[5])
 
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename=filenamemod+"_semantic_final", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name=filenamemod+'_semantic_final')

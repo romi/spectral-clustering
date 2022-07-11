@@ -226,8 +226,12 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
     calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
     G = QG.point_cloud_graph
     list_length = []
-    print('end')
-    for leaf in list_apex:
+    if list_apex:
+        list_end = list_apex
+    else:
+        list_end = list_leaves3
+
+    for leaf in list_end:
         sub_qg = nx.subgraph(QG, list_of_linear + [leaf] +  [G.nodes[root_point_riemanian]["quotient_graph_node"]])
         display_and_export_quotient_graph_matplotlib(quotient_graph=sub_qg, node_sizes=20,
                                                      filename="sub_graphsclass_feuilles_sur_noeuds"+str(leaf),
@@ -252,7 +256,7 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
         print(path)
         print(lengthpath)
 
-    leafend = list_apex[list_length.index(max(list_length))]
+    leafend = list_end[list_length.index(max(list_length))]
     #path_final = paths[]
 
     list_stem_full = nx.dijkstra_path(QG, G.nodes[root_point_riemanian]["quotient_graph_node"], leafend, weight='distance_centroides')

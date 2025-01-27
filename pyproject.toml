@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spectral_clustering"
+version = "0.0.1"
+description = "A Python package to perform segmentation of 3D plant point clouds."
+readme = "README.md"
+license = { text = "cecill-c" }
+authors = [
+    { name = "Katia Mirande", email = "katia.mirande@inria.fr" }
+]
+maintainers = [
+    { name = "Jonathan Legrand", email = "jonathan.legrand@ens-lyon.fr" },
+]
+requires-python = ">=3.8"
+dependencies = [
+    "matplotlib",
+    "networkx",
+    "numpy",
+    "pandas",
+    "open3d",
+    "ortools",
+    "scikit-learn",
+    "scipy",
+]
+
+[project.urls]
+Repository = "https://gitlab.inria.fr/mosaic/work-in-progress/spectral_clustering"

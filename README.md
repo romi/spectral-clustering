@@ -16,7 +16,9 @@ A Python package designed to perform both semantic and instance segmentation of 
 
 ## Overview
 
-Spectral Clustering is a powerful tool for accurate segmentation and classification of plant 3D point clouds. By leveraging advanced graph-based methods, this package enables simultaneous semantic and instance segmentation, correcting potential segmentation defects and incorporating plant structural knowledge. This method has been tested on both synthetic and real datasets to demonstrate reliability and efficiency.
+Spectral Clustering is a powerful tool for accurate segmentation and classification of plant 3D point clouds.
+By leveraging advanced graph-based methods, this package enables simultaneous semantic and instance segmentation, correcting potential segmentation defects and incorporating plant structural knowledge.
+This method has been tested on both synthetic and real datasets to demonstrate reliability and efficiency.
 
 ---
 
@@ -26,9 +28,7 @@ To set up the environment and install the package, follow the steps below.
 
 ### Prerequisites
 
-Before starting, ensure you have:
-- Python 3.10 installed.
-- `conda` package manager.
+Before starting, ensure you have `conda` package manager.
 
 ### Installation Steps
 
@@ -73,9 +73,9 @@ Traditional approaches rely on detecting plant organs based on local geometry bu
 
 This package is closely related to the following thesis:
 
-> **Katia MIRANDE** - Accurate simultaneous semantic and instance segmentation of 3D plant point clouds.  
-> The work explores graph-based methods at point and organ scales for plant analysis.
-> Full text and supporting material can be accessed [here](http://www.theses.fr/2022STRAD020/document).
+> **Katia MIRANDE** - _Semantic and instance segmentation of plant 3D point cloud_.  
+> The work explores graph-based methods at point and organ scales for plant phenotyping.
+> Full text can be accessed [here](http://www.theses.fr/2022STRAD020/document).
 
 ---
 
@@ -83,5 +83,3 @@ This package is closely related to the following thesis:
 
 We welcome contributions from the community!
 If you'd like to contribute, feel free to fork the repository or raise an issue.
-
----

@@ -10,7 +10,8 @@ import scipy.sparse as spsp
 import scipy as sp
 import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
+import open3d as o3d
+
 import spectral_clustering.point_cloud_graph as kpcg
 
 import time
@@ -30,7 +31,7 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_C_2021_04_07_double_hauteur.ply", format='ply')
+pcd = o3d.io.read_point_cloud("Data/chenos/cheno_C_2021_04_07_double_hauteur.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)

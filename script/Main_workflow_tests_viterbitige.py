@@ -10,7 +10,8 @@ import scipy.sparse as spsp
 import scipy as sp
 import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
+import open3d as o3d
+
 import spectral_clustering.point_cloud_graph as kpcg
 
 import time
@@ -31,7 +32,7 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_B_2021_04_19.ply", format='ply')
+pcd = o3d.io.read_point_cloud("Data/chenos/cheno_B_2021_04_19.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
@@ -132,13 +133,18 @@ opti_energy_dot_product(quotientgraph=QG, subgraph_riemannian=G, angle_to_stop=3
 
 QG.compute_nodes_coordinates()
 QG.compute_local_descriptors()
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="planarity", data_on_nodes='planarity', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="linearity", data_on_nodes='linearity', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="scattering", data_on_nodes='scattering', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="planarity",
+                                             data_on_nodes='planarity', data=True, attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="linearity",
+                                             data_on_nodes='linearity', data=True, attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="scattering",
+                                             data_on_nodes='scattering', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, 'planarity2')
 export_quotient_graph_attribute_on_point_cloud(QG, 'linearity')
 export_quotient_graph_attribute_on_point_cloud(QG, 'scattering')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotient_graph_matplotlib_final", data_on_nodes='intra_class_node_number', data=False, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="quotient_graph_matplotlib_final",
+                                             data_on_nodes='intra_class_node_number', data=False,
+                                             attributekmeans4clusters=False)
 
 
 #QG_t2 = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='inverse_inter_class_edge_weight')

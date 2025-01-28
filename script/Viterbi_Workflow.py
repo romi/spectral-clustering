@@ -22,7 +22,7 @@ from spectral_clustering.quotientgraph_semantics import *
 
 a = time.time()
 file1 = "/Users/katiamirande/Documents/Tests/Viterbi/chénopode/cheno_C_2021_04_07_small/seg/New_pcd_connected.ply"
-pcd = open3d.read_point_cloud(file1, format='ply')
+pcd = o3d.io.read_point_cloud(file1, format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r, radius=r)
 G = PointCloudGraph(SimG)
@@ -54,9 +54,12 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="planarity",
                                             filename="G_linearity.txt")
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="planarity", data_on_nodes='planarity', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="linearity", data_on_nodes='linearity', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="scattering", data_on_nodes='scattering', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="planarity",
+                                             data_on_nodes='planarity', data=True, attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="linearity",
+                                             data_on_nodes='linearity', data=True, attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="scattering",
+                                             data_on_nodes='scattering', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, 'planarity')
 export_quotient_graph_attribute_on_point_cloud(QG, 'linearity')
 export_quotient_graph_attribute_on_point_cloud(QG, 'scattering')
@@ -98,7 +101,7 @@ viterbi(t, 'observations', initial_distribution, transition_matrix, pdf_emission
 
 add_viterbi_results_to_quotient_graph(QG_t2, t, list_semantics=['leaf', 'stem', 'NSP'])
 add_viterbi_results_to_quotient_graph(QG, t, list_semantics=['leaf', 'stem', 'NSP'])
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG_t2, node_sizes=20, filename="quotient_graph_viterbi",
+display_and_export_quotient_graph_matplotlib(qg=QG_t2, node_sizes=20, name="quotient_graph_viterbi",
                                              data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class')

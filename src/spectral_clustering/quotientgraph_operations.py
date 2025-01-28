@@ -1,6 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import networkx as nx
 import operator
-from spectral_clustering.display_and_export import *
+
+import numpy as np
+
+from spectral_clustering.display_and_export import display_and_export_quotient_graph_matplotlib
+from spectral_clustering.display_and_export import export_some_graph_attributes_on_point_cloud
+
 
 def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_node=50):
     """Compute a new clustering by treating one node of the QuotientGraph after the other and changing the class of the
@@ -62,21 +70,22 @@ def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_nod
     
     
 def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old_cluster, new_cluster, node_to_change):
-    """When the node considered change of cluster, this function updates all the attributes associated to the
-    quotient graph.
+    """Updates the attributes of a quotient graph after a node changes its cluster.
+
+    This function modifies all the relevant attributes of the quotient graph
+    and ensures consistency after a node transitions from one cluster to another.
 
     Parameters
     ----------
-    node_to_change : int
-    The node considered and changed in an other cluster
+    quotientgraph : QuotientGraph
+        The quotient graph object whose attributes need to be updated. It contains
+        the graph structure as well as attribute data.
     old_cluster : int
-    The original cluster of the node
+        The original cluster to which the node belonged.
     new_cluster : int
-    The new cluster of the node
-    G : PointCloudGraph
-
-    Returns
-    -------
+        The new cluster to which the node is assigned.
+    node_to_change : int
+        The node that transitions from one cluster to another.
     """
 
     G = quotientgraph.point_cloud_graph
@@ -122,24 +131,27 @@ def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old
 
 
 def check_connectivity_of_modified_cluster(pointcloudgraph, old_cluster, new_cluster, node_to_change):
-    """When the node considered change of cluster, this function checks if the old cluster of the node is still
-    connected or forms two different parts.
-    This function is to use after the change occurred in the distance-based graph
+    """Checks the connectivity of the old cluster after a node has been reassigned to a new cluster.
+
+    When a node is moved from one cluster to another in the distance-based graph, this function verifies
+    whether the old cluster of the node remains connected or gets split into multiple disconnected
+    parts.
 
     Parameters
     ----------
-    node_to_change : int
-    The node considered and changed in an other cluster
+    pointcloudgraph : PointCloudGraph
+        The graph representing the point cloud and its connections.
     old_cluster : int
-    The original cluster of the node
+        The original cluster identifier of the node.
     new_cluster : int
-    The new cluster of the node
-    G : PointCloudGraph
+        The new cluster identifier of the node.
+    node_to_change : int
+        The node that has been reassigned to a different cluster.
 
     Returns
     -------
-    Boolean
-    True if the connectivity was conserved
+    bool
+        ``True`` if the old cluster remains connected after the node is reassigned, ``False`` otherwise.
     """
     G = pointcloudgraph
     # Build a dictionary which associate each node of the PointCloudGraph with its cluster/node in the QuotientGraph
@@ -160,6 +172,29 @@ def check_connectivity_of_modified_cluster(pointcloudgraph, old_cluster, new_clu
 
 
 def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_points=[]):
+    """Collect unique quotient graph nodes corresponding to the given list of point cloud points.
+
+    This function retrieves the quotient graph nodes associated with the provided points
+    in the point cloud graph. It extracts the nodes from the quotient graph associated
+    with each given point in the graph and eliminates duplicates to return a unique
+    list of quotient graph nodes.
+
+    Parameters
+    ----------
+    quotient_graph : object
+        A graph-like data structure with a `point_cloud_graph` attribute. The
+        `point_cloud_graph` is expected to have nodes with a `quotient_graph_node`
+        attribute.
+    list_of_points : list, optional
+        A list of specific point cloud node identifiers whose associated quotient
+        graph nodes need to be collected. Default is an empty list.
+
+    Returns
+    -------
+    list
+        A list of unique quotient graph nodes corresponding to the input point
+        cloud points.
+    """
     G = quotient_graph.point_cloud_graph
     listi = []
     for node in list_of_points:
@@ -170,6 +205,31 @@ def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_p
     return list_of_clusters
 
 def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, list_of_points=[]):
+    """Collects quotient graph nodes from a point cloud.
+
+    This function determines the quotient graph nodes that are most associated
+    with the points within a given list of points using a majority rule. It
+    iterates through the nodes in the quotient graph, evaluates point
+    membership, and decides the inclusion of a quotient graph node into the
+    result based on the majority vote.
+
+    Parameters
+    ----------
+    quotient_graph : object
+        The quotient graph object containing a point cloud graph with defined
+        nodes. Each node in the graph must include a 'quotient_graph_node'
+        attribute.
+    list_of_points : list, optional
+        A list of points that are used to determine the majority association
+        with the quotient graph's nodes. If not provided, it defaults to an
+        empty list.
+
+    Returns
+    -------
+    list
+        A list of unique quotient graph nodes from the point cloud graph that
+        have a majority of association with the provided list of points.
+    """
     G = quotient_graph.point_cloud_graph
     listi = []
 
@@ -189,7 +249,38 @@ def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, 
 
     return list_of_clusters
 
-def compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='clustering_labels'):
+def compute_quotient_graph_mean_attribute_from_points(G, QG, attribute='clustering_labels'):
+    """Computes the mean of a specified attribute from nodes in the input graph `G` and assigns
+    it to the corresponding nodes in the quotient graph `QG`.
+
+    This function calculates the average value of a given attribute for all nodes in the
+    original graph `G` that are represented by a single node in the quotient graph `QG`.
+    The resulting mean is stored as a new attribute in the corresponding node in `QG`.
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        The original graph containing the detailed node information including attributes
+        relevant to the computation.
+    QG : networkx.Graph
+        The quotient graph derived from the original graph. Each node in `QG` represents
+        a group of nodes from `G`.
+    attribute : str, optional
+        The node attribute in `G` from which the mean is to be computed. The default value
+        is 'clustering_labels'.
+
+    Notes
+    -----
+    The function assumes that:
+    1. Each node in `G` has the specified `attribute`.
+    2. Each node in `G` has a secondary attribute 'quotient_graph_node' which specifies
+       the corresponding node in `QG`.
+    3. Groups of nodes in `G` are mapped to nodes in `QG` through the
+       'quotient_graph_node' attribute.
+
+    The resulting mean for each node in `QG` will be stored under a new attribute with
+    the name defined as `{attribute}_mean`.
+    """
     for n in QG.nodes:
         moy = 0
         list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
@@ -198,6 +289,29 @@ def compute_quotientgraph_mean_attribute_from_points(G, QG, attribute='clusterin
         QG.nodes[n][attribute+'_mean'] = moy/len(list_of_nodes)
 
 def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
+    """Merges similar quotient graph (QG) nodes based on the specified attribute and updates the graph structure.
+
+    This function iteratively merges nodes in the quotient graph (QG) that share the same value of the specified
+    attribute. Each merge operation updates the QG and its associated point cloud graph, recalculating the
+    'similarity_class' for affected edges until no edges exhibit similarity. Optionally, the function can export
+    specific attributes to a file and display/export the modified graph.
+
+    Parameters
+    ----------
+    QG : networkx.Graph
+        The quotient graph to be processed, which contains node attributes and maintains
+        a reference to the associated point cloud graph.
+    attribute : str, optional
+        The node attribute used to evaluate similarity between nodes. By default, 'viterbi_class'.
+    export : bool, optional
+        If set to True, exports graph attributes and visualizations of the modified QG.
+        Defaults to True.
+
+    Returns
+    -------
+    networkx.Graph
+        The modified quotient graph (QG) with merged similar nodes and updated attributes.
+    """
     G = QG.point_cloud_graph
     energy_similarity = 0
     for e in QG.edges():
@@ -237,15 +351,41 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
         energy_max = energy_per_edges[edge_to_delete]
     #QG.rebuild(G=G)
     if export is True:
-        export_some_graph_attributes_on_point_cloud(pointcloudgraph=QG.point_cloud_graph,
+        export_some_graph_attributes_on_point_cloud(pcd_g=QG.point_cloud_graph,
                                                     graph_attribute='quotient_graph_node',
                                                     filename='Merge_after_viterbi.txt')
-        display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
-                                                     filename="merge_quotient_graph_viterbi", data_on_nodes='viterbi_class',
+        display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20,
+                                                     name="merge_quotient_graph_viterbi", data_on_nodes='viterbi_class',
                                                      data=True, attributekmeans4clusters=False)
     return QG
 
 def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
+    """Merge nodes of a quotient graph (QG) based on a specified attribute and classes.
+
+    This function processes a quotient graph and modifies it by merging nodes of the same
+    specified class based on their attributes. It calculates similarities between nodes
+    and iteratively merges those with a similarity class of 1, updating the properties
+    of the resulting graph. The node merging process ensures that the point cloud graph
+    associated with the quotient graph is also updated correctly.
+
+    Parameters
+    ----------
+    QG : networkx.Graph
+        The quotient graph that contains nodes and edges to be processed. The graph must
+        already include the attributes necessary for merging, such as intra-class node
+        numbers and node classes.
+    attribute : str, optional
+        The node attribute of the quotient graph used to determine which nodes can
+        be merged. Defaults to 'viterbi_class'.
+    viterbiclass : list, optional
+        A list of class values used for similarity calculations and determining
+        whether nodes should be merged. Defaults to [1].
+
+    Returns
+    -------
+    networkx.Graph
+        The updated quotient graph after merging nodes of the specified class.
+    """
     G = QG.point_cloud_graph
     energy_similarity = 0
     for e in QG.edges():
@@ -289,6 +429,21 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
 
 
 def quotient_graph_compute_direction_mean(quotient_graph):
+    """Computes the mean direction gradient for each node in a quotient graph.
+
+    This function iterates through nodes in the given `quotient_graph` and computes
+    the mean of a specified property, `direction_gradient`, over corresponding
+    subsets of nodes in the associated point cloud graph. The computed means are
+    stored as a new property, `dir_gradient_mean`, in the nodes of the quotient graph.
+
+    Parameters
+    ----------
+    quotient_graph : QuotientGraph
+        The input quotient graph, which is expected to contain a property,
+        `point_cloud_graph`. Each node in the `quotient_graph` corresponds to
+        a set of nodes in the associated `point_cloud_graph`, and the function
+        computes and assigns a mean value for its `direction_gradient` property.
+    """
     G = quotient_graph.point_cloud_graph
     for l in quotient_graph:
         quotient_graph.nodes[l]['dir_gradient_mean'] = 0
@@ -299,6 +454,24 @@ def quotient_graph_compute_direction_mean(quotient_graph):
 
 
 def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='dir_gradient_mean'):
+    """Computes the standard deviation of direction gradients for a quotient graph node.
+
+    This function calculates the standard deviation of the direction gradients for each
+    quotient graph node. It processes each node in the quotient graph by iterating through
+    its associated nodes in the original graph. For each associated node, a directional
+    gradient is computed, and the mean and standard deviation of the gradients are updated
+    accordingly in the quotient graph node attributes.
+
+    Parameters
+    ----------
+    quotient_graph : object
+        The quotient graph object, which contains nodes and associated attributes. It
+        includes a point cloud graph (point_cloud_graph) and information about the
+        directional gradients of each node.
+    mean : str, optional
+        The attribute name in the quotient graph node describing the mean vector for
+        the directional gradient. Defaults to 'dir_gradient_mean'.
+    """
     G = quotient_graph.point_cloud_graph
     for l in quotient_graph:
         quotient_graph.nodes[l]['dir_gradient_angle_mean'] = 0
@@ -318,18 +491,70 @@ def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='di
 
 
 def transfer_quotientgraph_infos_on_riemanian_graph(QG,info='viterbi_class'):
+    """Transfers information from a quotient graph to a Riemannian graph based on a specified attribute.
+
+    The function replicates a specified attribute from the nodes of the quotient graph to the nodes
+    of the Riemannian graph. Each node in the Riemannian graph receives the value of the attribute
+    from its corresponding node in the quotient graph. The correspondence is determined by a mapping
+    stored in each node of the Riemannian graph.
+
+    Parameters
+    ----------
+    QG : QuotientGraph
+        The quotient graph containing the original information that will be transferred.
+    info : str, optional
+        The attribute key in the quotient graph's nodes whose values are to be transferred to
+        the nodes of the Riemannian graph. Default is 'viterbi_class'.
+
+    Raises
+    ------
+    KeyError
+        If the `quotient_graph_node` key is missing in any node's attributes in the
+        Riemannian graph or if the specified `info` key is missing in the corresponding
+        nodes in the quotient graph.
+
+    Notes
+    -----
+    This function assumes correspondence between the nodes of the quotient graph and
+    the nodes of the Riemannian graph is established via the 'quotient_graph_node'
+    key in each Riemannian graph node.
+    """
     G = QG.point_cloud_graph
     for n in G.nodes:
         G.nodes[n][info] = QG.nodes[G.nodes[n]['quotient_graph_node']][info]
 
 
-def calcul_quotite_feuilles(QG, list_leaves, list_of_linear, root_point_riemanian):
+def calculate_leaf_quotients(QG, list_leaves, list_of_linear, root_point_riemanian):
+    """Calculates leaf quotients for nodes and edges in a graph, updating specific attributes for each.
+
+    The function processes a quotient graph `QG` and updates node and edge attributes based on the paths
+    between leaf nodes in `list_leaves` and a designated `root_point_riemanian`. For each leaf, the function
+    determines the shortest path (via Dijkstra's algorithm) from the leaf to the root, either through specific
+    nodes in `list_of_linear` or the entire graph.
+    It updates the 'leaf_quotient_n' and 'leaf_quotient_e' attributes of nodes and edges respectively along the path,
+    storing how many times each is involved in such paths.
+    The function also manages the 'useful_path' attribute for edges.
+
+    Parameters
+    ----------
+    QG : networkx.Graph
+        The quotient graph represented as a NetworkX graph object. It contains nodes and edges with
+        specific attributes that are updated during the computation.
+    list_leaves : list
+        A list of leaf nodes from which paths to the root node will be calculated.
+    list_of_linear : list
+        A list of intermediate nodes that may be included in the subgraph for calculating paths.
+    root_point_riemanian : Any
+        The root point in the Riemannian space, used to identify the destination node within the quotient
+        graph.
+
+    """
     G = QG.point_cloud_graph
     for e in QG.edges:
-        QG.edges[e]['quotite_feuille_e'] = 0
+        QG.edges[e]['leaf_quotient_e'] = 0
         QG.edges[e]['useful_path'] = 50
     for n in QG.nodes:
-        QG.nodes[n]['quotite_feuille_n'] = 0
+        QG.nodes[n]['leaf_quotient_n'] = 0
 
     for leaf in list_leaves:
         print(leaf)
@@ -341,10 +566,10 @@ def calcul_quotite_feuilles(QG, list_leaves, list_of_linear, root_point_riemania
             path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
             print(path)
         for n in path:
-            QG.nodes[n]['quotite_feuille_n'] += 1
+            QG.nodes[n]['leaf_quotient_n'] += 1
         for i in range(len(path) - 1):
             e = (path[i], path[i + 1])
-            QG.edges[e]['quotite_feuille_e'] += 1
+            QG.edges[e]['leaf_quotient_e'] += 1
             QG.edges[e]['useful_path'] = 0
 
 

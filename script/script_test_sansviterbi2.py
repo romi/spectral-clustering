@@ -10,7 +10,8 @@ import scipy.sparse as spsp
 import scipy as sp
 import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
+import open3d as o3d
+
 import spectral_clustering.point_cloud_graph as kpcg
 
 import time
@@ -41,7 +42,7 @@ model_filename = args.InputFileName
 begin = time.time()
 #model_filename = '/Users/katiamirande/Documents/Code_plantes_virtuelles/automatic_labelling/chenopodes/chenopodium-4_s_1p60_d11.ply'
 filenamemod = os.path.splitext(os.path.basename(model_filename))[0]
-pcd = open3d.read_point_cloud(model_filename, format='ply')
+pcd = o3d.io.read_point_cloud(model_filename, format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
@@ -169,7 +170,8 @@ list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
 
 differenciate_apex_limb(QG, attribute_class = 'viterbi_class', number_leaves_limb = 1, new_apex_class = 4)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_classlqg2", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="apex_classlqg2",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_seg.txt")
@@ -177,8 +179,8 @@ export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
 
 
 #calcul_quotite_feuilles(QG, list_leaves3, list_of_linear, root_point_riemanian)
-#export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
-#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
+#export_quotient_graph_attribute_on_point_cloud(QG, attribute='leaf_quotient_n', name='quotite_feuille_sur_cluster')
+#display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='leaf_quotient_n', data=True, attributekmeans4clusters = False)
 #
 #Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
 list_apex = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 4]
@@ -187,13 +189,14 @@ stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, 
 
 QG = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
 QG.point_cloud_graph = G
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="QG_merge_tige",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 
 list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
 list_notleaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] != 1]
-calcul_quotite_feuilles(QG, list_leaves, list_notleaves, root_point_riemanian)
+calculate_leaf_quotients(QG, list_leaves, list_notleaves, root_point_riemanian)
 for n in list_leaves:
-    QG.nodes[n]["quotite_feuille_n"] = -1
+    QG.nodes[n]["leaf_quotient_n"] = -1
 
 
 weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_linear=0, class_apex=4,
@@ -203,7 +206,8 @@ weight_with_semantic(QG=QG, class_attribute='viterbi_class', class_limb=1, class
 
 shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_apex=4, class_branch=0, class_mainstem=3, new_class_branch=6)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="apex_class_pet_branches",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches')
 
 
@@ -214,19 +218,23 @@ maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_ma
 
 shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribute='viterbi_class', weight='weight_sem_paths', class_limb=1, class_linear=0, class_mainstem=3, new_class_petiol=5)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="apex_class_pet",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole')
 
 
 QG = merge_remaining_clusters(quotientgraph=QG, remaining_clusters_class=0, class_attribute='viterbi_class')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_delete0", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="apex_class_pet_branches_delete0",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_delete0')
 
 remove_edges_useful_paths(QG)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="apex_class_pet_branches_remove", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="apex_class_pet_branches_remove",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb_petiole_branches_remove')
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename=filenamemod+"_semantic_1", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name=filenamemod + "_semantic_1",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name=filenamemod+'_semantic_1')
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
@@ -236,7 +244,8 @@ topology_control(QG, attribute_class_control ='viterbi_class',
                  class_stem=3, class_petiols=5, class_limb=1,
                  class_apex=4, error_norm=10, error_dir=11)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="topo_control", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="topo_control",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_control')
 #treat_topology_error(QG, attribute_class_control='viterbi_class', error = 10, way_to_treat='norm', number_of_cluster_tested=20)
 #export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='topo_reseg')
@@ -352,7 +361,8 @@ def obtain_tree_with_botanical(QG):
 
 QG=obtain_tree_with_botanical(QG)
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename=filenamemod+"_semantic_final", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name=filenamemod + "_semantic_final",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name=filenamemod+'_semantic_final')
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
@@ -372,7 +382,7 @@ selected_edges = [(u,v) for u,v,e in QG.edges(data=True) if e['useful_path'] == 
 QG.remove_edges_from(selected_edges)
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="span-path", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
 display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="span-path_intra", data_on_nodes='intra_class_node_number', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="span-path_quotite", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="span-path_quotite", data_on_nodes='leaf_quotient_n', data=True, attributekmeans4clusters = False)
 
 selected_nodes_isolated = [x for x in QG.nodes() if QG.degree(x) == 0]
 for n in selected_nodes_isolated:

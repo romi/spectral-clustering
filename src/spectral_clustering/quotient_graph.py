@@ -1,21 +1,29 @@
-########### Imports
-import time
-from collections import Counter
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import networkx as nx
 import numpy as np
-import scipy as sp
-import scipy.sparse as spsp
-import sklearn as sk
 import pandas as pd
-
+import sklearn as sk
 import spectral_clustering.point_cloud_graph as kpcg
-from spectral_clustering.similarity_graph import *
 
-
-########### Définition classe
 
 class QuotientGraph(nx.Graph):
+    """Represents a quotient graph derived from a point cloud graph.
+
+    The `QuotientGraph` class is designed to create a quotient graph based on the provided
+    point cloud graph structure. The class allows for computation of graph nodes, which are
+    regions derived from clustering in the point cloud graph, and establishes intra-class
+    and inter-class connections with computed weights and labels. Additionally, coordinates
+    of nodes can be derived, representing the geometric center of their respective regions.
+
+    Attributes
+    ----------
+    point_cloud_graph : PointCloudGraph or None
+        The underlying point cloud graph associated to this quotient graph.
+    nodes_coordinates : np.ndarray or None
+        Computed coordinates of the nodes within the quotient graph.
+    """
 
     def __init__(self):
         super().__init__()
@@ -26,25 +34,26 @@ class QuotientGraph(nx.Graph):
         self.nodes_coordinates = None
 
     def build_from_pointcloudgraph(self, G, labels_from_cluster, region_growing=True):
-        """Construction of a quotient graph with a PointCloudGraph. Region growing approach using a first clustering
-        of the points. Each region becomes a node of que quotient graph.
+        """Build a quotient graph from a given point cloud graph.
+
+        Builds a quotient graph from a given point cloud graph based on clustering results
+        and optionally applies a region-growing algorithm to extract connected components
+        made of the same k-means cluster label. The resulting quotient graph nodes represent
+        connected components, while edges represent interactions between these components.
 
         Parameters
         ----------
-        G : PointCloudGraph
-            The associated distance-based graph
-        labels_from_cluster : np.array
-            Each point of que point cloud/ distance based graph is associated to a label.
-            If the labels are an attribute to each node of the PointCloudGraph, use the following lines to convert :
-            labels_qg = [k for k in dict(G.nodes(data = 'quotient_graph_node')).values()]
-            labels_from_cluster = np.asarray(labels_qg)[:, np.newaxis]
-        filename : str
-            File to export
-
-        Returns
-        -------
-        Nothing
-        Update :
+        G : networkx.Graph
+            The input point cloud graph where nodes represent points and edges may have
+            associated weights describing relationships between points.
+        labels_from_cluster : numpy.ndarray
+            An array of labels from the initial clustering (e.g., k-means clustering) where
+            each element corresponds to the cluster label of a graph node.
+        region_growing : bool, optional, default=True
+            A flag indicating whether to use a region-growing algorithm to group nodes into
+            connected components based on their k-means cluster labels. If False, connected
+            components are not grown, and nodes are assigned to clusters based on initial
+            cluster labels directly.
         """
 
         kmeans_labels = labels_from_cluster
@@ -79,7 +88,7 @@ class QuotientGraph(nx.Graph):
                     visited[i] = 1
                     queue.append(i)
                     seed_kmeans_labels.append(kmeans_labels[seed])
-                    seed_colors.append('glasbey_'+ str(kmeans_labels[seed][0]%256))
+                    seed_colors.append('glasbey_' + str(kmeans_labels[seed][0] % 256))
                     # if len(my_count) == 4:
                     #     seed_colors.append(cluster_colors[kmeans_labels[seed][0]])
                     # else:
@@ -106,7 +115,7 @@ class QuotientGraph(nx.Graph):
             list_kmeans_labels = [kmeans_labels[i][0] for i in range(len(kmeans_labels))]
             label_count = len(list(set(list_kmeans_labels)))
             for i in range(kmeans_labels.shape[0]):
-                seed_colors.append('glasbey_'+ str(kmeans_labels[i][0]%256))
+                seed_colors.append('glasbey_' + str(kmeans_labels[i][0] % 256))
                 seed_kmeans_labels.append(kmeans_labels[i])
 
         # Create quotient graph nodes.
@@ -120,7 +129,7 @@ class QuotientGraph(nx.Graph):
         # Create quotient graph edges.
 
         intra_edge_weight_sum = np.zeros(label_count, dtype=np.float64)
-        intra_edge_count = np.zeros(label_count, dtype=np.int)
+        intra_edge_count = np.zeros(label_count, dtype=int)
 
         for (u, v) in G.edges:
             a = connected_component_labels[u, 0]
@@ -132,10 +141,10 @@ class QuotientGraph(nx.Graph):
                 if not self.has_edge(a, b):
                     w = G.edges[u, v]['weight']
                     self.add_edge(a, b, inter_class_edge_weight=w, inter_class_edge_number=1)
-                    #nx.set_edge_attributes(self, G.edges[u, v]['weight'], 'inter_class_edge_weight')
-                    #self.edges[a, b]['inter_class_edge_weight'] = G.edges[u, v]['weight']
-                    #nx.set_edge_attributes(self, 1, 'inter_class_edge_number')
-                    #self.edges[a, b]['inter_class_edge_number'] = 1
+                    # nx.set_edge_attributes(self, G.edges[u, v]['weight'], 'inter_class_edge_weight')
+                    # self.edges[a, b]['inter_class_edge_weight'] = G.edges[u, v]['weight']
+                    # nx.set_edge_attributes(self, 1, 'inter_class_edge_number')
+                    # self.edges[a, b]['inter_class_edge_number'] = 1
                 else:
                     self.edges[a, b]['inter_class_edge_weight'] += G.edges[u, v]['weight']
                     self.edges[a, b]['inter_class_edge_number'] += 1
@@ -153,7 +162,8 @@ class QuotientGraph(nx.Graph):
         nx.set_node_attributes(G, node_cc, 'quotient_graph_node')
 
         nx.set_node_attributes(self, dict(
-            zip(np.asarray(self.nodes()), np.transpose(np.asarray(connected_component_size)))), 'intra_class_node_number')
+            zip(np.asarray(self.nodes()), np.transpose(np.asarray(connected_component_size)))),
+                               'intra_class_node_number')
 
         nx.set_node_attributes(self, dict(
             zip(np.asarray(self.nodes()), np.transpose(np.asarray(intra_edge_weight_sum)))), 'intra_class_edge_weight')
@@ -168,24 +178,20 @@ class QuotientGraph(nx.Graph):
         nx.set_node_attributes(self, dict(
             zip(np.asarray(self.nodes()), seed_colors)), 'seed_colors')
 
-        #self.seed_colors = seed_colors
+        # self.seed_colors = seed_colors
         # self.label_count = label_count
         self.point_cloud_graph = G
-        #self.graph_labels_dict = dict(zip(np.asarray(self.nodes()), range(label_count)))
-        #kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels, filename=filename)
-
+        # self.graph_labels_dict = dict(zip(np.asarray(self.nodes()), range(label_count)))
+        # kpcg.export_anything_on_point_cloud(G, attribute=connected_component_labels, filename=filename)
 
     def compute_nodes_coordinates(self):
-        """Compute X Y Z coordinates for each node.
+        """Compute and assign average 3D coordinates to nodes in the quotient graph.
 
-        Compute X Y Z coordinates for each node of the quotient graph using the underlying point of the
-        PointCloudGraph (the distance_based_graph). The method just consist in computing the mean of each coordinates of
-        the underlying points of a quotient graph node.
-
-
-        Returns
-        -------
-
+        This function calculates the centroid coordinates for each node in the quotient
+        graph by computing the mean of the coordinates of the corresponding point cloud
+        graph nodes. These coordinates are subsequently stored as an attribute for each
+        node in the quotient graph. It provides a mechanism for visualizing the quotient
+        graph in 3D space.
         """
 
         G = self.point_cloud_graph
@@ -214,7 +220,6 @@ class QuotientGraph(nx.Graph):
         #     nodes_coords_moy[j, 0] = np.mean(X)
         #     nodes_coords_moy[j, 1] = np.mean(Y)
         #     nodes_coords_moy[j, 2] = np.mean(Z)
-
 
         # new_classif = new_classif[:, np.newaxis]
         # pcd_attribute = np.concatenate([G.nodes_coords, new_classif], axis=1)
@@ -249,6 +254,26 @@ class QuotientGraph(nx.Graph):
     #     self.build_from_pointcloudgraph(G, labels_qg_re)
 
     def ponderate_with_coordinates_of_points(self):
+        """Computes the weights of edges based on the centroid coordinates of their connected nodes.
+
+        This method first calculates the coordinates of the centroids for all nodes and then uses these
+        coordinates to calculate the distance between connected nodes in the graph. The calculated
+        distance is stored as an additional weight attribute for each edge.
+
+        Attributes
+        ----------
+        self.nodes : dict
+            A dictionary representing graph nodes where keys are node identifiers and values are
+            associated attributes, including 'centroide_coordinates'.
+        self.edges : dict
+            A dictionary representing graph edges where keys are tuples of connected node identifiers
+            and values are associated attributes, including the new 'distance_centroides'.
+
+        Notes
+        -----
+        The edge weight 'distance_centroides' is calculated as the Euclidean distance between the
+        centroid coordinates of two nodes connected by the edge.
+        """
         self.compute_nodes_coordinates()
         # Calcul des poids
         for e in self.edges:
@@ -260,17 +285,22 @@ class QuotientGraph(nx.Graph):
             self.edges[e]['distance_centroides'] = dist
 
     def rebuild(self, G, clear=True):
-        """
+        """Rebuilds the internal structure based on the provided graph and its associated data.
+
+        This method processes the input graph and reinitializes the internal structure. If the
+        `clear` flag is set to True, any existing data in the internal structure is cleared
+        before rebuilding. The method extracts node attributes from the graph, transforms them
+        into a numpy array, and utilizes this array to rebuild the internal representation
+        from the given graph.
 
         Parameters
         ----------
-        G
-        clear
-        filename
-
-        Returns
-        -------
-
+        G : networkx.Graph
+            A graph structure that contains nodes with the attribute
+            'quotient_graph_node', which is used to rebuild the internal data structure.
+        clear : bool, optional
+            If ``True``, clears the current internal structure before rebuilding.
+            Default is ``True``.
         """
         if clear:
             self.clear()
@@ -279,6 +309,29 @@ class QuotientGraph(nx.Graph):
         self.build_from_pointcloudgraph(G, labels_qg_re)
 
     def compute_quotientgraph_metadata_on_a_node_interclass(self, node):
+        """Computes metadata for a specific node in the quotient graph while focusing on interclass relationships.
+
+        This function analyzes the relationships of the node's neighbors that belong to different classes within
+        the quotient graph. It returns a dictionary that counts the occurrences of neighboring nodes belonging
+        to other classes relative to the specified node.
+
+        Parameters
+        ----------
+        node : any
+            The node in the quotient graph for which the interclass metadata should be computed.
+
+        Returns
+        -------
+        dict
+            A dictionary where the keys are the different classes (quotient graph nodes)
+            and the values are the count of neighboring nodes belonging to those classes.
+
+        Notes
+        -----
+        The function uses the 'quotient_graph_node' attribute of the nodes in the graph to determine
+        the class of each node. Nodes with the same 'quotient_graph_node' value are considered to
+        belong to the same class.
+        """
         G = self.point_cloud_graph
         count = {}
         for c in self[node]:
@@ -292,33 +345,71 @@ class QuotientGraph(nx.Graph):
 
         return count
 
-
-
     def delete_empty_edges_and_nodes(self):
         """Delete edges from the quotient graph that do not represent any edges in the distance-based graph anymore.
+
         Delete nodes from the quotient graph that do not represent any nodes of the distance-based graph.
         Update of the topological structure by removal only.
-
-        Parameters
-        ----------
-        Returns
-        -------
         """
-        to_remove =[]
+        to_remove = []
         list = [e for e in self.edges]
         for e in list:
             if self.edges[e[0], e[1]]['inter_class_edge_number'] == 0:
                 to_remove.append(e)
         print(to_remove)
         self.remove_edges_from(to_remove)
-        to_remove=[]
+        to_remove = []
         for n in self.nodes:
             if self.nodes[n]['intra_class_node_number'] == 0:
                 to_remove.append(n)
         self.remove_nodes_from(to_remove)
         print(to_remove)
 
-    def compute_local_descriptors(self, method='all_qg_cluster', data='coords', neighborhood='radius', scale = 10):
+    def compute_local_descriptors(self, method='all_qg_cluster', data='coords', neighborhood='radius', scale=10):
+        """
+        Compute local descriptors for the points in a graph or its quotient graph nodes based on various methods, data types, and neighborhood definitions.
+
+        This method calculates geometric and structural descriptors such as planarity, linearity, scattering, curvature, and eigenvalues
+        using covariance matrices derived from either the point coordinates or gradient vectors. Depending on the method and data type, the
+        computation is either performed for individual points or for clusters of points belonging to quotient graph nodes.
+
+        Parameters
+        ----------
+        method : str, optional
+            Specifies the type of computation to perform. Options include:
+            - 'all_qg_cluster': Compute descriptors for quotient graph nodes by aggregating information from all points
+              in a node.
+            - 'each_point': Compute descriptors for individual points based on their direct neighborhoods.
+            Default is 'all_qg_cluster'.
+
+        data : str, optional
+            Specifies the type of data on which descriptors are computed. Options include:
+            - 'coords': Use the coordinates of points.
+            - 'gradient_vector_fiedler': Use the gradient vector of the Fiedler eigenvector.
+            Default is 'coords'.
+
+        neighborhood : str, optional
+            Specifies the neighborhood definition when computing descriptors for individual points. Options include:
+            - 'radius': Neighborhood defined by points within a given radius.
+            - 'pointcloudgraph': Predefined graph-based neighborhood.
+            Default is 'radius'.
+
+        scale : int, optional
+            When 'neighborhood' is set to 'radius', this parameter determines the radius to define the neighborhood.
+            Default is 10.
+
+        Raises
+        ------
+        ValueError
+            If an invalid combination of `method`, `data`, or `neighborhood` is provided.
+        KeyError
+            If required attributes are missing in the point cloud graph.
+
+        Returns
+        -------
+        None
+            This method updates nodes in the graph with their computed descriptors as attributes.
+        """
         G = self.point_cloud_graph
         # compute the descriptor for all the point in a quotient graph node
         if method == 'all_qg_cluster' and data == 'coords':
@@ -344,7 +435,7 @@ class QuotientGraph(nx.Graph):
 
         if method == 'each_point' and data == 'coords' and neighborhood == 'radius':
             # compute a new pointcloudgraph with the neighborhood wanted
-            NewG = create_riemannian_graph(G.pcd, method=neighborhood, nearest_neighbors= neighborhood, radius=scale)
+            NewG = sgk.create_riemannian_graph(G.pcd, method=neighborhood, nearest_neighbors=neighborhood, radius=scale)
 
         if method == 'each_point' and data == 'coords' and neighborhood == 'pointcloudgraph':
             # compute each descriptor for each point of the point cloud and its neighborhood
@@ -397,9 +488,38 @@ class QuotientGraph(nx.Graph):
                 self.nodes[qnode]['scattering'] = eigenval[0] / eigenval[2]
                 self.nodes[qnode]['curvature_eig'] = eigenval[0] / (eigenval[0] + eigenval[2] + eigenval[1])
 
-
-
     def compute_silhouette(self, method='topological', data='direction_gradient_vector_fiedler'):
+        """Compute the silhouette score for nodes in a point cloud graph based on clustering.
+
+        This function calculates silhouette scores for each node in a point cloud graph
+        based either on the "all_qg_cluster" or "topological" approach. The silhouette
+        score is a measure of how similar a node's association to its own cluster is
+        versus its association to neighboring, adjacent clusters. The results are stored
+        in the graph for individual nodes and quotient graph nodes.
+
+        Parameters
+        ----------
+        method : str, optional
+            The method used to compute the silhouette score. Acceptable values are
+            'all_qg_cluster' for traditional silhouette computation or 'topological'
+            for a more nuanced topology-based computation. Default is 'topological'.
+        data : str, optional
+            Indicates the data used for silhouette computation. Options are
+            'direction_gradient_vector_fiedler' or 'norm_gradient_vector_fiedler',
+            determining the specific gradient vector field used in the calculation.
+            Default is 'direction_gradient_vector_fiedler'.
+
+        Notes
+        -----
+        - For the 'all_qg_cluster' method, silhouette scores are based on the classical
+          approach available in scikit-learn.
+        - For the 'topological' method, silhouette calculation considers the dissimilarities
+          with adjacent clusters only, leveraging adjacency matrices for the computations.
+        - The computed silhouette scores are stored directly as node attributes in the
+          underlying graph.
+        - Quotient graph nodes' silhouette scores are computed as the average of individual
+          nodes within the respective cluster.
+        """
         G = self.point_cloud_graph
         label = []
         for node in G:
@@ -434,6 +554,29 @@ class QuotientGraph(nx.Graph):
             label_index = np.array([np.where(label_list == l)[0][0] for l in labels])
 
             def mean_by_label(D_chunk, start):
+                """Computes the mean of data points by label, excluding contributions from the current label.
+
+                This function calculates the per-label mean of a given chunk of data points, while
+                excluding contributions from the label currently being processed. It operates on an
+                input chunk of data and associated labels, aggregating information based on the specified
+                index labels.
+
+                Parameters
+                ----------
+                D_chunk : np.ndarray
+                    A chunk of multi-dimensional data points split from the full dataset, where each row
+                    represents a data point.
+                start : int
+                    The start index for the current chunk of data within the full dataset. Used to
+                    correctly align the chunk with the corresponding labels.
+
+                Returns
+                -------
+                np.ndarray
+                    An array representing the mean value of data points grouped by label, excluding
+                    contributions from the current label. The size of the array matches the provided
+                    `D_chunk`.
+                """
                 label_mean = []
                 chunk_labels = labels[start:start + len(D_chunk)]
                 for line, label in zip(D_chunk, chunk_labels):
@@ -476,6 +619,20 @@ class QuotientGraph(nx.Graph):
             self.nodes[qnode]['silhouette'] /= len(list_of_nodes_in_qnode)
 
     def compute_direction_info(self, list_leaves):
+        """Computes directional gradient information for specific nodes and edges in the graph.
+
+        This function computes a mean direction gradient for each node in the graph, based on
+        the sum of the direction gradients of the individual nodes that belong to its quotient
+        graph node. Additionally, it calculates the energy dot product for each edge based
+        on the dot product of the mean direction gradients of the connected nodes. Leaves
+        from the specified list are assigned a predefined energy dot product value.
+
+        Parameters
+        ----------
+        list_leaves : list
+            A list of nodes that are considered as leaves in the graph. These nodes will
+            have their associated edges assigned a constant energy dot product value.
+        """
         G = self.point_cloud_graph
         for l in self:
             self.nodes[l]['dir_gradient_mean'] = 0
@@ -492,10 +649,31 @@ class QuotientGraph(nx.Graph):
                 self.edges[e]['energy_dot_product'] = 4
             else:
                 dot = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]
-                energy_dot_product = 1-dot
+                energy_dot_product = 1 - dot
                 self.edges[e]['energy_dot_product'] = energy_dot_product
 
     def count_local_extremum_of_Fiedler(self):
+        """
+        Counts the local extrema of the Fiedler vector in the graph associated with
+        each node.
+
+        The method utilizes a point cloud graph and updates the associated nodes
+        in the graph with the total number of local extrema of the Fiedler vector
+        belonging to their corresponding quotient graph nodes.
+
+        Attributes
+        ----------
+        point_cloud_graph : Graph
+            The graph associated with the point cloud being analyzed. This graph
+            contains necessary properties, such as the Fiedler vector, for calculating
+            local extrema.
+
+        Methods
+        -------
+        count_local_extremum_of_Fiedler()
+            Counts the number of local extrema of the Fiedler vector and assigns the
+            total to corresponding quotient graph nodes.
+        """
         G = self.point_cloud_graph
         G.find_local_extremum_of_Fiedler()
         for c in self.nodes():
@@ -505,17 +683,14 @@ class QuotientGraph(nx.Graph):
                 self.nodes[c]['number_of_local_Fiedler_extremum'] += G.nodes[pt]['extrem_local_Fiedler']
 
 
-
-
-
 ######### Main
 
 if __name__ == '__main__':
-    import open3d as open3d
+    import open3d as o3d
 
     import spectral_clustering.similarity_graph as sgk
 
-    pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/Older_Cheno.ply", format='ply')
+    pcd = o3d.io.read_point_cloud("Data/Older_Cheno.ply", format='ply')
     r = 18
 
     G = sgk.create_riemannian_graph(pcd, method='knn', nearest_neighbors=r)
@@ -531,17 +706,16 @@ if __name__ == '__main__':
             coords[i, :] = G.nodes[node]['pos']
             i += 1
         np.savetxt('New_pcd_connected.txt', coords, delimiter=' ', fmt='%f')
-        pcd2 = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
+        pcd2 = o3d.io.read_point_cloud("Src/spectral_clustering/New_pcd_connected.txt", format='xyz')
         r = 18
 
         G = sgk.create_riemannian_graph(pcd2, method='knn', nearest_neighbors=r)
         G = kpcg.PointCloudGraph(G)
 
-
     G.compute_graph_eigenvectors()
     G.compute_gradient_of_fiedler_vector(method='by_fiedler_weight')
     G.clustering_by_kmeans_in_four_clusters_using_gradient_norm(export_in_labeled_point_cloud=True)
-    #G.clustering_by_fiedler_and_optics(criteria=np.multiply(G.direction_gradient_on_fiedler_scaled, G.gradient_on_fiedler))
+    # G.clustering_by_fiedler_and_optics(criteria=np.multiply(G.direction_gradient_on_fiedler_scaled, G.gradient_on_fiedler))
 
     QG = QuotientGraph()
     QG.build_from_pointcloudgraph(G, G.kmeans_labels_gradient)
@@ -563,9 +737,6 @@ if __name__ == '__main__':
     list_of_nodes_to_work = QG.oversegment_part(list_quotient_node_to_work=[10], average_size_cluster=50)
     QG.compute_direction_info(list_leaves=[])
     QG.opti_energy_dot_product(energy_to_stop=0.29, leaves_out=False, list_graph_node_to_work=list_of_nodes_to_work)
-
-
-
 
     """
     
@@ -741,7 +912,6 @@ if __name__ == '__main__':
                                                 filename='graph_attribute_quotient_graph_node_very_end.txt')
     """
 
-
 """
     #display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20,
     #                                             filename="quotient_graph_matplotlib_brut")
@@ -791,6 +961,3 @@ if __name__ == '__main__':
                                                  data_on_nodes='intra_class_node_number')
 
 """
-
-
-

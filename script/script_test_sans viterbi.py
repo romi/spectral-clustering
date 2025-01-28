@@ -10,7 +10,8 @@ import scipy.sparse as spsp
 import scipy as sp
 import sklearn as sk
 import spectral_clustering.similarity_graph as sgk
-import open3d as open3d
+import open3d as o3d
+
 import spectral_clustering.point_cloud_graph as kpcg
 
 import time
@@ -33,7 +34,7 @@ from importlib import reload
 
 begin = time.time()
 
-pcd = open3d.read_point_cloud("/Users/katiamirande/PycharmProjects/Spectral_clustering_0/Data/chenos/cheno_C_2021_04_12.ply", format='ply')
+pcd = o3d.io.read_point_cloud("Data/chenos/cheno_C_2021_04_12.ply", format='ply')
 r = 18
 SimG, pcdfinal = sgk.create_connected_riemannian_graph(point_cloud=pcd, method='knn', nearest_neighbors=r)
 G = PointCloudGraph(SimG)
@@ -162,7 +163,8 @@ for e in QG.edges:
     QG.edges[e]['distance_centroides'] = dist
 #arbre couvrant dur distances les plus courtes.
 tree_centroide = nx.minimum_spanning_tree(QG, algorithm='kruskal', weight='centroide_coordinates')
-display_and_export_quotient_graph_matplotlib(quotient_graph=tree_centroide, node_sizes=20, filename="span-tree_centroides", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=tree_centroide, node_sizes=20, name="span-tree_centroides",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 
 delete_small_clusters(QG)
 list_leaves3 = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
@@ -170,10 +172,10 @@ list_of_linear = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 0]
 
 def calcul_quotite_feuilles(QG, list_leaves, list_of_linear):
     for e in QG.edges:
-        QG.edges[e]['quotite_feuille_e'] = 0
+        QG.edges[e]['leaf_quotient_e'] = 0
         QG.edges[e]['useful_path'] = 50
     for n in QG.nodes:
-        QG.nodes[n]['quotite_feuille_n'] = 0
+        QG.nodes[n]['leaf_quotient_n'] = 0
 
 
     for leaf in list_leaves:
@@ -183,22 +185,23 @@ def calcul_quotite_feuilles(QG, list_leaves, list_of_linear):
         else:
             path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
         for n in path:
-            QG.nodes[n]['quotite_feuille_n'] += 1
+            QG.nodes[n]['leaf_quotient_n'] += 1
         for i in range(len(path) - 1):
             e = (path[i], path[i + 1])
-            QG.edges[e]['quotite_feuille_e'] += 1
+            QG.edges[e]['leaf_quotient_e'] += 1
             QG.edges[e]['useful_path'] = 0
 
 calcul_quotite_feuilles(QG, list_leaves3, list_of_linear)
-export_quotient_graph_attribute_on_point_cloud(QG, attribute='quotite_feuille_n', name='quotite_feuille_sur_cluster')
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG, node_sizes=20, filename="quotite_feuilles_sur_noeuds", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
+export_quotient_graph_attribute_on_point_cloud(QG, attribute='leaf_quotient_n', name='quotite_feuille_sur_cluster')
+display_and_export_quotient_graph_matplotlib(qg=QG, node_sizes=20, name="quotite_feuilles_sur_noeuds",
+                                             data_on_nodes='leaf_quotient_n', data=True, attributekmeans4clusters=False)
 
 #Selection du plus long des plus courts chemins avec la pondération sur les edges en fonction de la quotité de feuilles
 list_length = []
 for leaf in list_leaves3:
     sub_qg = nx.subgraph(QG, list_of_linear + [leaf])
-    display_and_export_quotient_graph_matplotlib(quotient_graph=sub_qg, node_sizes=20,
-                                                 filename="sub_graphsclass_feuilles_sur_noeuds"+str(leaf),
+    display_and_export_quotient_graph_matplotlib(qg=sub_qg, node_sizes=20,
+                                                 name="sub_graphsclass_feuilles_sur_noeuds" + str(leaf),
                                                  data_on_nodes='viterbi_class', data=True,
                                                  attributekmeans4clusters=False)
 
@@ -210,7 +213,7 @@ for leaf in list_leaves3:
                                 weight='distance_centroides')
     pathleafquantity = []
     for p in path:
-        pathleafquantity.append(QG.nodes[p]['quotite_feuille_n'])
+        pathleafquantity.append(QG.nodes[p]['leaf_quotient_n'])
     lengthpath = sum(list(set(pathleafquantity)))
     list_length.append(lengthpath)
 
@@ -234,9 +237,11 @@ export_quotient_graph_attribute_on_point_cloud(QG, attribute='dir_gradient_stdv'
 
 
 QG2 = merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[3])
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="QG_merge_tige", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG2, node_sizes=20, name="QG_merge_tige",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 tree_centroide = nx.minimum_spanning_tree(QG2, algorithm='kruskal', weight='centroide_coordinates')
-display_and_export_quotient_graph_matplotlib(quotient_graph=tree_centroide, node_sizes=20, filename="span-tree_centroides", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=tree_centroide, node_sizes=20, name="span-tree_centroides",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 
 
 
@@ -246,13 +251,17 @@ list_leaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] == 1]
 list_notleaves = [x for x, y in QG.nodes(data=True) if y['viterbi_class'] != 1]
 calcul_quotite_feuilles(QG2, list_leaves, list_notleaves)
 for n in list_leaves:
-    QG2.nodes[n]["quotite_feuille_n"] = -1
+    QG2.nodes[n]["leaf_quotient_n"] = -1
 
 selected_edges = [(u,v) for u,v,e in QG2.edges(data=True) if e['useful_path'] == 50]
 QG2.remove_edges_from(selected_edges)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="span-path", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="span-path_intra", data_on_nodes='intra_class_node_number', data=True, attributekmeans4clusters = False)
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="span-path_quotite", data_on_nodes='quotite_feuille_n', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG2, node_sizes=20, name="span-path",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG2, node_sizes=20, name="span-path_intra",
+                                             data_on_nodes='intra_class_node_number', data=True,
+                                             attributekmeans4clusters=False)
+display_and_export_quotient_graph_matplotlib(qg=QG2, node_sizes=20, name="span-path_quotite",
+                                             data_on_nodes='leaf_quotient_n', data=True, attributekmeans4clusters=False)
 
 selected_nodes_isolated = [x for x in QG2.nodes() if QG2.degree(x) == 0]
 for n in selected_nodes_isolated:
@@ -283,7 +292,8 @@ differenciate_apex_limb(QG2)
 
 export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_apex_limb')
 
-display_and_export_quotient_graph_matplotlib(quotient_graph=QG2, node_sizes=20, filename="apex_classlqg2", data_on_nodes='viterbi_class', data=True, attributekmeans4clusters = False)
+display_and_export_quotient_graph_matplotlib(qg=QG2, node_sizes=20, name="apex_classlqg2",
+                                             data_on_nodes='viterbi_class', data=True, attributekmeans4clusters=False)
 export_some_graph_attributes_on_point_cloud(QG.point_cloud_graph,
                                             graph_attribute="quotient_graph_node",
                                             filename="pcd_seg.txt")

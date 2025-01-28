@@ -27,6 +27,27 @@ dependencies = [
     "scipy",
     "yellowbrick",
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)"
+]
 
 [project.urls]
-Repository = "https://gitlab.inria.fr/mosaic/work-in-progress/spectral_clustering"
+Homepage = "https://docs.romi-project.eu/plant_imager/"
+Documentation = "https://romi.github.io/spectral-clustering/"
+Repository = "https://github.com/romi/spectral-clustering"
+Issues = "https://github.com/romi/spectral-clustering/issues"
+
+[project.optional-dependencies]
+doc = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "pymdown-extensions",
+    "markdown-exec[ansi]",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+]

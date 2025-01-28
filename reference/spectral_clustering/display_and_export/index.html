@@ -1,0 +1,2902 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Spectral Clustering documentation.">
+      
+      
+        <meta name="author" content="ROMI Team">
+      
+      
+        <link rel="canonical" href="https://romi.github.io/spectral-clustering/reference/spectral_clustering/display_and_export/">
+      
+      
+        <link rel="prev" href="../dijkstra_segmentation/">
+      
+      
+        <link rel="next" href="../evaluation/">
+      
+      
+      <link rel="icon" href="../../../assets/images/ROMI_ICON_green.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>display_and_export - SpectralClustering</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.a40c8224.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,300i,400,400i,700,700i%7CUbuntu+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito Sans";--md-code-font:"Ubuntu Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_pyodide.css">
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#spectral_clustering.display_and_export" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://romi.github.io/spectral-clustering/" title="SpectralClustering" class="md-header__button md-logo" aria-label="SpectralClustering" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SpectralClustering
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              display_and_export
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/romi/spectral-clustering" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../dev/" class="md-tabs__link">
+        
+  
+    
+  
+  Developers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Reference API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://romi.github.io/spectral-clustering/" title="SpectralClustering" class="md-nav__button md-logo" aria-label="SpectralClustering" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    SpectralClustering
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/romi/spectral-clustering" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Reference API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    spectral_clustering
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            spectral_clustering
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Segmentation_Dijkstra_litt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Segmentation_Dijkstra_litt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Viterbi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Viterbi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branching_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    branching_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../constraint_program/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    constraint_program
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dijkstra_segmentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dijkstra_segmentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    display_and_export
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    display_and_export
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_graph_of_fiedler_vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_graph_of_fiedler_vector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_graph_of_gradient_of_fiedler_vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_graph_of_gradient_of_fiedler_vector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_quotient_graph_matplotlib" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_quotient_graph_matplotlib
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_gradient_vector_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_gradient_vector_field
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.draw_quotientgraph_cellcomplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      draw_quotientgraph_cellcomplex
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.draw_quotientgraph_matplotlib_3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      draw_quotientgraph_matplotlib_3D
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_anything_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_anything_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_clustering_labels_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_clustering_labels_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_fiedler_vector_on_pointcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_fiedler_vector_on_pointcloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_gradient_of_fiedler_vector_on_pointcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_gradient_of_fiedler_vector_on_pointcloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_quotient_graph_attribute_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_quotient_graph_attribute_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_some_graph_attributes_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_some_graph_attributes_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    evaluation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../point_cloud_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    point_cloud_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotient_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotient_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotientgraph_operations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotientgraph_operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotientgraph_semantics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotientgraph_semantics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation_algorithms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    segmentation_algorithms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../similarity_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    similarity_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../split_and_merge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    split_and_merge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topological_energy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    topological_energy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_16" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../utils/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_16" id="__nav_3_1_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_16">
+            <span class="md-nav__icon md-icon"></span>
+            utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/angle/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    angle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/size/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    size
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/sparse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sparse
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_graph_of_fiedler_vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_graph_of_fiedler_vector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_graph_of_gradient_of_fiedler_vector" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_graph_of_gradient_of_fiedler_vector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_and_export_quotient_graph_matplotlib" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_and_export_quotient_graph_matplotlib
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_gradient_vector_field" class="md-nav__link">
+    <span class="md-ellipsis">
+      display_gradient_vector_field
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.draw_quotientgraph_cellcomplex" class="md-nav__link">
+    <span class="md-ellipsis">
+      draw_quotientgraph_cellcomplex
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.draw_quotientgraph_matplotlib_3D" class="md-nav__link">
+    <span class="md-ellipsis">
+      draw_quotientgraph_matplotlib_3D
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_anything_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_anything_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_clustering_labels_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_clustering_labels_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_fiedler_vector_on_pointcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_fiedler_vector_on_pointcloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_gradient_of_fiedler_vector_on_pointcloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_gradient_of_fiedler_vector_on_pointcloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_quotient_graph_attribute_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_quotient_graph_attribute_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.export_some_graph_attributes_on_point_cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      export_some_graph_attributes_on_point_cloud
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>display_and_export</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="spectral_clustering.display_and_export"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.display_and_export_graph_of_fiedler_vector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">display_and_export_graph_of_fiedler_vector</span>
+
+
+<a href="#spectral_clustering.display_and_export.display_and_export_graph_of_fiedler_vector" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>display_and_export_graph_of_fiedler_vector(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;fiedler_vector.png&#39;</span>, sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Displays and exports a plot of the Fiedler vector.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing Fiedler vector data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;fiedler_vector.png&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for saving the output plot.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>sorted_by_fiedler_vector</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to sort the data by the Fiedler vector values.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">127</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">128</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">133</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">134</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">135</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">136</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">137</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">138</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">139</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">140</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">141</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">142</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">143</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">144</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">145</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">146</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">147</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;fiedler_vector.png&quot;</span>, sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Displays and exports a plot of the Fiedler vector.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing Fiedler vector data.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for saving the output plot.</span>
+<span style="color: #BA2121; font-style: italic">    sorted_by_fiedler_vector : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Whether to sort the data by the Fiedler vector values.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    vp2 <span style="color: #666">=</span> pcd_g<span style="color: #666">.</span>keigenvec[:, <span style="color: #666">1</span>]
+    pcd_vp2 <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, vp2[:, np<span style="color: #666">.</span>newaxis]], axis<span style="color: #666">=1</span>)
+    pcd_vp2_sort_by_vp2 <span style="color: #666">=</span> pcd_vp2[pcd_vp2[:, <span style="color: #666">3</span>]<span style="color: #666">.</span>argsort()]
+    figure <span style="color: #666">=</span> plt<span style="color: #666">.</span>figure(<span style="color: #666">0</span>)
+    figure<span style="color: #666">.</span>clf()
+    figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>set_title(<span style="color: #BA2121">&quot;fiedler vector&quot;</span>)
+    <span style="color: #008000; font-weight: bold">if</span> sorted_by_fiedler_vector:
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(pcd_vp2_sort_by_vp2)), pcd_vp2_sort_by_vp2[:, <span style="color: #666">3</span>], color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+    <span style="color: #008000; font-weight: bold">else</span>:
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(pcd_vp2)), pcd_vp2[:, <span style="color: #666">3</span>], color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+    figure<span style="color: #666">.</span>set_size_inches(<span style="color: #666">10</span>, <span style="color: #666">10</span>)
+    figure<span style="color: #666">.</span>subplots_adjust(wspace<span style="color: #666">=0</span>, hspace<span style="color: #666">=0</span>)
+    figure<span style="color: #666">.</span>tight_layout()
+    figure<span style="color: #666">.</span>savefig(filename)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du vecteur propre 2&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.display_and_export_graph_of_gradient_of_fiedler_vector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">display_and_export_graph_of_gradient_of_fiedler_vector</span>
+
+
+<a href="#spectral_clustering.display_and_export.display_and_export_graph_of_gradient_of_fiedler_vector" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>display_and_export_graph_of_gradient_of_fiedler_vector(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;Gradient_of_fiedler_vector.png&#39;</span>, sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, sorted_by_gradient<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Displays and exports a plot of the gradient of the Fiedler vector.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing Fiedler vector gradient data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;Gradient_of_fiedler_vector.png&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for saving the output plot.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>sorted_by_fiedler_vector</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to sort the data by the Fiedler vector values.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>sorted_by_gradient</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Whether to sort the data by the gradient values.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">150</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">151</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">152</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">153</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">154</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">155</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">156</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">157</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">160</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">161</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">162</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">163</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">164</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">165</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">166</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">167</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">168</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">169</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">170</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">171</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">172</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">173</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">174</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">175</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">176</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">177</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">178</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">179</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">180</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">181</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">182</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">183</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">184</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_gradient_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;Gradient_of_fiedler_vector.png&quot;</span>,
+                                                           sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, sorted_by_gradient<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Displays and exports a plot of the gradient of the Fiedler vector.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing Fiedler vector gradient data.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for saving the output plot.</span>
+<span style="color: #BA2121; font-style: italic">    sorted_by_fiedler_vector : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Whether to sort the data by the Fiedler vector values.</span>
+<span style="color: #BA2121; font-style: italic">    sorted_by_gradient : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Whether to sort the data by the gradient values.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    vp2 <span style="color: #666">=</span> pcd_g<span style="color: #666">.</span>keigenvec[:, <span style="color: #666">1</span>]
+    pcd_vp2 <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, vp2[:, np<span style="color: #666">.</span>newaxis]], axis<span style="color: #666">=1</span>)
+    pcd_vp2_grad_vp2 <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_vp2, pcd_g<span style="color: #666">.</span>gradient_on_fiedler], axis<span style="color: #666">=1</span>)
+    pcd_vp2_grad_vp2_sort_by_vp2 <span style="color: #666">=</span> pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, <span style="color: #666">3</span>]<span style="color: #666">.</span>argsort()]
+    pcd_vp2_grad_vp2_sort_by_grad <span style="color: #666">=</span> pcd_vp2_grad_vp2[pcd_vp2_grad_vp2[:, <span style="color: #666">4</span>]<span style="color: #666">.</span>argsort()]
+    figure <span style="color: #666">=</span> plt<span style="color: #666">.</span>figure(<span style="color: #666">1</span>)
+    figure<span style="color: #666">.</span>clf()
+    figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>set_title(<span style="color: #BA2121">&quot;Gradient of fiedler vector&quot;</span>)
+    <span style="color: #008000; font-weight: bold">if</span> sorted_by_fiedler_vector <span style="color: #A2F; font-weight: bold">and</span> <span style="color: #A2F; font-weight: bold">not</span> sorted_by_gradient:
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_vp2[:, <span style="color: #666">4</span>], color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+    <span style="color: #008000; font-weight: bold">elif</span> <span style="color: #A2F; font-weight: bold">not</span> sorted_by_fiedler_vector <span style="color: #A2F; font-weight: bold">and</span> <span style="color: #A2F; font-weight: bold">not</span> sorted_by_gradient:
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(pcd_vp2_grad_vp2)), pcd_vp2_grad_vp2[:, <span style="color: #666">4</span>], color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+    <span style="color: #008000; font-weight: bold">if</span> sorted_by_gradient:
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(pcd_vp2_grad_vp2_sort_by_vp2)), pcd_vp2_grad_vp2_sort_by_grad[:, <span style="color: #666">4</span>],
+                             color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+    figure<span style="color: #666">.</span>set_size_inches(<span style="color: #666">10</span>, <span style="color: #666">10</span>)
+    figure<span style="color: #666">.</span>subplots_adjust(wspace<span style="color: #666">=0</span>, hspace<span style="color: #666">=0</span>)
+    figure<span style="color: #666">.</span>tight_layout()
+    figure<span style="color: #666">.</span>savefig(filename)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du gradient&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.display_and_export_quotient_graph_matplotlib" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">display_and_export_quotient_graph_matplotlib</span>
+
+
+<a href="#spectral_clustering.display_and_export.display_and_export_quotient_graph_matplotlib" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>display_and_export_quotient_graph_matplotlib(qg, node_sizes<span style="color: #666">=20</span>, name<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_matplotlib&#39;</span>, data_on_nodes<span style="color: #666">=</span><span style="color: #BA2121">&#39;intra_class_node_number&#39;</span>, data<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, attributekmeans4clusters<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, <span style="color: #008000">round</span><span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">&#39;.&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Generates a matplotlib visualization for the given quotient graph and exports it to a file.</p>
+<p>Visualizes the input graph using NetworkX's drawing functions with matplotlib. The appearance of the
+graph, including node colors, labels, and sizes, can be customized based on the given parameters.
+The plot is saved to the specified file.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>qg</code></b>
+              (<code><span title="spectral_clustering.quotientgraph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The input graph to be visualized and exported.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>node_sizes</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>, default:
+                  <code>20</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Size of the nodes in the plot, by default <code>20</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>name</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;quotient_graph_matplotlib&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The name of the file where the graph visualization plot is saved.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>data_on_nodes</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;intra_class_node_number&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The name of the attribute on the nodes to be displayed as labels, by default
+'intra_class_node_number'.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>data</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Determines whether to use node-specific data attributes in visualization, by default <code>True</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>attributekmeans4clusters</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If <code>True</code>, the visualization integrates clustering-specific attributes and uses k-means
+related coloring, by default <code>False</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>round</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>False</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If <code>True</code>, rounds the node attribute values for display, by default <code>False</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">187</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">188</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">189</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">190</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">191</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">192</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">193</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">194</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">195</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">196</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">197</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">198</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">199</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">200</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">201</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">202</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">203</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">204</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">205</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">206</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">207</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">208</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">209</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">210</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">211</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">212</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">213</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">214</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">215</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">216</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">217</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">218</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">219</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">220</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">221</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">222</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">223</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">224</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">225</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">226</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">227</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">228</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">229</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">230</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">231</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">232</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">233</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">234</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">235</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">236</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">237</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">238</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">239</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">241</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">242</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">243</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">244</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">245</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">246</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">247</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">248</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">249</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">250</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">251</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">252</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">253</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">254</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">255</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">256</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">257</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">258</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">259</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">260</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">261</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">262</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">263</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">264</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">265</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">266</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">267</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">268</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">270</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_quotient_graph_matplotlib</span>(qg, node_sizes<span style="color: #666">=20</span>, name<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_matplotlib&#39;</span>,
+                                                 data_on_nodes<span style="color: #666">=</span><span style="color: #BA2121">&#39;intra_class_node_number&#39;</span>, data<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>,
+                                                 attributekmeans4clusters<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, <span style="color: #008000">round</span><span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>,
+                                                 directory<span style="color: #666">=</span><span style="color: #BA2121">&quot;.&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Generates a matplotlib visualization for the given quotient graph and exports it to a file.</span>
+
+<span style="color: #BA2121; font-style: italic">    Visualizes the input graph using NetworkX&#39;s drawing functions with matplotlib. The appearance of the</span>
+<span style="color: #BA2121; font-style: italic">    graph, including node colors, labels, and sizes, can be customized based on the given parameters.</span>
+<span style="color: #BA2121; font-style: italic">    The plot is saved to the specified file.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    qg : spectral_clustering.quotientgraph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The input graph to be visualized and exported.</span>
+<span style="color: #BA2121; font-style: italic">    node_sizes : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Size of the nodes in the plot, by default ``20``.</span>
+<span style="color: #BA2121; font-style: italic">    name : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the file where the graph visualization plot is saved.</span>
+<span style="color: #BA2121; font-style: italic">    data_on_nodes : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the attribute on the nodes to be displayed as labels, by default</span>
+<span style="color: #BA2121; font-style: italic">        &#39;intra_class_node_number&#39;.</span>
+<span style="color: #BA2121; font-style: italic">    data : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Determines whether to use node-specific data attributes in visualization, by default ``True``.</span>
+<span style="color: #BA2121; font-style: italic">    attributekmeans4clusters : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If ``True``, the visualization integrates clustering-specific attributes and uses k-means</span>
+<span style="color: #BA2121; font-style: italic">        related coloring, by default ``False``.</span>
+<span style="color: #BA2121; font-style: italic">    round : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If ``True``, rounds the node attribute values for display, by default ``False``.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    figure <span style="color: #666">=</span> plt<span style="color: #666">.</span>figure(<span style="color: #666">0</span>)
+    figure<span style="color: #666">.</span>clf()
+    graph_layout <span style="color: #666">=</span> nx<span style="color: #666">.</span>kamada_kawai_layout(qg)
+    colormap <span style="color: #666">=</span> <span style="color: #BA2121">&#39;jet&#39;</span>
+
+    <span style="color: #008000; font-weight: bold">if</span> attributekmeans4clusters <span style="color: #A2F; font-weight: bold">and</span> data:
+        labels_from_attributes <span style="color: #666">=</span> <span style="color: #008000">dict</span>(qg<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span>data_on_nodes))
+        <span style="color: #3D7B7B; font-style: italic"># Rounding the data to allow an easy display</span>
+        <span style="color: #008000; font-weight: bold">for</span> dict_value <span style="color: #A2F; font-weight: bold">in</span> labels_from_attributes:
+            labels_from_attributes[dict_value] <span style="color: #666">=</span> <span style="color: #008000">round</span>(labels_from_attributes[dict_value], <span style="color: #666">2</span>)
+        node_color_from_attribute <span style="color: #666">=</span> <span style="color: #008000">dict</span>(qg<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span><span style="color: #BA2121">&#39;seed_colors&#39;</span>))<span style="color: #666">.</span>values()
+        node_color <span style="color: #666">=</span> [qg<span style="color: #666">.</span>nodes[i][<span style="color: #BA2121">&#39;kmeans_labels&#39;</span>] <span style="color: #666">/</span> <span style="color: #666">4</span> <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes()]
+        nx<span style="color: #666">.</span>drawing<span style="color: #666">.</span>nx_pylab<span style="color: #666">.</span>draw_networkx(qg,
+                                          ax<span style="color: #666">=</span>figure<span style="color: #666">.</span>gca(),
+                                          pos<span style="color: #666">=</span>graph_layout,
+                                          with_labels<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>,
+                                          node_size<span style="color: #666">=</span>node_sizes,
+                                          node_color<span style="color: #666">=</span>node_color_from_attribute,
+                                          labels<span style="color: #666">=</span>labels_from_attributes,
+                                          cmap<span style="color: #666">=</span>plt<span style="color: #666">.</span>get_cmap(colormap))
+
+    <span style="color: #008000; font-weight: bold">elif</span> attributekmeans4clusters <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">False</span> <span style="color: #A2F; font-weight: bold">and</span> data <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">False</span>:
+        nx<span style="color: #666">.</span>drawing<span style="color: #666">.</span>nx_pylab<span style="color: #666">.</span>draw_networkx(qg,
+                                          ax<span style="color: #666">=</span>figure<span style="color: #666">.</span>gca(),
+                                          pos<span style="color: #666">=</span>graph_layout,
+                                          with_labels<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>,
+                                          node_size<span style="color: #666">=</span>node_sizes,
+                                          node_color<span style="color: #666">=</span><span style="color: #BA2121">&quot;r&quot;</span>,
+                                          cmap<span style="color: #666">=</span>plt<span style="color: #666">.</span>get_cmap(colormap))
+
+    <span style="color: #008000; font-weight: bold">elif</span> attributekmeans4clusters <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">False</span> <span style="color: #A2F; font-weight: bold">and</span> data:
+        labels_from_attributes <span style="color: #666">=</span> <span style="color: #008000">dict</span>(qg<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span>data_on_nodes))
+        <span style="color: #3D7B7B; font-style: italic"># Rounding the data to allow an easy display</span>
+        <span style="color: #008000; font-weight: bold">for</span> dict_value <span style="color: #A2F; font-weight: bold">in</span> labels_from_attributes:
+            <span style="color: #008000; font-weight: bold">if</span> data_on_nodes <span style="color: #666">!=</span> <span style="color: #BA2121">&#39;semantic_label&#39;</span>:
+                <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">round</span> <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">True</span>:
+                    labels_from_attributes[dict_value] <span style="color: #666">=</span> <span style="color: #008000">round</span>(labels_from_attributes[dict_value], <span style="color: #666">2</span>)
+        nx<span style="color: #666">.</span>drawing<span style="color: #666">.</span>nx_pylab<span style="color: #666">.</span>draw_networkx(qg,
+                                          ax<span style="color: #666">=</span>figure<span style="color: #666">.</span>gca(),
+                                          pos<span style="color: #666">=</span>graph_layout,
+                                          with_labels<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>,
+                                          node_size<span style="color: #666">=</span>node_sizes,
+                                          node_color<span style="color: #666">=</span><span style="color: #BA2121">&quot;r&quot;</span>,
+                                          labels<span style="color: #666">=</span>labels_from_attributes,
+                                          cmap<span style="color: #666">=</span>plt<span style="color: #666">.</span>get_cmap(colormap))
+
+    <span style="color: #3D7B7B; font-style: italic"># nx.drawing.nx_pylab.draw_networkx_edge_labels(quotient_graph, pos=graph_layout, font_size=20, font_family=&quot;sans-sherif&quot;)</span>
+
+    figure<span style="color: #666">.</span>subplots_adjust(wspace<span style="color: #666">=0</span>, hspace<span style="color: #666">=0</span>)
+    figure<span style="color: #666">.</span>tight_layout()
+    directory <span style="color: #666">=</span> Path(directory)
+    fname <span style="color: #666">=</span> name <span style="color: #666">+</span> <span style="color: #BA2121">&#39;_&#39;</span> <span style="color: #666">+</span> data_on_nodes <span style="color: #666">+</span> <span style="color: #BA2121">&#39;.png&#39;</span>
+    figure<span style="color: #666">.</span>savefig(directory <span style="color: #666">/</span> fname)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du graphe quotient matplotlib&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.display_gradient_vector_field" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">display_gradient_vector_field</span>
+
+
+<a href="#spectral_clustering.display_and_export.display_gradient_vector_field" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>display_gradient_vector_field(pcd_g, normalized<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, scale<span style="color: #666">=1.0</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;gradient_vectorfield_3d.png&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Display the gradient vector field of a 3D topology.</p>
+<p>This function visualizes the gradient vector field of a provided topology using
+arrows as glyphs in a 3D representation. It supports configurable vector
+normalization, glyph scaling, and output filename for saving the visualization
+as an image.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The topology graph object, containing nodes with associated coordinates and gradient data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>normalized</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Specifies whether the vectors should be normalized. If <code>True</code>, the scaled
+direction gradient on the Fiedler vector is used. Otherwise, the original
+gradient is scaled with the direction gradient on the Fiedler vector.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>scale</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></code>, default:
+                  <code>1.0</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Factor by which the arrow glyphs representing the gradient vectors should
+be scaled. Defaults to <code>1.0</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;gradient_vectorfield_3d.png&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The name of the output image file where the visualization will be saved.
+Defaults to <code>'gradient_vectorfield_3d.png'</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">283</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">286</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">287</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">288</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">289</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">290</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">291</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">294</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">296</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">298</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">299</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">300</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">301</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">302</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">303</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">304</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">305</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">306</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">311</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">312</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">313</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">314</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">315</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">316</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">319</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">321</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">323</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_gradient_vector_field</span>(pcd_g, normalized<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, scale<span style="color: #666">=1.</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;gradient_vectorfield_3d.png&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Display the gradient vector field of a 3D topology.</span>
+
+<span style="color: #BA2121; font-style: italic">    This function visualizes the gradient vector field of a provided topology using</span>
+<span style="color: #BA2121; font-style: italic">    arrows as glyphs in a 3D representation. It supports configurable vector</span>
+<span style="color: #BA2121; font-style: italic">    normalization, glyph scaling, and output filename for saving the visualization</span>
+<span style="color: #BA2121; font-style: italic">    as an image.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The topology graph object, containing nodes with associated coordinates and gradient data.</span>
+<span style="color: #BA2121; font-style: italic">    normalized : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        Specifies whether the vectors should be normalized. If ``True``, the scaled</span>
+<span style="color: #BA2121; font-style: italic">        direction gradient on the Fiedler vector is used. Otherwise, the original</span>
+<span style="color: #BA2121; font-style: italic">        gradient is scaled with the direction gradient on the Fiedler vector.</span>
+<span style="color: #BA2121; font-style: italic">    scale : float, optional</span>
+<span style="color: #BA2121; font-style: italic">        Factor by which the arrow glyphs representing the gradient vectors should</span>
+<span style="color: #BA2121; font-style: italic">        be scaled. Defaults to ``1.0``.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the output image file where the visualization will be saved.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``&#39;gradient_vectorfield_3d.png&#39;``.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">cellcomplex.property_topomesh.creation</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> vertex_topomesh
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">cellcomplex.property_topomesh.visualization.vtk_actor_topomesh</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> VtkActorTopomesh
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">visu_core.vtk.display</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> vtk_display_actors, vtk_save_screenshot_actors
+
+    n_points <span style="color: #666">=</span> pcd_g<span style="color: #666">.</span>nodes_coords<span style="color: #666">.</span>shape[<span style="color: #666">0</span>]
+
+    topomesh <span style="color: #666">=</span> vertex_topomesh(<span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>(<span style="color: #008000">range</span>(n_points), pcd_g<span style="color: #666">.</span>nodes_coords)))
+
+    <span style="color: #008000; font-weight: bold">if</span> normalized:
+        vectors <span style="color: #666">=</span> pcd_g<span style="color: #666">.</span>direction_gradient_on_fiedler_scaled
+    <span style="color: #008000; font-weight: bold">if</span> normalized <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">False</span>:
+        vectors <span style="color: #666">=</span> pcd_g<span style="color: #666">.</span>gradient_on_fiedler <span style="color: #666">*</span> pcd_g<span style="color: #666">.</span>direction_gradient_on_fiedler_scaled
+
+    topomesh<span style="color: #666">.</span>update_wisp_property(<span style="color: #BA2121">&#39;vector&#39;</span>, <span style="color: #666">0</span>, <span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>(<span style="color: #008000">range</span>(n_points), vectors)))
+
+    actors <span style="color: #666">=</span> []
+
+    vector_actor <span style="color: #666">=</span> VtkActorTopomesh(topomesh, degree<span style="color: #666">=0</span>, property_name<span style="color: #666">=</span><span style="color: #BA2121">&#39;vector&#39;</span>)
+    vector_actor<span style="color: #666">.</span>vector_glyph <span style="color: #666">=</span> <span style="color: #BA2121">&#39;arrow&#39;</span>
+    vector_actor<span style="color: #666">.</span>glyph_scale <span style="color: #666">=</span> scale
+    vector_actor<span style="color: #666">.</span>update(colormap<span style="color: #666">=</span><span style="color: #BA2121">&#39;Reds&#39;</span>, value_range<span style="color: #666">=</span>(<span style="color: #666">0</span>, <span style="color: #666">0</span>))
+    actors <span style="color: #666">+=</span> [vector_actor]
+
+    <span style="color: #3D7B7B; font-style: italic"># Change of background</span>
+    ren, _, _ <span style="color: #666">=</span> vtk_display_actors(actors, background<span style="color: #666">=</span>(<span style="color: #666">0.9</span>, <span style="color: #666">0.9</span>, <span style="color: #666">0.9</span>))
+    cam <span style="color: #666">=</span> ren<span style="color: #666">.</span>GetActiveCamera()
+    vtk_save_screenshot_actors(actors, image_filename<span style="color: #666">=</span>filename, camera<span style="color: #666">=</span>cam)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.draw_quotientgraph_cellcomplex" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">draw_quotientgraph_cellcomplex</span>
+
+
+<a href="#spectral_clustering.display_and_export.draw_quotientgraph_cellcomplex" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>draw_quotientgraph_cellcomplex(pcd, qg, pcd_g, color_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_and_quotientgraph_3d.png&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Draws and visualizes a cell complex derived from a quotient graph in 3D visualization.</p>
+<p>The method creates a topomesh representation of the input quotient graph, assigns vertex colors based on
+specified attributes, calculates edge properties (e.g., length), and renders the visualization.
+It allows customization of glyph type, color maps, and visual output filename.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd</code></b>
+              (<code><span title="open3d.geometry.PointCloud">PointCloud</span> or <a class="autorefs autorefs-external" title="numpy.ndarray" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Point cloud data, either as an Open3D PointCloud object or a NumPy array containing
+point coordinates. If provided as Open3D PointCloud, the points are extracted and used
+as input.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>qg</code></b>
+              (<code><span title="spectral_clustering.quotientgraph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Quotient graph describing the cell complex structure. The graph should contain nodes
+and edges associated with the geometric representation of the input data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>Graph specifying additional properties such as positions ('pos') and the visualization
+attributes for nodes in 3D. This graph is used to represent the original structure.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>color_attribute</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;quotient_graph_node&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Name of the property to be used for coloring the vertex glyphs. Defaults to
+<code>'quotient_graph_node'</code>. It can be changed to any node attribute present in the input
+quotient graph.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;graph_and_quotientgraph_3d.png&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Path and name of the file where the rendered 3D visualization will be saved as a
+screenshot. Defaults to <code>'graph_and_quotientgraph_3d.png'</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">327</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">332</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">333</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">338</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">339</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">340</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">341</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">342</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">343</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">344</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">345</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">346</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">347</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">348</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">349</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">351</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">353</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">354</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">356</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">357</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">358</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">359</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">360</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">361</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">362</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">363</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">364</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">365</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">366</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">367</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">368</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">369</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">370</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">371</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">372</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">373</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">374</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">375</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">376</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">377</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">378</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">379</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">380</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">381</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">382</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">383</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">384</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">385</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">386</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">387</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">388</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">389</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">390</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">391</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">393</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">396</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">397</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">398</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">399</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">400</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">401</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">402</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">403</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">404</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">405</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_cellcomplex</span>(pcd, qg, pcd_g, color_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>,
+                                   filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_and_quotientgraph_3d.png&#39;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Draws and visualizes a cell complex derived from a quotient graph in 3D visualization.</span>
+
+<span style="color: #BA2121; font-style: italic">    The method creates a topomesh representation of the input quotient graph, assigns vertex colors based on</span>
+<span style="color: #BA2121; font-style: italic">    specified attributes, calculates edge properties (e.g., length), and renders the visualization.</span>
+<span style="color: #BA2121; font-style: italic">    It allows customization of glyph type, color maps, and visual output filename.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd : open3d.geometry.PointCloud or numpy.ndarray</span>
+<span style="color: #BA2121; font-style: italic">        Point cloud data, either as an Open3D PointCloud object or a NumPy array containing</span>
+<span style="color: #BA2121; font-style: italic">        point coordinates. If provided as Open3D PointCloud, the points are extracted and used</span>
+<span style="color: #BA2121; font-style: italic">        as input.</span>
+<span style="color: #BA2121; font-style: italic">    qg : spectral_clustering.quotientgraph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        Quotient graph describing the cell complex structure. The graph should contain nodes</span>
+<span style="color: #BA2121; font-style: italic">        and edges associated with the geometric representation of the input data.</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        Graph specifying additional properties such as positions (&#39;pos&#39;) and the visualization</span>
+<span style="color: #BA2121; font-style: italic">        attributes for nodes in 3D. This graph is used to represent the original structure.</span>
+<span style="color: #BA2121; font-style: italic">    color_attribute : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Name of the property to be used for coloring the vertex glyphs. Defaults to</span>
+<span style="color: #BA2121; font-style: italic">        ``&#39;quotient_graph_node&#39;``. It can be changed to any node attribute present in the input</span>
+<span style="color: #BA2121; font-style: italic">        quotient graph.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        Path and name of the file where the rendered 3D visualization will be saved as a</span>
+<span style="color: #BA2121; font-style: italic">        screenshot. Defaults to ``&#39;graph_and_quotientgraph_3d.png&#39;``.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">type</span>(pcd) <span style="color: #A2F; font-weight: bold">is</span> o3d<span style="color: #666">.</span>geometry<span style="color: #666">.</span>PointCloud:
+        pcdtab <span style="color: #666">=</span> np<span style="color: #666">.</span>asarray(pcd<span style="color: #666">.</span>points)
+    <span style="color: #008000; font-weight: bold">else</span>:
+        pcdtab <span style="color: #666">=</span> pcd
+    <span style="color: #3D7B7B; font-style: italic"># s, t = np.meshgrid(np.arange(len(pcdtab)), np.arange(len(pcdtab)))</span>
+    <span style="color: #3D7B7B; font-style: italic"># sources = s[simatrix &gt; 0]</span>
+    <span style="color: #3D7B7B; font-style: italic"># targets = t[simatrix &gt; 0]</span>
+    <span style="color: #3D7B7B; font-style: italic"># sources, targets = sources[sources &lt; targets], targets[sources &lt; targets]</span>
+
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">cellcomplex.property_topomesh.creation</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> vertex_topomesh, edge_topomesh
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">cellcomplex.property_topomesh.analysis</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> compute_topomesh_property
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">cellcomplex.property_topomesh.visualization.vtk_actor_topomesh</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> VtkActorTopomesh
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">visu_core.vtk.display</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> vtk_display_actors, vtk_save_screenshot_actors
+
+    topomesh <span style="color: #666">=</span> edge_topomesh(np<span style="color: #666">.</span>array([e <span style="color: #008000; font-weight: bold">for</span> e <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>edges <span style="color: #008000; font-weight: bold">if</span> e[<span style="color: #666">0</span>] <span style="color: #666">!=</span> e[<span style="color: #666">1</span>]]),
+                             <span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>(np<span style="color: #666">.</span>asarray([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes]), pcdtab)))
+
+    <span style="color: #008000; font-weight: bold">if</span> color_attribute <span style="color: #666">==</span> <span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>:
+        topomesh<span style="color: #666">.</span>update_wisp_property(<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>, <span style="color: #666">0</span>, <span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes], [n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes])))
+    <span style="color: #008000; font-weight: bold">else</span>:
+        topomesh<span style="color: #666">.</span>update_wisp_property(color_attribute, <span style="color: #666">0</span>,
+                                      <span style="color: #008000">dict</span>(
+                                          <span style="color: #008000">zip</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes], [qg<span style="color: #666">.</span>nodes[n][color_attribute] <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes])))
+
+    compute_topomesh_property(topomesh, <span style="color: #BA2121">&#39;length&#39;</span>, <span style="color: #666">1</span>)
+
+    actors <span style="color: #666">=</span> []
+
+    edge_actor <span style="color: #666">=</span> VtkActorTopomesh()
+    edge_actor<span style="color: #666">.</span>set_topomesh(topomesh, <span style="color: #666">1</span>, property_name<span style="color: #666">=</span><span style="color: #BA2121">&#39;length&#39;</span>)
+    edge_actor<span style="color: #666">.</span>line_glyph <span style="color: #666">=</span> <span style="color: #BA2121">&#39;tube&#39;</span>
+    edge_actor<span style="color: #666">.</span>glyph_scale <span style="color: #666">=</span> <span style="color: #666">0.33</span>
+    edge_actor<span style="color: #666">.</span>update(colormap<span style="color: #666">=</span><span style="color: #BA2121">&quot;gray&quot;</span>)
+    actors <span style="color: #666">+=</span> [edge_actor]
+
+    vertex_actor <span style="color: #666">=</span> VtkActorTopomesh(topomesh, <span style="color: #666">0</span>, property_name<span style="color: #666">=</span>color_attribute)
+    <span style="color: #3D7B7B; font-style: italic"># vertex_actor.point_glyph = &#39;point&#39;</span>
+    vertex_actor<span style="color: #666">.</span>point_glyph <span style="color: #666">=</span> <span style="color: #BA2121">&#39;sphere&#39;</span>
+    vertex_actor<span style="color: #666">.</span>glyph_scale <span style="color: #666">=</span> <span style="color: #666">2</span>
+    vertex_actor<span style="color: #666">.</span>update(colormap<span style="color: #666">=</span><span style="color: #BA2121">&quot;jet&quot;</span>)
+    actors <span style="color: #666">+=</span> [vertex_actor]
+
+    graph_topomesh <span style="color: #666">=</span> vertex_topomesh(<span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> pcd_g<span style="color: #666">.</span>nodes], [pcd_g<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;pos&#39;</span>] <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> pcd_g<span style="color: #666">.</span>nodes])))
+    graph_topomesh<span style="color: #666">.</span>update_wisp_property(color_attribute, <span style="color: #666">0</span>, <span style="color: #008000">dict</span>(
+        <span style="color: #008000">zip</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> pcd_g<span style="color: #666">.</span>nodes], [pcd_g<span style="color: #666">.</span>nodes[n][color_attribute] <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> pcd_g<span style="color: #666">.</span>nodes])))
+    point_cloud_actor <span style="color: #666">=</span> VtkActorTopomesh(graph_topomesh, <span style="color: #666">0</span>, property_name<span style="color: #666">=</span>color_attribute)
+    point_cloud_actor<span style="color: #666">.</span>point_glyph <span style="color: #666">=</span> <span style="color: #BA2121">&#39;point&#39;</span>
+    point_cloud_actor<span style="color: #666">.</span>update(colormap<span style="color: #666">=</span><span style="color: #BA2121">&quot;jet&quot;</span>)
+    actors <span style="color: #666">+=</span> [point_cloud_actor]
+
+    ren, _, _ <span style="color: #666">=</span> vtk_display_actors(actors, background<span style="color: #666">=</span>(<span style="color: #666">0.9</span>, <span style="color: #666">0.9</span>, <span style="color: #666">0.9</span>))
+    cam <span style="color: #666">=</span> ren<span style="color: #666">.</span>GetActiveCamera()
+    vtk_save_screenshot_actors(actors, image_filename<span style="color: #666">=</span>filename, camera<span style="color: #666">=</span>cam)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.draw_quotientgraph_matplotlib_3D" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">draw_quotientgraph_matplotlib_3D</span>
+
+
+<a href="#spectral_clustering.display_and_export.draw_quotientgraph_matplotlib_3D" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>draw_quotientgraph_matplotlib_3D(nodes_coords_moy, qg)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Draws a 3D visualization of a quotient graph using Matplotlib.</p>
+<p>The function takes in the 3D coordinates of nodes and a quotient graph object, and visualizes the
+nodes and edges of the graph in three dimensions.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>nodes_coords_moy</code></b>
+              (<code><a class="autorefs autorefs-external" title="numpy.ndarray" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>A 2D numpy array of shape <code>(n, 3)</code>, where n represents the number of graph nodes.
+Each row corresponds to the 3D coordinates of a node.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>qg</code></b>
+              (<code><span title="spectral_clustering.quotientgraph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>A quotient graph to be visualized.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The function uses a matplotlib 3D scatter plot to render the nodes of the graph
+and draws lines connecting the nodes to represent edges. Node coordinates are
+specified in the <code>nodes_coords_moy</code> parameter, while edge connectivity is
+derived from the <code>QG</code> graph structure.</p>
+</details>
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">419</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">420</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">421</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">422</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">423</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">424</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">425</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">426</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">427</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">428</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">429</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">430</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">431</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">432</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">433</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">434</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">435</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">436</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">441</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">442</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">444</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">445</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">446</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">447</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">449</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_matplotlib_3D</span>(nodes_coords_moy, qg):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Draws a 3D visualization of a quotient graph using Matplotlib.</span>
+
+<span style="color: #BA2121; font-style: italic">    The function takes in the 3D coordinates of nodes and a quotient graph object, and visualizes the</span>
+<span style="color: #BA2121; font-style: italic">    nodes and edges of the graph in three dimensions.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    nodes_coords_moy : numpy.ndarray</span>
+<span style="color: #BA2121; font-style: italic">        A 2D numpy array of shape `(n, 3)`, where n represents the number of graph nodes.</span>
+<span style="color: #BA2121; font-style: italic">        Each row corresponds to the 3D coordinates of a node.</span>
+<span style="color: #BA2121; font-style: italic">    qg : spectral_clustering.quotientgraph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        A quotient graph to be visualized.</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    The function uses a matplotlib 3D scatter plot to render the nodes of the graph</span>
+<span style="color: #BA2121; font-style: italic">    and draws lines connecting the nodes to represent edges. Node coordinates are</span>
+<span style="color: #BA2121; font-style: italic">    specified in the `nodes_coords_moy` parameter, while edge connectivity is</span>
+<span style="color: #BA2121; font-style: italic">    derived from the `QG` graph structure.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">mpl_toolkits.mplot3d</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> Axes3D
+
+    <span style="color: #008000; font-weight: bold">with</span> plt<span style="color: #666">.</span>style<span style="color: #666">.</span>context((<span style="color: #BA2121">&#39;ggplot&#39;</span>)):
+        fig <span style="color: #666">=</span> plt<span style="color: #666">.</span>figure(figsize<span style="color: #666">=</span>(<span style="color: #666">10</span>, <span style="color: #666">7</span>))
+        ax <span style="color: #666">=</span> Axes3D(fig)
+        <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">range</span>(nodes_coords_moy<span style="color: #666">.</span>shape[<span style="color: #666">0</span>]):
+            xi <span style="color: #666">=</span> nodes_coords_moy[i, <span style="color: #666">0</span>]
+            yi <span style="color: #666">=</span> nodes_coords_moy[i, <span style="color: #666">1</span>]
+            zi <span style="color: #666">=</span> nodes_coords_moy[i, <span style="color: #666">2</span>]
+
+            ax<span style="color: #666">.</span>scatter(xi, yi, zi, s<span style="color: #666">=10</span> <span style="color: #666">**</span> <span style="color: #666">2</span>, edgecolors<span style="color: #666">=</span><span style="color: #BA2121">&#39;k&#39;</span>, alpha<span style="color: #666">=0.7</span>)
+
+        <span style="color: #008000; font-weight: bold">for</span> i, j <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">enumerate</span>(qg<span style="color: #666">.</span>edges()):
+            corresp <span style="color: #666">=</span> <span style="color: #008000">dict</span>(<span style="color: #008000">zip</span>(qg<span style="color: #666">.</span>nodes, <span style="color: #008000">range</span>(<span style="color: #008000">len</span>(qg<span style="color: #666">.</span>nodes))))
+            x <span style="color: #666">=</span> np<span style="color: #666">.</span>array((nodes_coords_moy[corresp[j[<span style="color: #666">0</span>]], <span style="color: #666">0</span>], nodes_coords_moy[corresp[j[<span style="color: #666">1</span>]], <span style="color: #666">0</span>]))
+            y <span style="color: #666">=</span> np<span style="color: #666">.</span>array((nodes_coords_moy[corresp[j[<span style="color: #666">0</span>]], <span style="color: #666">1</span>], nodes_coords_moy[corresp[j[<span style="color: #666">1</span>]], <span style="color: #666">1</span>]))
+            z <span style="color: #666">=</span> np<span style="color: #666">.</span>array((nodes_coords_moy[corresp[j[<span style="color: #666">0</span>]], <span style="color: #666">2</span>], nodes_coords_moy[corresp[j[<span style="color: #666">1</span>]], <span style="color: #666">2</span>]))
+            ax<span style="color: #666">.</span>plot(x, y, z, c<span style="color: #666">=</span><span style="color: #BA2121">&#39;black&#39;</span>, alpha<span style="color: #666">=0.5</span>)
+        ax<span style="color: #666">.</span>view_init(elev<span style="color: #666">=30</span>)
+        ax<span style="color: #666">.</span>set_axis_off()
+        plt<span style="color: #666">.</span>show()
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_anything_on_point_cloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_anything_on_point_cloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_anything_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_anything_on_point_cloud(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;pcd_attribute.txt&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports a specified attribute to the point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing nodes coordinates.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>attribute</code></b>
+              (<code>ndarray</code>)
+          –
+          <div class="doc-md-description">
+            <p>An array representing the attribute values to export.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;pcd_attribute.txt&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The name of the output file.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">52</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">53</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">54</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">55</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">56</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">57</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">58</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">59</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">60</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">61</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">62</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">63</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">64</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">65</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">66</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">67</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">68</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_anything_on_point_cloud</span>(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;pcd_attribute.txt&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports a specified attribute to the point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates.</span>
+<span style="color: #BA2121; font-style: italic">    attribute : ndarray</span>
+<span style="color: #BA2121; font-style: italic">        An array representing the attribute values to export.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the output file.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    <span style="color: #008000; font-weight: bold">if</span> attribute<span style="color: #666">.</span>ndim <span style="color: #666">==</span> <span style="color: #666">1</span>:
+        attribute <span style="color: #666">=</span> attribute[:, np<span style="color: #666">.</span>newaxis]
+    pcd_attribute <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, attribute], axis<span style="color: #666">=1</span>)
+    np<span style="color: #666">.</span>savetxt(filename, pcd_attribute, delimiter<span style="color: #666">=</span><span style="color: #BA2121">&quot;,&quot;</span>)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du nuage avec les attributs demandés&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_clustering_labels_on_point_cloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_clustering_labels_on_point_cloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_clustering_labels_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_clustering_labels_on_point_cloud(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;pcd_clustered.txt&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports clustering labels of a graph to a point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing nodes coordinates and clustering labels.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;pcd_clustered.txt&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for the output.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">37</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">38</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">39</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">40</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">41</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">42</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">43</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">44</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">45</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">46</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">47</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">48</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">49</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_clustering_labels_on_point_cloud</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;pcd_clustered.txt&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports clustering labels of a graph to a point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates and clustering labels.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    pcd_clusters <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, pcd_g<span style="color: #666">.</span>clustering_labels], axis<span style="color: #666">=1</span>)
+    np<span style="color: #666">.</span>savetxt(filename, pcd_clusters, delimiter<span style="color: #666">=</span><span style="color: #BA2121">&quot;,&quot;</span>)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du nuage avec les labels de cluster&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_fiedler_vector_on_pointcloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_fiedler_vector_on_pointcloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_fiedler_vector_on_pointcloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_fiedler_vector_on_pointcloud(G, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;pcd_vp2.txt&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports the Fiedler vector to a point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>G</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing nodes coordinates and Fiedler vector data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;pcd_vp2.txt&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for the output.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">86</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">87</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">88</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">89</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">90</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">91</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">92</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">93</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">94</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">95</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">96</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">97</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">98</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">99</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_fiedler_vector_on_pointcloud</span>(G, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;pcd_vp2.txt&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports the Fiedler vector to a point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    G : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates and Fiedler vector data.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    vp2 <span style="color: #666">=</span> G<span style="color: #666">.</span>keigenvec[:, <span style="color: #666">1</span>]
+    pcd_vp2 <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([G<span style="color: #666">.</span>nodes_coords, vp2[:, np<span style="color: #666">.</span>newaxis]], axis<span style="color: #666">=1</span>)
+    np<span style="color: #666">.</span>savetxt(filename, pcd_vp2, delimiter<span style="color: #666">=</span><span style="color: #BA2121">&quot;,&quot;</span>)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du nuage avec le vecteur propre 2&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_gradient_of_fiedler_vector_on_pointcloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_gradient_of_fiedler_vector_on_pointcloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_gradient_of_fiedler_vector_on_pointcloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;pcd_vp2_grad.txt&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports the gradient of the Fiedler vector to a point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing nodes coordinates and fiedler gradient data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;pcd_vp2_grad.txt&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for the output.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">71</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">72</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">73</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">74</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">75</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">76</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">77</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">78</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">79</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">80</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">81</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">82</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">83</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_gradient_of_fiedler_vector_on_pointcloud</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">&quot;pcd_vp2_grad.txt&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports the gradient of the Fiedler vector to a point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates and fiedler gradient data.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    pcd_vp2_grad <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, pcd_g<span style="color: #666">.</span>gradient_on_fiedler], axis<span style="color: #666">=1</span>)
+    np<span style="color: #666">.</span>savetxt(filename, pcd_vp2_grad, delimiter<span style="color: #666">=</span><span style="color: #BA2121">&quot;,&quot;</span>)
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export du nuage avec gradient du vecteur propre 2&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_quotient_graph_attribute_on_point_cloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_quotient_graph_attribute_on_point_cloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_quotient_graph_attribute_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_quotient_graph_attribute_on_point_cloud(qg, attribute, name<span style="color: #666">=</span><span style="color: #BA2121">&#39;&#39;</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">&#39;.&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports attributes from a quotient graph to a point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>qg</code></b>
+              (<code><span title="spectral_clustering.quotientgraph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The quotient graph containing point cloud and attribute data.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>attribute</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The attribute from the quotient graph nodes to be exported.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>name</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A suffix to append to the output file name.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">11</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">12</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">13</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">14</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">15</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">16</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">17</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">18</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">19</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">20</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">21</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">22</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">23</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">24</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">25</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">26</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">27</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">28</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">29</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">30</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">31</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">32</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">33</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">34</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_quotient_graph_attribute_on_point_cloud</span>(qg, attribute, name<span style="color: #666">=</span><span style="color: #BA2121">&#39;&#39;</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">&quot;.&quot;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports attributes from a quotient graph to a point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    qg : spectral_clustering.quotientgraph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The quotient graph containing point cloud and attribute data.</span>
+<span style="color: #BA2121; font-style: italic">    attribute : str</span>
+<span style="color: #BA2121; font-style: italic">        The attribute from the quotient graph nodes to be exported.</span>
+<span style="color: #BA2121; font-style: italic">    name : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        A suffix to append to the output file name.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    labels_from_qg <span style="color: #666">=</span> np<span style="color: #666">.</span>zeros((<span style="color: #008000">len</span>(qg<span style="color: #666">.</span>point_cloud_graph), <span style="color: #666">4</span>))
+    i <span style="color: #666">=</span> <span style="color: #666">0</span>
+    G <span style="color: #666">=</span> qg<span style="color: #666">.</span>point_cloud_graph
+    <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G<span style="color: #666">.</span>nodes:
+        labels_from_qg[i, <span style="color: #666">0</span>:<span style="color: #666">3</span>] <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;pos&#39;</span>]
+        labels_from_qg[i, <span style="color: #666">3</span>] <span style="color: #666">=</span> qg<span style="color: #666">.</span>nodes[G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]][attribute]
+        i <span style="color: #666">+=</span> <span style="color: #666">1</span>
+    directory <span style="color: #666">=</span> Path(directory)
+    fname <span style="color: #666">=</span> <span style="color: #BA2121">&#39;pcd_&#39;</span> <span style="color: #666">+</span> attribute <span style="color: #666">+</span> name <span style="color: #666">+</span> <span style="color: #BA2121">&#39;.txt&#39;</span>
+    np<span style="color: #666">.</span>savetxt(directory <span style="color: #666">/</span> fname, labels_from_qg, delimiter<span style="color: #666">=</span><span style="color: #BA2121">&quot;,&quot;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.display_and_export.export_some_graph_attributes_on_point_cloud" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export_some_graph_attributes_on_point_cloud</span>
+
+
+<a href="#spectral_clustering.display_and_export.export_some_graph_attributes_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_attribute.txt&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exports specific graph attributes to a point cloud.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd_g</code></b>
+              (<code><span title="spectral_clustering.pointcloudgraph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The graph containing nodes and the requested attribute.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>graph_attribute</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;quotient_graph_node&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The name of the graph attribute to export.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;graph_attribute.txt&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The file name for the output.</p>
+          </div>
+        </li>
+    </ul>
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">106</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">107</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">109</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">110</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">112</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">113</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">114</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_some_graph_attributes_on_point_cloud</span>(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>,
+                                                filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_attribute.txt&#39;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Exports specific graph attributes to a point cloud.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd_g : spectral_clustering.pointcloudgraph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The graph containing nodes and the requested attribute.</span>
+<span style="color: #BA2121; font-style: italic">    graph_attribute : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The name of the graph attribute to export.</span>
+<span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    G <span style="color: #666">=</span> pcd_g
+    new_classif <span style="color: #666">=</span> np<span style="color: #666">.</span>asarray(<span style="color: #008000">list</span>((<span style="color: #008000">dict</span>(G<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span>graph_attribute))<span style="color: #666">.</span>values())))
+    new_classif <span style="color: #666">=</span> new_classif[:, np<span style="color: #666">.</span>newaxis]
+    export_anything_on_point_cloud(G, attribute<span style="color: #666">=</span>new_classif, filename<span style="color: #666">=</span>filename)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      The ROMI project has received funding from the European Community’s H2020 Programme under Grant Agreement No. 773875.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/ROMI_EU_PROJECT" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l164.9-188.5L26.8 48h145.6l100.5 132.9zm-24.8 373.8h39.1L151.1 88h-42z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.facebook.com/ROMIEUProject" target="_blank" rel="noopener" title="www.facebook.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/romi/spectral-clustering" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://hub.docker.com/repository/docker/roboticsmicrofarms/plantimager/general" target="_blank" rel="noopener" title="hub.docker.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M349.9 236.3h-66.1v-59.4h66.1zm0-204.3h-66.1v60.7h66.1zm78.2 144.8H362v59.4h66.1zm-156.3-72.1h-66.1v60.1h66.1zm78.1 0h-66.1v60.1h66.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1zm78.1 0h-66.1v59.4h66.1zm-78.1-72.1h-66.1v60.1h66.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+        <script src="../../../assets/_markdown_exec_pyodide.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+        <script src="https://buttons.github.io/buttons.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2269 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Spectral Clustering documentation.">
+      
+      
+        <meta name="author" content="ROMI Team">
+      
+      
+        <link rel="canonical" href="https://romi.github.io/spectral-clustering/reference/spectral_clustering/topological_energy/">
+      
+      
+        <link rel="prev" href="../split_and_merge/">
+      
+      
+        <link rel="next" href="../utils/">
+      
+      
+      <link rel="icon" href="../../../assets/images/ROMI_ICON_green.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>topological_energy - SpectralClustering</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.a40c8224.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,300i,400,400i,700,700i%7CUbuntu+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Nunito Sans";--md-code-font:"Ubuntu Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_pyodide.css">
+    
+      <link rel="stylesheet" href="../../../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#spectral_clustering.topological_energy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://romi.github.io/spectral-clustering/" title="SpectralClustering" class="md-header__button md-logo" aria-label="SpectralClustering" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SpectralClustering
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              topological_energy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/romi/spectral-clustering" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../dev/" class="md-tabs__link">
+        
+  
+    
+  
+  Developers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  Reference API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://romi.github.io/spectral-clustering/" title="SpectralClustering" class="md-nav__button md-logo" aria-label="SpectralClustering" data-md-component="logo">
+      
+  <img src="../../../assets/images/ROMI_logo_white.svg" alt="logo">
+
+    </a>
+    SpectralClustering
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/romi/spectral-clustering" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dev/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Reference API
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Reference API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    spectral_clustering
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            spectral_clustering
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Segmentation_Dijkstra_litt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Segmentation_Dijkstra_litt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Viterbi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Viterbi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branching_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    branching_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../constraint_program/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    constraint_program
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dijkstra_segmentation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    dijkstra_segmentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../display_and_export/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    display_and_export
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    evaluation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../point_cloud_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    point_cloud_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotient_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotient_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotientgraph_operations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotientgraph_operations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quotientgraph_semantics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    quotientgraph_semantics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../segmentation_algorithms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    segmentation_algorithms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../similarity_graph/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    similarity_graph
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../split_and_merge/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    split_and_merge
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    topological_energy
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    topological_energy
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      topological_energy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.define_and_optimize_topological_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      define_and_optimize_topological_energy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.init_topo_scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_topo_scores
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.optimization_topo_scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      optimization_topo_scores
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1_16" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../utils/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1_16" id="__nav_3_1_16_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_1_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1_16">
+            <span class="md-nav__icon md-icon"></span>
+            utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/angle/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    angle
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/size/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    size
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../utils/sparse/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    sparse
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      topological_energy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.define_and_optimize_topological_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      define_and_optimize_topological_energy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.init_topo_scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      init_topo_scores
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.topological_energy.optimization_topo_scores" class="md-nav__link">
+    <span class="md-ellipsis">
+      optimization_topo_scores
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+  <h1>topological_energy</h1>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="spectral_clustering.topological_energy"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.topological_energy.define_and_optimize_topological_energy" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">define_and_optimize_topological_energy</span>
+
+
+<a href="#spectral_clustering.topological_energy.define_and_optimize_topological_energy" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>define_and_optimize_topological_energy(quotient_graph, point_cloud_graph, exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>, number_of_iteration<span style="color: #666">=1000</span>, choice_of_node_to_change<span style="color: #666">=</span><span style="color: #BA2121">&#39;max_energy&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Compute and optimize the topological scores of each node in the PointCloudGraph.</p>
+<p>This function first calculates the initial topological scores for each node in
+the <code>point_cloud_graph</code> using the <code>init_topo_scores</code> function. Following this, it
+optimizes the topological energy using the <code>optimization_topo_scores</code> function.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>quotient_graph</code></b>
+              (<code><span title="spectral_clustering.graph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The quotient graph derived from the <code>PointCloudGraph</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>point_cloud_graph</code></b>
+              (<code><span title="spectral_clustering.graph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The associated distance-based PointCloudGraph.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>exports</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, exports the computed scores to a <code>.txt</code> file and saves a visualization
+of the scores on the quotient graph as a <code>.png</code> image. Default is True.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>formulae</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;improved&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Determines the formula used to compute the topological energy for a node.
+Options are:
+- <code>'improved'</code> (default): Uses the improved formula.
+- <code>'old'</code>: Uses the old formula.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>number_of_iteration</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>, default:
+                  <code>1000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The number of iterations for topological energy optimization. Default is 1000.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>choice_of_node_to_change</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;max_energy&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The method used to select a node for changing its cluster. Options are:
+- <code>'max_energy'</code> (default): Selects the node with the maximum energy.
+- <code>'random_proba_energy'</code>: Selects a node based on a probability distribution
+  of energy values.
+- <code>'max_energy_and_select'</code>: Selects the maximum energy node with additional
+  selection criteria.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>The function consists of two main steps:
+1. Calculation of initial topological scores with <code>init_topo_scores</code>.
+2. Optimization of scores using <code>optimization_topo_scores</code>.</p>
+<p>At the end of the process, a summary message is printed to indicate that the
+optimization has been completed.</p>
+</details>
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/topological_energy.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">16</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">17</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">18</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">19</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">20</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">21</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">22</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">23</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">24</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">25</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">26</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">27</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">28</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">29</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">30</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">31</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">32</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">33</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">34</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">35</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">36</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">37</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">38</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">39</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">40</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">41</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">42</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">43</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">44</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">45</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">46</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">47</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">48</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">49</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">50</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">51</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">52</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">53</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">54</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">55</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">56</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">57</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">58</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">59</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">60</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">61</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">62</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">63</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">64</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">65</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">66</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">67</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">68</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">69</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">70</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">71</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">72</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">define_and_optimize_topological_energy</span>(quotient_graph,
+                                           point_cloud_graph,
+                                           exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>,
+                                           formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>,
+                                           number_of_iteration<span style="color: #666">=1000</span>,
+                                           choice_of_node_to_change<span style="color: #666">=</span><span style="color: #BA2121">&#39;max_energy&#39;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Compute and optimize the topological scores of each node in the PointCloudGraph.</span>
+
+<span style="color: #BA2121; font-style: italic">    This function first calculates the initial topological scores for each node in</span>
+<span style="color: #BA2121; font-style: italic">    the `point_cloud_graph` using the `init_topo_scores` function. Following this, it</span>
+<span style="color: #BA2121; font-style: italic">    optimizes the topological energy using the `optimization_topo_scores` function.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    quotient_graph : spectral_clustering.graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The quotient graph derived from the `PointCloudGraph`.</span>
+<span style="color: #BA2121; font-style: italic">    point_cloud_graph : spectral_clustering.graph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The associated distance-based PointCloudGraph.</span>
+<span style="color: #BA2121; font-style: italic">    exports : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If True, exports the computed scores to a `.txt` file and saves a visualization</span>
+<span style="color: #BA2121; font-style: italic">        of the scores on the quotient graph as a `.png` image. Default is True.</span>
+<span style="color: #BA2121; font-style: italic">    formulae : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Determines the formula used to compute the topological energy for a node.</span>
+<span style="color: #BA2121; font-style: italic">        Options are:</span>
+<span style="color: #BA2121; font-style: italic">        - `&#39;improved&#39;` (default): Uses the improved formula.</span>
+<span style="color: #BA2121; font-style: italic">        - `&#39;old&#39;`: Uses the old formula.</span>
+<span style="color: #BA2121; font-style: italic">    number_of_iteration : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        The number of iterations for topological energy optimization. Default is 1000.</span>
+<span style="color: #BA2121; font-style: italic">    choice_of_node_to_change : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The method used to select a node for changing its cluster. Options are:</span>
+<span style="color: #BA2121; font-style: italic">        - `&#39;max_energy&#39;` (default): Selects the node with the maximum energy.</span>
+<span style="color: #BA2121; font-style: italic">        - `&#39;random_proba_energy&#39;`: Selects a node based on a probability distribution</span>
+<span style="color: #BA2121; font-style: italic">          of energy values.</span>
+<span style="color: #BA2121; font-style: italic">        - `&#39;max_energy_and_select&#39;`: Selects the maximum energy node with additional</span>
+<span style="color: #BA2121; font-style: italic">          selection criteria.</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    The function consists of two main steps:</span>
+<span style="color: #BA2121; font-style: italic">    1. Calculation of initial topological scores with `init_topo_scores`.</span>
+<span style="color: #BA2121; font-style: italic">    2. Optimization of scores using `optimization_topo_scores`.</span>
+
+<span style="color: #BA2121; font-style: italic">    At the end of the process, a summary message is printed to indicate that the</span>
+<span style="color: #BA2121; font-style: italic">    optimization has been completed.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    init_topo_scores(quotient_graph<span style="color: #666">=</span>quotient_graph,
+                     point_cloud_graph<span style="color: #666">=</span>point_cloud_graph,
+                     exports<span style="color: #666">=</span>exports,
+                     formulae<span style="color: #666">=</span>formulae)
+    optimization_topo_scores(quotientgraph<span style="color: #666">=</span>quotient_graph,
+                             pointcloudgraph<span style="color: #666">=</span>point_cloud_graph,
+                             exports<span style="color: #666">=</span>exports,
+                             number_of_iteration<span style="color: #666">=</span>number_of_iteration,
+                             choice_of_node_to_change<span style="color: #666">=</span>choice_of_node_to_change,
+                             formulae<span style="color: #666">=</span>formulae)
+
+    <span style="color: #008000">print</span>(<span style="color: #BA2121">&#39;Optimization of topological energy : Done&#39;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.topological_energy.init_topo_scores" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">init_topo_scores</span>
+
+
+<a href="#spectral_clustering.topological_energy.init_topo_scores" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>init_topo_scores(quotient_graph, point_cloud_graph, exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Calculate the topological scores for each node in the PointCloudGraph and associated
+energy metrics for the QuotientGraph.</p>
+<p>This function computes the number of adjacent clusters in the PointCloudGraph that are
+different from the cluster of the considered node. It also calculates a per-node energy
+score for the QuotientGraph and the global topological energy of the entire QuotientGraph,
+which is the sum of the energies of its nodes.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>quotient_graph</code></b>
+              (<code><span title="spectral_clustering.graph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The QuotientGraph object representing the coarse-grained view of the PointCloudGraph.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>point_cloud_graph</code></b>
+              (<code><span title="spectral_clustering.graph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The PointCloudGraph object, typically a distance-based graph, associated with
+the quotient graph.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>exports</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, exports the computed scores to a <code>.txt</code> file and a matplotlib
+visualization (<code>.png</code>) of the quotient graph. Default is True.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>formulae</code></b>
+              (<code>(improved, old)</code>, default:
+                  <code>&#39;improved&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Specifies the formula used to compute the topological energy for each node:
+- 'improved': A refined computation method based on normalized counts of adjacent
+  clusters.
+- 'old': A simpler, earlier computational approach. Default is 'improved'.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code>None</code>
+          –
+          <div class="doc-md-description">
+            <p>This function modifies <code>quotient_graph</code> and <code>point_cloud_graph</code> in place by adding
+attributes such as:
+- <code>number_of_adj_labels</code> for the PointCloudGraph nodes.
+- <code>topological_energy</code> for the QuotientGraph nodes.
+Additionally, the global topological energy is stored in the <code>quotient_graph.graph</code>
+attribute: <code>global_topological_energy</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <ul>
+<li>When <code>formulae='improved'</code>, the energy calculation considers the normalized
+  contributions of connections to clusters different from the node’s own cluster.</li>
+<li>This function works in-place, directly modifying the input graph objects.</li>
+<li>If <code>exports</code> is True, the function will generate:<ul>
+<li>A <code>.txt</code> file containing the computed energy scores for the PointCloudGraph.</li>
+<li>A <code>.png</code> visualization of the QuotientGraph with node energies annotated.</li>
+</ul>
+</li>
+</ul>
+</details>
+
+<details class="see-also" open>
+  <summary>See Also</summary>
+  <p>export_some_graph_attributes_on_point_cloud : Export node attributes for visualization or analysis.
+display_and_export_quotient_graph_matplotlib : Display and save a visualization of the graph structure.</p>
+</details>
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/topological_energy.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 75</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 76</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 77</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 78</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 79</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 80</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 81</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 82</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 83</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 84</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 85</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 86</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 87</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 88</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 89</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 90</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 91</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 92</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 93</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 94</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 95</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 96</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 97</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 98</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 99</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">100</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">101</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">106</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">107</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">109</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">110</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">112</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">113</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">114</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">119</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">127</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">128</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">133</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">134</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">135</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">136</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">137</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">138</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">139</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">140</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">141</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">142</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">143</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">144</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">145</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">146</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">147</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">148</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">149</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">150</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">151</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">152</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">153</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">154</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">155</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">156</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">157</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">160</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">161</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">162</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">163</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">164</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">165</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">166</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">167</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">168</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">169</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">170</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">init_topo_scores</span>(quotient_graph, point_cloud_graph, exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;</span>
+<span style="color: #BA2121; font-style: italic">    Calculate the topological scores for each node in the PointCloudGraph and associated</span>
+<span style="color: #BA2121; font-style: italic">    energy metrics for the QuotientGraph.</span>
+
+<span style="color: #BA2121; font-style: italic">    This function computes the number of adjacent clusters in the PointCloudGraph that are</span>
+<span style="color: #BA2121; font-style: italic">    different from the cluster of the considered node. It also calculates a per-node energy</span>
+<span style="color: #BA2121; font-style: italic">    score for the QuotientGraph and the global topological energy of the entire QuotientGraph,</span>
+<span style="color: #BA2121; font-style: italic">    which is the sum of the energies of its nodes.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    quotient_graph : spectral_clustering.graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The QuotientGraph object representing the coarse-grained view of the PointCloudGraph.</span>
+<span style="color: #BA2121; font-style: italic">    point_cloud_graph : spectral_clustering.graph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The PointCloudGraph object, typically a distance-based graph, associated with</span>
+<span style="color: #BA2121; font-style: italic">        the quotient graph.</span>
+<span style="color: #BA2121; font-style: italic">    exports : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If True, exports the computed scores to a `.txt` file and a matplotlib</span>
+<span style="color: #BA2121; font-style: italic">        visualization (`.png`) of the quotient graph. Default is True.</span>
+<span style="color: #BA2121; font-style: italic">    formulae : {&#39;improved&#39;, &#39;old&#39;}, optional</span>
+<span style="color: #BA2121; font-style: italic">        Specifies the formula used to compute the topological energy for each node:</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;improved&#39;: A refined computation method based on normalized counts of adjacent</span>
+<span style="color: #BA2121; font-style: italic">          clusters.</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;old&#39;: A simpler, earlier computational approach. Default is &#39;improved&#39;.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    None</span>
+<span style="color: #BA2121; font-style: italic">        This function modifies `quotient_graph` and `point_cloud_graph` in place by adding</span>
+<span style="color: #BA2121; font-style: italic">        attributes such as:</span>
+<span style="color: #BA2121; font-style: italic">        - `number_of_adj_labels` for the PointCloudGraph nodes.</span>
+<span style="color: #BA2121; font-style: italic">        - `topological_energy` for the QuotientGraph nodes.</span>
+<span style="color: #BA2121; font-style: italic">        Additionally, the global topological energy is stored in the `quotient_graph.graph`</span>
+<span style="color: #BA2121; font-style: italic">        attribute: `global_topological_energy`.</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    - When `formulae=&#39;improved&#39;`, the energy calculation considers the normalized</span>
+<span style="color: #BA2121; font-style: italic">      contributions of connections to clusters different from the node’s own cluster.</span>
+<span style="color: #BA2121; font-style: italic">    - This function works in-place, directly modifying the input graph objects.</span>
+<span style="color: #BA2121; font-style: italic">    - If `exports` is True, the function will generate:</span>
+<span style="color: #BA2121; font-style: italic">        - A `.txt` file containing the computed energy scores for the PointCloudGraph.</span>
+<span style="color: #BA2121; font-style: italic">        - A `.png` visualization of the QuotientGraph with node energies annotated.</span>
+
+<span style="color: #BA2121; font-style: italic">    See Also</span>
+<span style="color: #BA2121; font-style: italic">    --------</span>
+<span style="color: #BA2121; font-style: italic">    export_some_graph_attributes_on_point_cloud : Export node attributes for visualization or analysis.</span>
+<span style="color: #BA2121; font-style: italic">    display_and_export_quotient_graph_matplotlib : Display and save a visualization of the graph structure.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    QG <span style="color: #666">=</span> quotient_graph
+    G <span style="color: #666">=</span> point_cloud_graph
+
+    <span style="color: #3D7B7B; font-style: italic"># Determinate a score for each vertex in a quotient node. Normalized by the number of neighbors</span>
+    <span style="color: #3D7B7B; font-style: italic"># init</span>
+    maxNeighbSize <span style="color: #666">=</span> <span style="color: #666">0</span>
+    <span style="color: #008000; font-weight: bold">for</span> u <span style="color: #A2F; font-weight: bold">in</span> G<span style="color: #666">.</span>nodes:
+        G<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+    <span style="color: #008000; font-weight: bold">for</span> u <span style="color: #A2F; font-weight: bold">in</span> QG<span style="color: #666">.</span>nodes:
+        QG<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+    <span style="color: #3D7B7B; font-style: italic"># global score for the entire graph</span>
+    QG<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+    <span style="color: #3D7B7B; font-style: italic"># for to compute the score of each vertex</span>
+    <span style="color: #008000; font-weight: bold">if</span> formulae <span style="color: #666">==</span> <span style="color: #BA2121">&#39;old&#39;</span>:
+        <span style="color: #008000; font-weight: bold">for</span> v <span style="color: #A2F; font-weight: bold">in</span> G<span style="color: #666">.</span>nodes:
+            number_of_neighb <span style="color: #666">=</span> <span style="color: #008000">len</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[v]])
+            <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[v]:
+                <span style="color: #008000; font-weight: bold">if</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>] <span style="color: #666">!=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]:
+                    G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">+=</span> <span style="color: #666">1</span>
+            G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">/=</span> number_of_neighb
+            u <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+            QG<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+            QG<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+    <span style="color: #008000; font-weight: bold">elif</span> formulae <span style="color: #666">==</span> <span style="color: #BA2121">&#39;improved&#39;</span>:
+        <span style="color: #008000; font-weight: bold">for</span> v <span style="color: #A2F; font-weight: bold">in</span> G<span style="color: #666">.</span>nodes:
+            list_neighb_clust <span style="color: #666">=</span> []
+            <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[v]:
+                list_neighb_clust<span style="color: #666">.</span>append(G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+            number_of_clusters <span style="color: #666">=</span> <span style="color: #008000">len</span>(Counter(list_neighb_clust)<span style="color: #666">.</span>keys())
+            <span style="color: #008000; font-weight: bold">if</span> number_of_clusters <span style="color: #666">==</span> <span style="color: #666">1</span> <span style="color: #A2F; font-weight: bold">and</span> list_neighb_clust[<span style="color: #666">0</span>] <span style="color: #666">==</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]:
+                G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+            <span style="color: #008000; font-weight: bold">else</span>:
+                number_same <span style="color: #666">=</span> list_neighb_clust<span style="color: #666">.</span>count(G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+                number_diff <span style="color: #666">=</span> <span style="color: #008000">len</span>(list_neighb_clust) <span style="color: #666">-</span> number_same
+                G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> number_diff <span style="color: #666">/</span> \
+                                                     (number_diff <span style="color: #666">+</span> (number_of_clusters <span style="color: #666">-</span> <span style="color: #666">1</span>) <span style="color: #666">*</span> number_same)
+            u <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+            QG<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+            QG<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+
+    <span style="color: #008000; font-weight: bold">if</span> exports:
+        export_some_graph_attributes_on_point_cloud(G, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>,
+                                                    filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_attribute_energy_init.txt&#39;</span>)
+
+        display_and_export_quotient_graph_matplotlib(QG, node_sizes<span style="color: #666">=20</span>, name<span style="color: #666">=</span><span style="color: #BA2121">&quot;quotient_graph_matplotlib_energy_init&quot;</span>,
+                                                     data_on_nodes<span style="color: #666">=</span><span style="color: #BA2121">&#39;topological_energy&#39;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.topological_energy.optimization_topo_scores" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">optimization_topo_scores</span>
+
+
+<a href="#spectral_clustering.topological_energy.optimization_topo_scores" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>optimization_topo_scores(quotientgraph, pointcloudgraph, exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, number_of_iteration<span style="color: #666">=1000</span>, choice_of_node_to_change<span style="color: #666">=</span><span style="color: #BA2121">&#39;max_energy&#39;</span>, formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Optimizes the topological scores by iteratively modifying clusters of nodes in
+a point cloud graph and updating the corresponding energies.</p>
+<p>The function starts by selecting a node based on its energy using the specified
+selection method. The selected node changes its cluster to one of its neighbor's
+clusters. The function then updates the global topological energy and other graph
+properties accordingly. The process is repeated for a specified number of iterations
+and can export the results, including graphs showing energy evolution.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>quotientgraph</code></b>
+              (<code><span title="spectral_clustering.graph.QuotientGraph">QuotientGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The quotient graph that contains meta-information about clusters and associated
+energy values. This graph gets updated with changes during optimization.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>pointcloudgraph</code></b>
+              (<code><span title="spectral_clustering.graph.PointCloudGraph">PointCloudGraph</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The point cloud graph where each node represents a point and is associated with
+cluster data. This is the main graph on which optimization operations are performed.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>exports</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>, default:
+                  <code>True</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>If True, the function will export the graph showing the evolution of the global
+energy, the quotient graph with energy values for each node, and point-cloud-related
+data. Default is True.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>number_of_iteration</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#int">int</a></code>, default:
+                  <code>1000</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The total number of iterations to perform for optimization. Default is 1000.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>choice_of_node_to_change</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;max_energy&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Method used to select the node for changing its cluster. Options include:
+- 'max_energy': Select nodes with the maximum energy.
+- 'random_proba_energy': Select nodes probabilistically based on normalized energy.
+- 'max_energy_and_select': Select nodes with maximum energy, applying additional
+  constraints to avoid repeated selections.
+Default is 'max_energy'.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>formulae</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;improved&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>The formula used for updating the energy based on cluster changes. Options:
+- 'old': Uses the original formula for energy updates.
+- 'improved': Uses an enhanced formula to adjust energy dependencies.
+This must match the formula used during the initialization of the system.
+Default is 'improved'.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code>None</code>
+          –
+          <div class="doc-md-description">
+            <p>This function modifies the given input graphs (<code>quotientgraph</code> and
+<code>pointcloudgraph</code>) in place and optionally exports results as files.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <ul>
+<li>The function internally tracks the global energy values across iterations and can
+  export these results visually as scatter plots.</li>
+<li>Clusters for the nodes are determined by their neighbors' attributes and random
+  weight probabilities derived from their local environment.</li>
+</ul>
+</details>
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/topological_energy.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">173</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">174</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">175</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">176</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">177</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">178</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">179</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">180</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">181</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">182</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">183</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">184</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">185</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">186</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">187</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">188</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">189</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">190</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">191</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">192</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">193</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">194</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">195</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">196</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">197</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">198</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">199</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">200</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">201</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">202</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">203</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">204</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">205</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">206</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">207</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">208</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">209</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">210</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">211</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">212</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">213</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">214</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">215</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">216</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">217</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">218</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">219</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">220</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">221</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">222</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">223</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">224</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">225</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">226</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">227</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">228</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">229</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">230</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">231</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">232</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">233</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">234</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">235</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">236</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">237</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">238</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">239</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">241</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">242</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">243</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">244</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">245</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">246</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">247</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">248</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">249</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">250</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">251</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">252</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">253</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">254</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">255</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">256</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">257</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">258</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">259</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">260</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">261</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">262</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">263</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">264</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">265</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">266</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">267</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">268</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">270</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">272</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">283</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">286</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">287</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">288</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">289</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">290</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">291</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">294</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">296</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">298</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">299</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">300</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">301</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">302</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">303</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">304</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">305</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">306</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">307</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">308</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">309</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">310</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">311</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">312</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">313</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">314</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">315</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">316</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">317</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">318</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">319</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">321</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">323</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">324</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">325</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">327</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">332</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">333</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">338</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">339</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">340</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">341</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">342</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">343</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">344</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">345</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">346</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">347</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">348</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">349</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">351</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">353</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">354</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">356</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">357</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">358</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">359</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">360</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">361</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">362</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">363</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">364</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">365</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">366</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">367</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">368</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">369</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">370</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">371</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">372</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">373</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">374</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">375</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">376</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">377</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">378</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">379</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">380</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">381</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">382</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">383</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">384</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">385</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">386</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">387</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">388</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">389</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">390</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">391</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">392</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">393</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">394</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">395</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">396</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">397</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">398</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">399</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">400</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">401</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">402</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">403</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">404</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">optimization_topo_scores</span>(quotientgraph, pointcloudgraph, exports<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, number_of_iteration<span style="color: #666">=1000</span>,
+                             choice_of_node_to_change<span style="color: #666">=</span><span style="color: #BA2121">&#39;max_energy&#39;</span>, formulae<span style="color: #666">=</span><span style="color: #BA2121">&#39;improved&#39;</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">&quot;&quot;&quot;Optimizes the topological scores by iteratively modifying clusters of nodes in</span>
+<span style="color: #BA2121; font-style: italic">    a point cloud graph and updating the corresponding energies.</span>
+
+<span style="color: #BA2121; font-style: italic">    The function starts by selecting a node based on its energy using the specified</span>
+<span style="color: #BA2121; font-style: italic">    selection method. The selected node changes its cluster to one of its neighbor&#39;s</span>
+<span style="color: #BA2121; font-style: italic">    clusters. The function then updates the global topological energy and other graph</span>
+<span style="color: #BA2121; font-style: italic">    properties accordingly. The process is repeated for a specified number of iterations</span>
+<span style="color: #BA2121; font-style: italic">    and can export the results, including graphs showing energy evolution.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    quotientgraph : spectral_clustering.graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The quotient graph that contains meta-information about clusters and associated</span>
+<span style="color: #BA2121; font-style: italic">        energy values. This graph gets updated with changes during optimization.</span>
+<span style="color: #BA2121; font-style: italic">    pointcloudgraph : spectral_clustering.graph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The point cloud graph where each node represents a point and is associated with</span>
+<span style="color: #BA2121; font-style: italic">        cluster data. This is the main graph on which optimization operations are performed.</span>
+<span style="color: #BA2121; font-style: italic">    exports : bool, optional</span>
+<span style="color: #BA2121; font-style: italic">        If True, the function will export the graph showing the evolution of the global</span>
+<span style="color: #BA2121; font-style: italic">        energy, the quotient graph with energy values for each node, and point-cloud-related</span>
+<span style="color: #BA2121; font-style: italic">        data. Default is True.</span>
+<span style="color: #BA2121; font-style: italic">    number_of_iteration : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        The total number of iterations to perform for optimization. Default is 1000.</span>
+<span style="color: #BA2121; font-style: italic">    choice_of_node_to_change : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Method used to select the node for changing its cluster. Options include:</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;max_energy&#39;: Select nodes with the maximum energy.</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;random_proba_energy&#39;: Select nodes probabilistically based on normalized energy.</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;max_energy_and_select&#39;: Select nodes with maximum energy, applying additional</span>
+<span style="color: #BA2121; font-style: italic">          constraints to avoid repeated selections.</span>
+<span style="color: #BA2121; font-style: italic">        Default is &#39;max_energy&#39;.</span>
+<span style="color: #BA2121; font-style: italic">    formulae : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        The formula used for updating the energy based on cluster changes. Options:</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;old&#39;: Uses the original formula for energy updates.</span>
+<span style="color: #BA2121; font-style: italic">        - &#39;improved&#39;: Uses an enhanced formula to adjust energy dependencies.</span>
+<span style="color: #BA2121; font-style: italic">        This must match the formula used during the initialization of the system.</span>
+<span style="color: #BA2121; font-style: italic">        Default is &#39;improved&#39;.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    None</span>
+<span style="color: #BA2121; font-style: italic">        This function modifies the given input graphs (`quotientgraph` and</span>
+<span style="color: #BA2121; font-style: italic">        `pointcloudgraph`) in place and optionally exports results as files.</span>
+
+<span style="color: #BA2121; font-style: italic">    Notes</span>
+<span style="color: #BA2121; font-style: italic">    -----</span>
+<span style="color: #BA2121; font-style: italic">    - The function internally tracks the global energy values across iterations and can</span>
+<span style="color: #BA2121; font-style: italic">      export these results visually as scatter plots.</span>
+<span style="color: #BA2121; font-style: italic">    - Clusters for the nodes are determined by their neighbors&#39; attributes and random</span>
+<span style="color: #BA2121; font-style: italic">      weight probabilities derived from their local environment.</span>
+<span style="color: #BA2121; font-style: italic">    &quot;&quot;&quot;</span>
+    G <span style="color: #666">=</span> pointcloudgraph
+
+    <span style="color: #3D7B7B; font-style: italic"># nombre d&#39;itérations</span>
+    <span style="color: #008000">iter</span> <span style="color: #666">=</span> number_of_iteration
+    <span style="color: #3D7B7B; font-style: italic"># Liste contenant l&#39;énergie globale du graph</span>
+    evol_energy <span style="color: #666">=</span> [quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>]]
+
+    <span style="color: #3D7B7B; font-style: italic"># list to detect repetition in &#39;max_energy_and_select&#39;</span>
+    detect_rep <span style="color: #666">=</span> []
+    ban_list <span style="color: #666">=</span> []
+
+    <span style="color: #3D7B7B; font-style: italic"># Start loops for the number of iteration specified</span>
+    <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #008000">iter</span>):
+
+        <span style="color: #3D7B7B; font-style: italic"># Choice of point to move from a cluster to another.</span>
+
+        <span style="color: #008000; font-weight: bold">if</span> choice_of_node_to_change <span style="color: #666">==</span> <span style="color: #BA2121">&#39;max_energy&#39;</span>:
+            <span style="color: #3D7B7B; font-style: italic"># Creation of a dictionary with the energy per node</span>
+            energy_per_node <span style="color: #666">=</span> nx<span style="color: #666">.</span>get_node_attributes(G, <span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>)
+            <span style="color: #3D7B7B; font-style: italic"># Extraction of a random point to treat, use of &quot;smart indexing&quot;</span>
+            nodes <span style="color: #666">=</span> np<span style="color: #666">.</span>array(<span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>keys()))
+            mylist <span style="color: #666">=</span> <span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>values())
+            myRoundedList <span style="color: #666">=</span> [<span style="color: #008000">round</span>(x, <span style="color: #666">2</span>) <span style="color: #008000; font-weight: bold">for</span> x <span style="color: #A2F; font-weight: bold">in</span> mylist]
+            node_energies <span style="color: #666">=</span> np<span style="color: #666">.</span>array(myRoundedList)
+            maximal_energy_nodes <span style="color: #666">=</span> nodes[node_energies <span style="color: #666">==</span> np<span style="color: #666">.</span>max(node_energies)]
+            node_to_change <span style="color: #666">=</span> np<span style="color: #666">.</span>random<span style="color: #666">.</span>choice(maximal_energy_nodes)
+        <span style="color: #008000; font-weight: bold">if</span> choice_of_node_to_change <span style="color: #666">==</span> <span style="color: #BA2121">&#39;random_proba_energy&#39;</span>:
+            energy_per_node <span style="color: #666">=</span> nx<span style="color: #666">.</span>get_node_attributes(G, <span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>)
+            nodes <span style="color: #666">=</span> np<span style="color: #666">.</span>array(<span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>keys()))
+            total_energy <span style="color: #666">=</span> quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>]
+            l <span style="color: #666">=</span> <span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>values())
+            node_energies <span style="color: #666">=</span> np<span style="color: #666">.</span>array([e <span style="color: #666">/</span> total_energy <span style="color: #008000; font-weight: bold">for</span> e <span style="color: #A2F; font-weight: bold">in</span> l])
+            node_to_change <span style="color: #666">=</span> np<span style="color: #666">.</span>random<span style="color: #666">.</span>choice(nodes, p<span style="color: #666">=</span>node_energies)
+        <span style="color: #008000; font-weight: bold">if</span> choice_of_node_to_change <span style="color: #666">==</span> <span style="color: #BA2121">&#39;max_energy_and_select&#39;</span>:
+            energy_per_node <span style="color: #666">=</span> nx<span style="color: #666">.</span>get_node_attributes(G, <span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>)
+            nodes <span style="color: #666">=</span> np<span style="color: #666">.</span>array(<span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>keys()))
+            node_energies <span style="color: #666">=</span> np<span style="color: #666">.</span>array(<span style="color: #008000">list</span>(energy_per_node<span style="color: #666">.</span>values()))
+            maximal_energy_nodes <span style="color: #666">=</span> nodes[node_energies <span style="color: #666">==</span> np<span style="color: #666">.</span>max(node_energies)]
+            node_to_change <span style="color: #666">=</span> np<span style="color: #666">.</span>random<span style="color: #666">.</span>choice(maximal_energy_nodes)
+            <span style="color: #008000; font-weight: bold">if</span> ban_list<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">==</span> <span style="color: #666">0</span>:
+                <span style="color: #008000; font-weight: bold">if</span> detect_rep<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">==</span> <span style="color: #666">0</span> <span style="color: #A2F; font-weight: bold">and</span> ban_list<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">==</span> <span style="color: #666">0</span>:
+                    detect_rep<span style="color: #666">.</span>append(node_to_change)
+                <span style="color: #008000; font-weight: bold">if</span> detect_rep<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">!=</span> <span style="color: #666">0</span>:
+                    detect_rep<span style="color: #666">.</span>append(node_to_change)
+            <span style="color: #008000; font-weight: bold">if</span> ban_list<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">!=</span> <span style="color: #666">0</span>:
+                sort_energy_per_node <span style="color: #666">=</span> {k: v <span style="color: #008000; font-weight: bold">for</span> k, v <span style="color: #A2F; font-weight: bold">in</span>
+                                        <span style="color: #008000">sorted</span>(energy_per_node<span style="color: #666">.</span>items(), key<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">lambda</span> item: item[<span style="color: #666">1</span>], reverse<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)}
+                <span style="color: #008000; font-weight: bold">for</span> c <span style="color: #A2F; font-weight: bold">in</span> sort_energy_per_node:
+                    <span style="color: #008000; font-weight: bold">if</span> ban_list<span style="color: #666">.</span>count(c) <span style="color: #666">==</span> <span style="color: #666">0</span>:
+                        node_to_change <span style="color: #666">=</span> c
+                        <span style="color: #008000; font-weight: bold">if</span> detect_rep<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">==</span> <span style="color: #666">0</span>:
+                            detect_rep<span style="color: #666">.</span>append(node_to_change)
+                        <span style="color: #008000; font-weight: bold">else</span>:
+                            detect_rep<span style="color: #666">.</span>append(node_to_change)
+                        <span style="color: #008000; font-weight: bold">break</span>
+            <span style="color: #008000; font-weight: bold">if</span> detect_rep<span style="color: #666">.</span>count(node_to_change) <span style="color: #666">&gt;=</span> G<span style="color: #666">.</span>nearest_neighbors <span style="color: #666">*</span> <span style="color: #666">2</span>:
+                ban_list<span style="color: #666">.</span>append(node_to_change)
+                detect_rep <span style="color: #666">=</span> []
+
+        <span style="color: #3D7B7B; font-style: italic"># print()</span>
+        <span style="color: #3D7B7B; font-style: italic"># print(i)</span>
+        <span style="color: #3D7B7B; font-style: italic"># print(ban_list)</span>
+        <span style="color: #3D7B7B; font-style: italic"># print(node_to_change)</span>
+        <span style="color: #3D7B7B; font-style: italic"># print(G.nodes[node_to_change][&#39;number_of_adj_labels&#39;])</span>
+        <span style="color: #3D7B7B; font-style: italic"># print(G.nodes[node_to_change][&#39;quotient_graph_node&#39;])</span>
+
+        <span style="color: #3D7B7B; font-style: italic"># change the cluster of the node_to_change</span>
+        number_of_neighb <span style="color: #666">=</span> <span style="color: #008000">len</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[node_to_change]])
+        <span style="color: #3D7B7B; font-style: italic"># attribution for each label a probability depending on the number of points having this label</span>
+        <span style="color: #3D7B7B; font-style: italic"># in the neighborhood of node_to_change</span>
+        <span style="color: #3D7B7B; font-style: italic"># stocked in a dictionary</span>
+        old_cluster <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+        proba_label <span style="color: #666">=</span> {}
+        <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[node_to_change]:
+            <span style="color: #008000; font-weight: bold">if</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>] <span style="color: #A2F; font-weight: bold">not</span> <span style="color: #A2F; font-weight: bold">in</span> proba_label:
+                proba_label[G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]] <span style="color: #666">=</span> <span style="color: #666">0</span>
+            proba_label[G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]] <span style="color: #666">+=</span> <span style="color: #666">1.0</span> <span style="color: #666">/</span> number_of_neighb
+
+        new_label_proba <span style="color: #666">=</span> np<span style="color: #666">.</span>random<span style="color: #666">.</span>random()
+        new_energy <span style="color: #666">=</span> <span style="color: #666">0</span>
+        range_origin <span style="color: #666">=</span> <span style="color: #666">0</span>
+        <span style="color: #008000; font-weight: bold">for</span> l <span style="color: #A2F; font-weight: bold">in</span> proba_label:
+            <span style="color: #008000; font-weight: bold">if</span> new_label_proba <span style="color: #666">&lt;=</span> range_origin <span style="color: #A2F; font-weight: bold">or</span> new_label_proba <span style="color: #666">&gt;</span> range_origin <span style="color: #666">+</span> proba_label[l]:
+                new_energy <span style="color: #666">+=</span> proba_label[l]
+            <span style="color: #008000; font-weight: bold">else</span>:
+                G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>] <span style="color: #666">=</span> l
+            range_origin <span style="color: #666">+=</span> proba_label[l]
+
+        new_cluster <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+
+        update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old_cluster, new_cluster,
+                                                                  node_to_change)
+
+        <span style="color: #008000; font-weight: bold">if</span> formulae <span style="color: #666">==</span> <span style="color: #BA2121">&#39;old&#39;</span>:
+            <span style="color: #3D7B7B; font-style: italic"># update of energy for the node changed</span>
+            previous_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+            G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> new_energy
+            quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> (new_energy <span style="color: #666">-</span> previous_energy)
+            u <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+            quotientgraph<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> new_energy
+            quotientgraph<span style="color: #666">.</span>nodes[old_cluster][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">-=</span> previous_energy
+            <span style="color: #3D7B7B; font-style: italic"># update of energy for the neighbors</span>
+            <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[node_to_change]:
+                previous_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+                G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+                <span style="color: #008000; font-weight: bold">for</span> v <span style="color: #A2F; font-weight: bold">in</span> G[n]:
+                    number_of_neighb <span style="color: #666">=</span> <span style="color: #008000">len</span>([n <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[v]])
+                    <span style="color: #008000; font-weight: bold">if</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>] <span style="color: #666">!=</span> G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]:
+                        G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">+=</span> <span style="color: #666">1</span> <span style="color: #666">/</span> number_of_neighb
+                quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> (
+                        G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">-</span> previous_energy)
+                u <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+                quotientgraph<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> (G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">-</span> previous_energy)
+
+        <span style="color: #008000; font-weight: bold">elif</span> formulae <span style="color: #666">==</span> <span style="color: #BA2121">&#39;improved&#39;</span>:
+            <span style="color: #3D7B7B; font-style: italic"># update of energy for the node changed</span>
+            list_neighb_clust <span style="color: #666">=</span> []
+            previous_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+            <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[node_to_change]:
+                list_neighb_clust<span style="color: #666">.</span>append(G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+            number_of_clusters <span style="color: #666">=</span> <span style="color: #008000">len</span>(Counter(list_neighb_clust)<span style="color: #666">.</span>keys())
+            <span style="color: #008000; font-weight: bold">if</span> number_of_clusters <span style="color: #666">==</span> <span style="color: #666">1</span> <span style="color: #A2F; font-weight: bold">and</span> list_neighb_clust[<span style="color: #666">0</span>] <span style="color: #666">==</span> new_cluster:
+                G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+            <span style="color: #008000; font-weight: bold">else</span>:
+                number_same <span style="color: #666">=</span> list_neighb_clust<span style="color: #666">.</span>count(G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+                number_diff <span style="color: #666">=</span> <span style="color: #008000">len</span>(list_neighb_clust) <span style="color: #666">-</span> number_same
+                G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> number_diff <span style="color: #666">/</span> (
+                        number_diff <span style="color: #666">+</span> (number_of_clusters <span style="color: #666">-</span> <span style="color: #666">1</span>) <span style="color: #666">*</span> number_same)
+
+            new_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[node_to_change][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+            quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> (new_energy <span style="color: #666">-</span> previous_energy)
+            quotientgraph<span style="color: #666">.</span>nodes[new_cluster][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> new_energy
+            quotientgraph<span style="color: #666">.</span>nodes[old_cluster][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">-=</span> previous_energy
+
+            <span style="color: #3D7B7B; font-style: italic"># update energy of the neighbors</span>
+            <span style="color: #008000; font-weight: bold">for</span> n <span style="color: #A2F; font-weight: bold">in</span> G[node_to_change]:
+                list_neighb_clust <span style="color: #666">=</span> []
+                previous_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+                G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+                <span style="color: #008000; font-weight: bold">for</span> v <span style="color: #A2F; font-weight: bold">in</span> G[n]:
+                    list_neighb_clust<span style="color: #666">.</span>append(G<span style="color: #666">.</span>nodes[v][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+                number_of_clusters <span style="color: #666">=</span> <span style="color: #008000">len</span>(Counter(list_neighb_clust)<span style="color: #666">.</span>keys())
+                <span style="color: #008000; font-weight: bold">if</span> number_of_clusters <span style="color: #666">==</span> <span style="color: #666">1</span> <span style="color: #A2F; font-weight: bold">and</span> list_neighb_clust[<span style="color: #666">0</span>] <span style="color: #666">==</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]:
+                    G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> <span style="color: #666">0</span>
+                <span style="color: #008000; font-weight: bold">else</span>:
+                    number_same <span style="color: #666">=</span> list_neighb_clust<span style="color: #666">.</span>count(G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>])
+                    number_diff <span style="color: #666">=</span> <span style="color: #008000">len</span>(list_neighb_clust) <span style="color: #666">-</span> number_same
+                    G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>] <span style="color: #666">=</span> number_diff <span style="color: #666">/</span> (
+                            number_diff <span style="color: #666">+</span> (number_of_clusters <span style="color: #666">-</span> <span style="color: #666">1</span>) <span style="color: #666">*</span> number_same)
+                new_energy <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>]
+                quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>] <span style="color: #666">+=</span> (new_energy <span style="color: #666">-</span> previous_energy)
+                u <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>]
+                quotientgraph<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">&#39;topological_energy&#39;</span>] <span style="color: #666">+=</span> (new_energy <span style="color: #666">-</span> previous_energy)
+
+        <span style="color: #3D7B7B; font-style: italic"># update list containing all the differents stages of energy obtained</span>
+        evol_energy<span style="color: #666">.</span>append(quotientgraph<span style="color: #666">.</span>graph[<span style="color: #BA2121">&#39;global_topological_energy&#39;</span>])
+
+    quotientgraph<span style="color: #666">.</span>delete_empty_edges_and_nodes()
+    quotientgraph<span style="color: #666">.</span>point_cloud_graph <span style="color: #666">=</span> G
+    <span style="color: #008000; font-weight: bold">if</span> exports:
+        <span style="color: #008000; font-weight: bold">from</span><span style="color: #BBB"> </span><span style="color: #00F; font-weight: bold">matplotlib</span><span style="color: #BBB"> </span><span style="color: #008000; font-weight: bold">import</span> pyplot <span style="color: #008000; font-weight: bold">as</span> plt
+        figure <span style="color: #666">=</span> plt<span style="color: #666">.</span>figure(<span style="color: #666">1</span>)
+        figure<span style="color: #666">.</span>clf()
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>set_title(<span style="color: #BA2121">&quot;Evolution_of_energy&quot;</span>)
+        plt<span style="color: #666">.</span>autoscale(enable<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, axis<span style="color: #666">=</span><span style="color: #BA2121">&#39;both&#39;</span>, tight<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>)
+        figure<span style="color: #666">.</span>gca()<span style="color: #666">.</span>scatter(<span style="color: #008000">range</span>(<span style="color: #008000">len</span>(evol_energy)), evol_energy, color<span style="color: #666">=</span><span style="color: #BA2121">&#39;blue&#39;</span>)
+        figure<span style="color: #666">.</span>set_size_inches(<span style="color: #666">10</span>, <span style="color: #666">10</span>)
+        figure<span style="color: #666">.</span>subplots_adjust(wspace<span style="color: #666">=0</span>, hspace<span style="color: #666">=0</span>)
+        figure<span style="color: #666">.</span>tight_layout()
+        figure<span style="color: #666">.</span>savefig(<span style="color: #BA2121">&#39;Evolution_global_energy&#39;</span>)
+        <span style="color: #008000">print</span>(<span style="color: #BA2121">&quot;Export énergie globale&quot;</span>)
+
+        display_and_export_quotient_graph_matplotlib(quotientgraph, node_sizes<span style="color: #666">=20</span>,
+                                                     name<span style="color: #666">=</span><span style="color: #BA2121">&quot;quotient_graph_matplotlib_energy_final&quot;</span>,
+                                                     data_on_nodes<span style="color: #666">=</span><span style="color: #BA2121">&#39;topological_energy&#39;</span>)
+        export_some_graph_attributes_on_point_cloud(G, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;number_of_adj_labels&#39;</span>,
+                                                    filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_attribute_energy_final.txt&#39;</span>)
+
+        export_some_graph_attributes_on_point_cloud(G, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">&#39;quotient_graph_node&#39;</span>,
+                                                    filename<span style="color: #666">=</span><span style="color: #BA2121">&#39;graph_attribute_quotient_graph_node_final.txt&#39;</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      The ROMI project has received funding from the European Community’s H2020 Programme under Grant Agreement No. 773875.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/ROMI_EU_PROJECT" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8l164.9-188.5L26.8 48h145.6l100.5 132.9zm-24.8 373.8h39.1L151.1 88h-42z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.facebook.com/ROMIEUProject" target="_blank" rel="noopener" title="www.facebook.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256c0 120 82.7 220.8 194.2 248.5V334.2h-52.8V256h52.8v-33.7c0-87.1 39.4-127.5 125-127.5 16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287v175.9C413.8 494.8 512 386.9 512 256"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/romi/spectral-clustering" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://hub.docker.com/repository/docker/roboticsmicrofarms/plantimager/general" target="_blank" rel="noopener" title="hub.docker.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M349.9 236.3h-66.1v-59.4h66.1zm0-204.3h-66.1v60.7h66.1zm78.2 144.8H362v59.4h66.1zm-156.3-72.1h-66.1v60.1h66.1zm78.1 0h-66.1v60.1h66.1zm276.8 100c-14.4-9.7-47.6-13.2-73.1-8.4-3.3-24-16.7-44.9-41.1-63.7l-14-9.3-9.3 14c-18.4 27.8-23.4 73.6-3.7 103.8-8.7 4.7-25.8 11.1-48.4 10.7H2.4c-8.7 50.8 5.8 116.8 44 162.1 37.1 43.9 92.7 66.2 165.4 66.2 157.4 0 273.9-72.5 328.4-204.2 21.4.4 67.6.1 91.3-45.2 1.5-2.5 6.6-13.2 8.5-17.1zm-511.1-27.9h-66v59.4h66.1v-59.4zm78.1 0h-66.1v59.4h66.1zm78.1 0h-66.1v59.4h66.1zm-78.1-72.1h-66.1v60.1h66.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+        <script src="../../../assets/_markdown_exec_pyodide.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+        <script src="https://buttons.github.io/buttons.js"></script>
+      
+    
+  </body>
+</html>

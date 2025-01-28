@@ -37,9 +37,10 @@ class BranchingGraph(nx.Graph):
     --------
     >>> from spectral_clustering.branching_graph import BranchingGraph
     >>> # Create a main stem with 10 nodes
-    >>> graph = BranchingGraph(stem_size=10)
+    >>> graph = BranchingGraph(stem_size=100)
+    >>> linking_nodes = [32, 63, 40, 47, 50, 55, 62, 63, 70]
     >>> # Add a branch of size 5 to node 4
-    >>> graph.add_branch(branch_size=5, linking_node=4)
+    >>> [graph.add_branch(branch_size=5, linking_node=ln) for ln in linking_nodes]
     >>> # Compute eigenvectors for the graph Laplacian
     >>> graph.compute_graph_eigenvectors()
     >>> print(graph.keigenvec)

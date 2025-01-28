@@ -19,9 +19,9 @@ class QuotientGraph(nx.Graph):
 
     Attributes
     ----------
-    point_cloud_graph : PointCloudGraph or None
+    point_cloud_graph : spectral_clustering.point_cloud_graph.PointCloudGraph or None
         The underlying point cloud graph associated to this quotient graph.
-    nodes_coordinates : np.ndarray or None
+    nodes_coordinates : numpy.ndarray or None
         Computed coordinates of the nodes within the quotient graph.
     """
 
@@ -43,17 +43,18 @@ class QuotientGraph(nx.Graph):
 
         Parameters
         ----------
-        G : networkx.Graph
+        G : spectral_clustering.point_cloud_graph.PointCloudGraph
             The input point cloud graph where nodes represent points and edges may have
             associated weights describing relationships between points.
         labels_from_cluster : numpy.ndarray
             An array of labels from the initial clustering (e.g., k-means clustering) where
             each element corresponds to the cluster label of a graph node.
-        region_growing : bool, optional, default=True
+        region_growing : bool, optional
             A flag indicating whether to use a region-growing algorithm to group nodes into
             connected components based on their k-means cluster labels. If False, connected
             components are not grown, and nodes are assigned to clusters based on initial
             cluster labels directly.
+            Default is ``True``.
         """
 
         kmeans_labels = labels_from_cluster
@@ -295,9 +296,9 @@ class QuotientGraph(nx.Graph):
 
         Parameters
         ----------
-        G : networkx.Graph
-            A graph structure that contains nodes with the attribute
-            'quotient_graph_node', which is used to rebuild the internal data structure.
+        G : spectral_clustering.point_cloud_graph.PointCloudGraph
+            A graph structure that contains nodes with the attribute 'quotient_graph_node', which is
+            used to rebuild the internal data structure.
         clear : bool, optional
             If ``True``, clears the current internal structure before rebuilding.
             Default is ``True``.
@@ -376,27 +377,30 @@ class QuotientGraph(nx.Graph):
         Parameters
         ----------
         method : str, optional
-            Specifies the type of computation to perform. Options include:
-            - 'all_qg_cluster': Compute descriptors for quotient graph nodes by aggregating information from all points
+            Specifies the type of computation to perform.
+            Default is ``'all_qg_cluster'``.
+            Options include:
+
+            - ``'all_qg_cluster'``: Compute descriptors for quotient graph nodes by aggregating information from all points
               in a node.
-            - 'each_point': Compute descriptors for individual points based on their direct neighborhoods.
-            Default is 'all_qg_cluster'.
-
+            - ``'each_point'``: Compute descriptors for individual points based on their direct neighborhoods.
         data : str, optional
-            Specifies the type of data on which descriptors are computed. Options include:
-            - 'coords': Use the coordinates of points.
-            - 'gradient_vector_fiedler': Use the gradient vector of the Fiedler eigenvector.
+            Specifies the type of data on which descriptors are computed.
             Default is 'coords'.
+            Options include:
 
+            - ``'coords'``: Use the coordinates of points.
+            - ``'gradient_vector_fiedler'``: Use the gradient vector of the Fiedler eigenvector.
         neighborhood : str, optional
-            Specifies the neighborhood definition when computing descriptors for individual points. Options include:
-            - 'radius': Neighborhood defined by points within a given radius.
-            - 'pointcloudgraph': Predefined graph-based neighborhood.
+            Specifies the neighborhood definition when computing descriptors for individual points.
             Default is 'radius'.
+            Options include:
 
+              - ``'radius'``: Neighborhood defined by points within a given radius.
+              - ``'pointcloudgraph'``: Predefined graph-based neighborhood.
         scale : int, optional
             When 'neighborhood' is set to 'radius', this parameter determines the radius to define the neighborhood.
-            Default is 10.
+            Default is ``10``.
 
         Raises
         ------
@@ -653,26 +657,11 @@ class QuotientGraph(nx.Graph):
                 self.edges[e]['energy_dot_product'] = energy_dot_product
 
     def count_local_extremum_of_Fiedler(self):
-        """
-        Counts the local extrema of the Fiedler vector in the graph associated with
-        each node.
+        """Counts the local extrema of the Fiedler vector in the graph associated with each node.
 
         The method utilizes a point cloud graph and updates the associated nodes
         in the graph with the total number of local extrema of the Fiedler vector
         belonging to their corresponding quotient graph nodes.
-
-        Attributes
-        ----------
-        point_cloud_graph : Graph
-            The graph associated with the point cloud being analyzed. This graph
-            contains necessary properties, such as the Fiedler vector, for calculating
-            local extrema.
-
-        Methods
-        -------
-        count_local_extremum_of_Fiedler()
-            Counts the number of local extrema of the Fiedler vector and assigns the
-            total to corresponding quotient graph nodes.
         """
         G = self.point_cloud_graph
         G.find_local_extremum_of_Fiedler()

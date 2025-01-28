@@ -72,11 +72,12 @@ def define_leaves_by_topo(quotientgraph):
 def define_semantic_classes(quotientgraph):
     """Assigns semantic labels to nodes in a quotient graph.
 
-    Given a quotient graph, this function classifies its nodes into three semantic
-    classes: 'leaf', 'stem', and 'petiole'. Nodes with a single adjacency are
-    labeled as 'leaf'. The node with the highest number of neighbors is labeled as
-    'stem'. All other nodes are classified as 'petiole'. The function directly
-    modifies the quotient graph by adding a 'semantic_label' attribute with the
+    Given a quotient graph, this function classifies its nodes into three semantic classes:
+    'leaf', 'stem', and 'petiole'.
+    Nodes with a single adjacency are labeled as 'leaf'.
+    The node with the highest number of neighbors is labeled as 'stem'.
+    All other nodes are classified as 'petiole'.
+    The function directly modifies the quotient graph by adding a 'semantic_label' attribute with the
     appropriate class to each node.
 
     Parameters
@@ -121,6 +122,7 @@ def define_semantic_scores(quotientgraph, method='similarity_dist'):
     method : str, optional
         The scoring method to be used. Defaults to 'similarity_dist'.
         Options include:
+
           - 'condition_list': Evaluates descriptive conditions on graph node properties.
           - 'similarity_dist': Computes similarity based on a reference score vector
             using Euclidean distances and applies smoothstep or identity transformations.
@@ -205,7 +207,6 @@ def minimum_spanning_tree_quotientgraph_semantics(quotientgraph):
     QG_t2 : networkx.Graph
         The resultant minimum spanning tree of the quotient graph, where weights
         are determined by semantic-based criteria.
-
     """
     define_semantic_classes(quotientgraph)
     for (u, v) in quotientgraph.edges:
@@ -244,11 +245,11 @@ def determination_main_stem(QG, list_of_linear_QG_nodes, stemroot, list_leaves, 
     list_leaves : list
         List of leaf node identifiers in the Quotient Graph used for directional computation.
     angle_to_stop : float, optional
-        Angular threshold (in degrees) to determine when to stop the stem traversal. Defaults
-        to 45 degrees.
+        Angular threshold (in degrees) to determine when to stop the stem traversal.
+        Defaults to ``45`` degrees.
     new_viterbi_class_number : int, optional
         The viterbi classification number assigned to identified stem nodes in both the Quotient
-        Graph and the point cloud graph. Defaults to 3.
+        Graph and the point cloud graph. Defaults to ``3``.
     """
     QG.compute_direction_info(list_leaves=list_leaves)
     G = QG.point_cloud_graph
@@ -283,8 +284,7 @@ def determination_main_stem(QG, list_of_linear_QG_nodes, stemroot, list_leaves, 
 
 
 def determination_main_stem_shortest_paths(QG, list_of_linear_QG_nodes):
-    """
-    Determines the shortest paths for the main stem using the quotient graph (QG).
+    """Determines the shortest paths for the main stem using the quotient graph (QG).
 
     This function identifies and processes key nodes in the quotient graph (QG) and
     marks their corresponding nodes in the point cloud graph with a specific class.
@@ -302,8 +302,7 @@ def determination_main_stem_shortest_paths(QG, list_of_linear_QG_nodes):
     Returns
     -------
     list
-        A deduplicated list of quotient graph nodes traversed by the shortest paths
-        of the main stem.
+        A deduplicated list of quotient graph nodes traversed by the shortest paths of the main stem.
     """
     sub_riemanian = create_subgraphs_to_work(quotientgraph=QG, list_quotient_node_to_work=list_of_linear_QG_nodes)
     G = QG.point_cloud_graph
@@ -341,22 +340,20 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
         The quotient graph (QG) that contains the structure and properties used to
         compute the main stems and anomaly points.
     ptsource : int
-        A starting point or source node for the shortest path calculation on the
-        sub-Riemannian graph.
+        A starting point or source node for the shortest path calculation on the sub-Riemannian graph.
     list_of_linear_QG_nodes : list[int]
-        A list of nodes in the quotient graph that are considered linear for the
-        purposes of this computation.
+        A list of nodes in the quotient graph that are considered linear for the purposes of this computation.
     angle_to_stop : float, optional
-        The angle threshold to stop splitting paths, in degrees. Default is 45.
+        The angle threshold to stop splitting paths, in degrees. Default is ``45``.
     minimumpoint : int, optional
-        Minimum number of traversals through a cluster node for it to be considered
-        part of the main stem. Default is 5.
+        Minimum number of traversals through a cluster node for it to be considered part of the main stem.
+        Default is ``5``.
     classnumberstem : int, optional
         The classification number assigned to the nodes belonging to the main stem.
-        Default is 3.
+        Default is ``3``.
     classnumberanomaly : int, optional
-        The classification number assigned to nodes considered anomalies. Default
-        is 3.
+        The classification number assigned to nodes considered anomalies.
+        Default is ``3``.
 
     Returns
     -------
@@ -445,8 +442,8 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
     root_point_riemanian : int
         Node id corresponding to the root point in the Riemannian graph representation.
     new_class_stem : int, optional
-        An integer value used to classify the main stem nodes after detection. Default
-        is 3.
+        An integer value used to classify the main stem nodes after detection.
+        Default is ``3``.
 
     Returns
     -------
@@ -538,14 +535,14 @@ def differenciate_apex_limb(QG, attribute_class='viterbi_class', number_leaves_l
         `number_of_local_Fiedler_extremum` in its nodes.
     attribute_class : str, optional
         The attribute class in the graph's node dictionary to check and update.
-        Default is 'viterbi_class'.
+        Default is ``'viterbi_class'``.
     number_leaves_limb : int, optional
         The value of `attribute_class` used to identify the nodes of interest
         (limbs). Only nodes where the specific attribute class has this value
-        will be processed. Default is 1.
+        will be processed. Default is ``1``.
     new_apex_class : int, optional
         The new value for the attribute class to assign to the nodes that satisfy
-        the conditions. Default is 4.
+        the conditions. Default is ``4``.
     """
     QG.count_local_extremum_of_Fiedler()
     list_limbs = [x for x, y in QG.nodes(data=True) if y[attribute_class] == number_leaves_limb]
@@ -571,25 +568,25 @@ def topology_control(quotient_graph, attribute_class_control='viterbi_class', cl
         classification attribute used for controlling topology.
     attribute_class_control : str, optional
         Name of the node attribute that represents the class to control.
-        The default is 'viterbi_class'.
+        The default is ``'viterbi_class'``.
     class_stem : int, optional
         Numerical identifier representing the class of stem nodes.
-        The default is 3.
+        The default is ``3``.
     class_petiols : int, optional
         Numerical identifier representing the class of petiole nodes.
-        The default is 5.
+        The default is ``5``.
     class_limb : int, optional
         Numerical identifier representing the class of limb nodes.
-        The default is 1.
+        The default is ``1``.
     class_apex : int, optional
         Numerical identifier representing the class of apex nodes.
-        The default is 4.
+        The default is ``4``.
     error_norm : int, optional
         Numerical identifier used to reclassify nodes that violate the
-        connection rules for limb or apex nodes. The default is 10.
+        connection rules for limb or apex nodes. The default is ``10``.
     error_dir : int, optional
         Numerical identifier used to reclassify nodes with high degree
-        that violate the class petioles rules. The default is 11.
+        that violate the class petioles rules. The default is ``11``.
     """
     QG = quotient_graph
     # check leaves connected to stem
@@ -615,23 +612,25 @@ def treat_topology_error(quotient_graph, attribute_class_control='viterbi_class'
     ----------
     quotient_graph : spectral_clustering.quotientgraph.QuotientGraph
         The input quotient graph containing nodes with labeled attributes to analyze and correct.
-    attribute_class_control : str, optional, default='viterbi_class'
+    attribute_class_control : str, optional
         The attribute in quotient_graph's nodes that is examined to identify nodes with errors.
-    error : int, optional, default=5
+        Default is ``'viterbi_class'``.
+    error : int, optional
         The specific error value in the attribute_class_control being targeted for treatment.
+        Default is ``5``.
     way_to_treat : {'direction', 'norm'}, optional, default='direction'
-        Specifies the method to use for segmenting and treating erroneous nodes. If 'direction',
-        the 'direction_gradient' attribute is used for resegmentation. If 'norm', the 'norm_gradient'
-        attribute is used.
-    number_of_cluster_tested : int, optional, default=20
+        Specifies the method to use for segmenting and treating erroneous nodes.
+        If ``'direction'``, the 'direction_gradient' attribute is used for resegmentation.
+        If ``'norm'``, the 'norm_gradient' attribute is used.
+    number_of_cluster_tested : int, optional
         The maximum number of clusters to test when applying the elbow method for clustering the nodes.
+        Default is ``20``.
 
     Notes
     -----
     The method makes use of the resegment_nodes_with_elbow_method, which performs clustering on nodes
     based on their attributes. The attributes ‘direction_gradient’ or ‘norm_gradient’ are utilized
     depending on the `way_to_treat` parameter to guide the resegmentation process.
-
     """
     QG = quotient_graph
     nodes_to_treat = [x for x, y in QG.nodes(data=True) if y[attribute_class_control] == error]
@@ -667,46 +666,54 @@ def weight_with_semantic(QG, class_attribute='viterbi_class', class_limb=1, clas
         The graph whose edges will be assigned weights based on the semantic relationships
         between connected nodes.
     class_attribute : str, optional
-        The node attribute in `QG` used to determine the category of the nodes, default is
-        'viterbi_class'.
+        The node attribute in `QG` used to determine the category of the nodes.
+        Default is ``'viterbi_class'``.
     class_limb : Any, optional
-        A value representing the "limb" classification of a node, default is 1.
+        A value representing the "limb" classification of a node.
+        Default is ``1``.
     class_mainstem : Any, optional
-        A value representing the "mainstem" classification of a node, default is 3.
+        A value representing the "mainstem" classification of a node.
+        Default is ``3``.
     class_linear : Any, optional
-        A value representing the "linear" classification of a node, default is 0.
+        A value representing the "linear" classification of a node.
+        Default is ``0``.
     class_apex : Any, optional
-        A value representing the "apex" classification of a node, default is 4.
+        A value representing the "apex" classification of a node.
+        Default is ``4``.
     weight_limb_limb : float, optional
         The weight assigned to edges where both connected nodes are classified as "limb".
+        Default is ``10000``.
     weight_apex_apex : float, optional
         The weight assigned to edges where both connected nodes are classified as "apex".
+        Default is ``10000``.
     weight_apex_mainstem : float, optional
-        The weight assigned to edges where one node is classified as "apex" and the other as
-        "mainstem".
+        The weight assigned to edges where one node is classified as "apex" and the other as "mainstem".
+        Default is ``10000``.
     weight_limb_apex : float, optional
-        The weight assigned to edges where one node is classified as "limb" and the other as
-        "apex".
+        The weight assigned to edges where one node is classified as "limb" and the other as "apex".
+        Default is ``10000``.
     weight_limb_mainstem : float, optional
-        The weight assigned to edges where one node is classified as "limb" and the other as
-        "mainstem".
+        The weight assigned to edges where one node is classified as "limb" and the other as "mainstem".
+        Default is ``10000``.
     weight_linear_mainstem : float, optional
-        The weight assigned to edges where one node is classified as "linear" and the other
-        as "mainstem".
+        The weight assigned to edges where one node is classified as "linear" and the other as "mainstem".
+        Default is ``0``.
     weight_linear_linear : float, optional
         The weight assigned to edges where both connected nodes are classified as "linear".
+        Default is ``0``.
     weight_linear_limb : float, optional
-        The weight assigned to edges where one node is classified as "linear" and the other
-        as "limb".
+        The weight assigned to edges where one node is classified as "linear" and the other as "limb".
+        Default is ``0``.
     weight_linear_apex : float, optional
-        The weight assigned to edges where one node is classified as "linear" and the other
-        as "apex".
+        The weight assigned to edges where one node is classified as "linear" and the other as "apex".
+        Default is ``0``.
 
     Notes
     -----
     - The function modifies the provided graph `QG` in place. It adds a new edge attribute
       named `weight_sem_paths` to store the computed weights.
-    - If node classifications for a given edge do not match any of the specified categories"""
+    - If node classifications for a given edge do not match any of the specified categories
+    """
     for e in QG.edges():
         QG.edges[e]['weight_sem_paths'] = np.nan
         c1 = QG.nodes[e[0]][class_attribute]
@@ -742,34 +749,38 @@ def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribu
     node and edge attributes accordingly.
 
     This function identifies limb nodes in the graph based on their classification attribute and calculates
-    the shortest path from these limb nodes to a specified root point in the Riemannian tree graph. During the
-    path computation, nodes classified as linear are reclassified to a new specified petiol class. Additionally,
-    edges along these paths are marked as part of a useful shortest path.
+    the shortest path from these limb nodes to a specified root point in the Riemannian tree graph.
+    During the path computation, nodes classified as linear are reclassified to a new specified petiol class.
+    Additionally, edges along these paths are marked as part of a useful shortest path.
 
     Parameters
     ----------
-    QG : networkx.Graph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The input graph representing the point cloud or Riemannian tree structure.
     root_point_riemanian : Any
         The key of the root node in the graph from which shortest paths are computed.
     class_attribute : str, optional
-        The node attribute in the graph used for classification (default is 'viterbi_class').
+        The node attribute in the graph used for classification.
+        Default is ``'viterbi_class'``.
     weight : str, optional
-        The edge attribute used to calculate shortest paths' weights (default is 'weight_sem_paths').
+        The edge attribute used to calculate shortest paths' weights
+        Default is ``'weight_sem_paths'``.
     class_limb : int, optional
-        The classification value of nodes considered as limb nodes (default is 1).
+        The classification value of nodes considered as limb nodes
+        Default is ``1``.
     class_linear : int, optional
-        The classification value of nodes considered linear in the graph (default is 0).
+        The classification value of nodes considered linear in the graph
+        Default is ``0``.
     class_mainstem : int, optional
-        The classification value of nodes considered as the main stem in the graph (default is 3).
+        The classification value of nodes considered as the main stem in the graph
+        Default is ``3``.
     new_class_petiol : int, optional
-        The classification value to which linear nodes are reclassified during path traversal (default is 5).
+        The classification value to which linear nodes are reclassified during path traversal
+        Default is ``5``.
 
-    Returns
-    -------
-    None
-        The function updates the graph `QG` in place by modifying node and edge attributes without returning
-        a separate result.
+    Notes
+    -----
+    The function updates the graph `QG` in place by modifying node and edge attributes.
     """
     G = QG.point_cloud_graph
 
@@ -790,8 +801,7 @@ def shortest_paths_from_limbs_det_petiol(QG, root_point_riemanian, class_attribu
 def maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, class_mainstem=3, class_petiol=5,
                          class_apex=4, class_branch=6,
                          weight_petiol_petiol=0, weight_petiol_apex=10000, weight_branch_limb=10000):
-    """
-    Adjusts edge weights in a graph based on semantic class relationships.
+    """Adjusts edge weights in a graph based on semantic class relationships.
 
     This function considers semantic relationships between different graph node
     classes and modifies the edge weight accordingly. It specifically targets
@@ -804,31 +814,38 @@ def maj_weight_semantics(QG, class_attribute='viterbi_class', class_limb=1, clas
         The input graph where the semantic weights of edges will be modified.
         Nodes of the graph should include the attribute specified in
         `class_attribute` to determine their semantic class.
-    class_attribute : str, default='viterbi_class'
-        The name of the node attribute that represents the semantic class
-        of the node.
-    class_limb : int, optional, default=1
+    class_attribute : str
+        The name of the node attribute that represents the semantic class of the node.
+        Default is ``'viterbi_class'``.
+    class_limb : int, optional
         Represents the integer code for the 'limb' semantic class.
-    class_mainstem : int, optional, default=3
+        Default: `1`
+    class_mainstem : int, optional
         Represents the integer code for the 'mainstem' semantic class.
-    class_petiol : int, optional, default=5
+        Default: `3`
+    class_petiol : int, optional
         Represents the integer code for the 'petiol' semantic class.
-    class_apex : int, optional, default=4
+        Default: `5`
+    class_apex : int, optional
         Represents the integer code for the 'apex' semantic class.
-    class_branch : int, optional, default=6
+        Default: `4`
+    class_branch : int, optional
         Represents the integer code for the 'branch' semantic class.
-    weight_petiol_petiol : int, optional, default=0
+        Default: `6`
+    weight_petiol_petiol : int, optional
         The weight representing edges between two 'petiol' class nodes.
-    weight_petiol_apex : int, optional, default=10000
+        Default: `0`.
+    weight_petiol_apex : int, optional
         The weight representing edges connecting a 'petiol' class node to an 'apex' class node.
-    weight_branch_limb : int, optional, default=10000
+        Default: `10000`.
+    weight_branch_limb : int, optional
         The weight representing edges connecting a 'branch' class node to a 'limb' class node.
+        Default: `10000`.
 
     Notes
     -------
-    This function modifies the input graph in-place by adding or updating
-    the 'weight_sem_paths' attribute on edges based on their connected
-    nodes' semantic classes.
+    This function modifies the input graph in-place by adding or updating the 'weight_sem_paths' attribute
+    on edges based on their connected nodes' semantic classes.
     """
     for e in QG.edges():
         c1 = QG.nodes[e[0]][class_attribute]
@@ -857,21 +874,27 @@ def shortest_paths_from_apex_det_branch(QG, root_point_riemanian, class_attribut
     root_point_riemanian : int or string
         The identifier of the root node within the quotient graph. This is the target node for
         computing shortest paths using Dijkstra's algorithm.
-    class_attribute : str, optional, default='viterbi_class'
+    class_attribute : str, optional
         The name of the node attribute used to determine and reclassify nodes for processing.
-    weight : str, optional, default='weight_sem_paths'
+        Default is ``'viterbi_class'``.
+    weight : str, optional
         The edge attribute name representing edge weights for the shortest path computation.
-    class_apex : int, optional, default=4
+        Default is ``'weight_sem_paths'``.
+    class_apex : int, optional
         The integer value of the node attribute used to identify "apex" nodes.
-    class_branch : int, optional, default=0
+        Default is ``4``.
+    class_branch : int, optional
         The integer value of the node attribute for nodes belonging to the original branch class
         which will be reclassified.
-    class_mainstem : int, optional, default=3
+        Default is ``0``.
+    class_mainstem : int, optional
         This parameter exists but is not actively used in the function logic. Typically might
         relate to other classifications within the graph structure.
-    new_class_branch : int, optional, default=6
+        Default is ``3``.
+    new_class_branch : int, optional
         The new classification value assigned to nodes that belonged to the `class_branch` group
         encountered along the shortest paths.
+        Default is ``6``.
     """
     G = QG.point_cloud_graph
     list_apex = [x for x, y in QG.nodes(data=True) if y[class_attribute] == class_apex]
@@ -904,11 +927,11 @@ def merge_remaining_clusters(quotientgraph, remaining_clusters_class=0, class_at
         and edges, along with associated metadata.
     remaining_clusters_class : int, optional
         The class value used to identify nodes in the quotient graph that belong to the target cluster to
-        be merged. Default is 0.
+        be merged. Default is ``0``.
     class_attribute : str, optional
         The attribute name in the quotient graph's node metadata used to distinguish clusters. Nodes with the
         specified 'remaining_clusters_class' value for this attribute will be targeted for merging. Default
-        is 'viterbi_class'.
+        is ``'viterbi_class'``.
 
     Returns
     -------

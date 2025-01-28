@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import networkx as nx
 import operator
 
+import networkx as nx
 import numpy as np
 
 from spectral_clustering.display_and_export import display_and_export_quotient_graph_matplotlib
@@ -11,23 +11,21 @@ from spectral_clustering.display_and_export import export_some_graph_attributes_
 
 
 def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_node=50):
-    """Compute a new clustering by treating one node of the QuotientGraph after the other and changing the class of the
-    underlying nodes of the PointCloudGraph associated.
-
-    Parameters
-    ----------
-    quotientgraph : QuotientGraph class object.
-    min_number_of_element_in_a_quotient_node
-
-    Returns
-    -------
-    Nothing
-    Update the quotientgraph by deleting the nodes with intra_class_node_number < min_number_of_element_in_a_quotient_node
-    Update the PointCloudGraph associated to the QuotientGraph by changing the points from the small class to the most
-    bigger adjacent class.
-
     """
+    Merges small clusters in a quotient graph with their largest neighboring cluster. This function modifies the
+    quotient graph in place by removing clusters with fewer intra-class nodes than a specified threshold. The
+    nodes of these removed clusters are reassigned to their neighboring cluster with the highest number of
+    intra-class nodes. The edges and attributes of the remaining clusters are updated accordingly.
 
+    quotientgraph : spectral_clustering.quotientgraph.QuotientGraph
+        A graph representing the quotient graph structure that holds clusters as nodes,
+        defined by the aggregated properties such as number of intra-class nodes, intra-class edge weights,
+        or inter-class edge properties.
+    min_number_of_element_in_a_quotient_node: int, optional
+        Minimum threshold specifying the number of intra-class elements required for a cluster to persist.
+        Clusters with a count below this threshold are merged with their most significant neighboring cluster.
+        Default is ``50``.
+    """
     G = quotientgraph.point_cloud_graph
     nodes_to_remove = []
     for u in quotientgraph.nodes:
@@ -35,18 +33,23 @@ def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_nod
             adjacent_clusters = [n for n in quotientgraph[u]]
             max_number_of_nodes_in_adjacent_clusters = 0
             for i in range(len(adjacent_clusters)):
-                if quotientgraph.nodes[adjacent_clusters[i]]['intra_class_node_number'] > max_number_of_nodes_in_adjacent_clusters:
-                    max_number_of_nodes_in_adjacent_clusters = quotientgraph.nodes[adjacent_clusters[i]]['intra_class_node_number']
+                if quotientgraph.nodes[adjacent_clusters[i]][
+                    'intra_class_node_number'] > max_number_of_nodes_in_adjacent_clusters:
+                    max_number_of_nodes_in_adjacent_clusters = quotientgraph.nodes[adjacent_clusters[i]][
+                        'intra_class_node_number']
                     new_cluster = adjacent_clusters[i]
             # Opération de fusion du petit cluster avec son voisin le plus conséquent.
             # Mise à jour des attributs de la grande classe et suppression de la petite classe
-            quotientgraph.nodes[new_cluster]['intra_class_node_number'] += quotientgraph.nodes[u]['intra_class_node_number']
-            quotientgraph.nodes[new_cluster]['intra_class_edge_weight'] += (quotientgraph.nodes[u]['intra_class_edge_weight']
-                                                                   + quotientgraph.edges[new_cluster, u][
-                                                                       'inter_class_edge_weight'])
-            quotientgraph.nodes[new_cluster]['intra_class_edge_number'] += (quotientgraph.nodes[u]['intra_class_edge_number']
-                                                                   + quotientgraph.edges[new_cluster, u][
-                                                                       'inter_class_edge_number'])
+            quotientgraph.nodes[new_cluster]['intra_class_node_number'] += quotientgraph.nodes[u][
+                'intra_class_node_number']
+            quotientgraph.nodes[new_cluster]['intra_class_edge_weight'] += (
+                        quotientgraph.nodes[u]['intra_class_edge_weight']
+                        + quotientgraph.edges[new_cluster, u][
+                            'inter_class_edge_weight'])
+            quotientgraph.nodes[new_cluster]['intra_class_edge_number'] += (
+                        quotientgraph.nodes[u]['intra_class_edge_number']
+                        + quotientgraph.edges[new_cluster, u][
+                            'inter_class_edge_number'])
 
             # Mise à jour du lien avec le PointCloudGraph d'origine
             for v in G.nodes:
@@ -57,8 +60,10 @@ def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_nod
             for i in range(len(adjacent_clusters)):
                 if quotientgraph.has_edge(new_cluster, adjacent_clusters[i]) is False:
                     quotientgraph.add_edge(new_cluster, adjacent_clusters[i],
-                                           inter_class_edge_weight=quotientgraph.edges[u, adjacent_clusters[i]]['inter_class_edge_weight'],
-                                           inter_class_edge_number=quotientgraph.edges[u, adjacent_clusters[i]]['inter_class_edge_number'])
+                                           inter_class_edge_weight=quotientgraph.edges[u, adjacent_clusters[i]][
+                                               'inter_class_edge_weight'],
+                                           inter_class_edge_number=quotientgraph.edges[u, adjacent_clusters[i]][
+                                               'inter_class_edge_number'])
                 elif quotientgraph.has_edge(new_cluster, adjacent_clusters[i]) and new_cluster != adjacent_clusters[i]:
                     quotientgraph.edges[new_cluster, adjacent_clusters[i]]['inter_class_edge_weight'] += \
                         quotientgraph.edges[u, adjacent_clusters[i]]['inter_class_edge_weight']
@@ -67,8 +72,8 @@ def delete_small_clusters(quotientgraph, min_number_of_element_in_a_quotient_nod
             nodes_to_remove.append(u)
 
     quotientgraph.remove_nodes_from(nodes_to_remove)
-    
-    
+
+
 def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old_cluster, new_cluster, node_to_change):
     """Updates the attributes of a quotient graph after a node changes its cluster.
 
@@ -77,7 +82,7 @@ def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old
 
     Parameters
     ----------
-    quotientgraph : QuotientGraph
+    quotientgraph : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph object whose attributes need to be updated. It contains
         the graph structure as well as attribute data.
     old_cluster : int
@@ -91,8 +96,8 @@ def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old
     G = quotientgraph.point_cloud_graph
     # update Quotient Graph attributes
     # Intra_class_node_number
-    #print(old_cluster)
-    #print(new_cluster)
+    # print(old_cluster)
+    # print(new_cluster)
     quotientgraph.nodes[old_cluster]['intra_class_node_number'] += -1
     quotientgraph.nodes[new_cluster]['intra_class_node_number'] += 1
 
@@ -110,8 +115,10 @@ def update_quotient_graph_attributes_when_node_change_cluster(quotientgraph, old
             quotientgraph.nodes[old_cluster]['intra_class_edge_number'] += -1
             cluster_adj = G.nodes[ng]['quotient_graph_node']
             if quotientgraph.has_edge(new_cluster, cluster_adj) is False:
-                quotientgraph.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=None, inter_class_edge_number=None)
-            quotientgraph.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change]['weight']
+                quotientgraph.add_edge(new_cluster, cluster_adj, inter_class_edge_weight=None,
+                                       inter_class_edge_number=None)
+            quotientgraph.edges[new_cluster, cluster_adj]['inter_class_edge_weight'] += G.edges[ng, node_to_change][
+                'weight']
             quotientgraph.edges[new_cluster, cluster_adj]['inter_class_edge_number'] += 1
 
         if old_cluster != G.nodes[ng]['quotient_graph_node'] and new_cluster != G.nodes[ng]['quotient_graph_node']:
@@ -139,7 +146,7 @@ def check_connectivity_of_modified_cluster(pointcloudgraph, old_cluster, new_clu
 
     Parameters
     ----------
-    pointcloudgraph : PointCloudGraph
+    pointcloudgraph : spectral_clustering.pointcloudgraph.PointCloudGraph
         The graph representing the point cloud and its connections.
     old_cluster : int
         The original cluster identifier of the node.
@@ -168,7 +175,8 @@ def check_connectivity_of_modified_cluster(pointcloudgraph, old_cluster, new_clu
 
     return result
 
-#def rebuilt_topological_quotient_graph
+
+# def rebuilt_topological_quotient_graph
 
 
 def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_points=[]):
@@ -181,7 +189,7 @@ def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_p
 
     Parameters
     ----------
-    quotient_graph : object
+    quotient_graph : spectral_clustering.quotientgraph.QuotientGraph
         A graph-like data structure with a `point_cloud_graph` attribute. The
         `point_cloud_graph` is expected to have nodes with a `quotient_graph_node`
         attribute.
@@ -204,6 +212,7 @@ def collect_quotient_graph_nodes_from_pointcloudpoints(quotient_graph, list_of_p
 
     return list_of_clusters
 
+
 def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, list_of_points=[]):
     """Collects quotient graph nodes from a point cloud.
 
@@ -215,7 +224,7 @@ def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, 
 
     Parameters
     ----------
-    quotient_graph : object
+    quotient_graph : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph object containing a point cloud graph with defined
         nodes. Each node in the graph must include a 'quotient_graph_node'
         attribute.
@@ -249,6 +258,7 @@ def collect_quotient_graph_nodes_from_pointcloudpoints_majority(quotient_graph, 
 
     return list_of_clusters
 
+
 def compute_quotient_graph_mean_attribute_from_points(G, QG, attribute='clustering_labels'):
     """Computes the mean of a specified attribute from nodes in the input graph `G` and assigns
     it to the corresponding nodes in the quotient graph `QG`.
@@ -259,10 +269,10 @@ def compute_quotient_graph_mean_attribute_from_points(G, QG, attribute='clusteri
 
     Parameters
     ----------
-    G : networkx.Graph
+    G : spectral_clustering.pointcloudgraph.PointCloudGraph
         The original graph containing the detailed node information including attributes
         relevant to the computation.
-    QG : networkx.Graph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph derived from the original graph. Each node in `QG` represents
         a group of nodes from `G`.
     attribute : str, optional
@@ -286,7 +296,8 @@ def compute_quotient_graph_mean_attribute_from_points(G, QG, attribute='clusteri
         list_of_nodes = [x for x, y in G.nodes(data=True) if y['quotient_graph_node'] == n]
         for e in list_of_nodes:
             moy += G.nodes[e][attribute]
-        QG.nodes[n][attribute+'_mean'] = moy/len(list_of_nodes)
+        QG.nodes[n][attribute + '_mean'] = moy / len(list_of_nodes)
+
 
 def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
     """Merges similar quotient graph (QG) nodes based on the specified attribute and updates the graph structure.
@@ -298,7 +309,7 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
 
     Parameters
     ----------
-    QG : networkx.Graph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph to be processed, which contains node attributes and maintains
         a reference to the associated point cloud graph.
     attribute : str, optional
@@ -309,7 +320,7 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
 
     Returns
     -------
-    networkx.Graph
+    spectral_clustering.quotientgraph.QuotientGraph
         The modified quotient graph (QG) with merged similar nodes and updated attributes.
     """
     G = QG.point_cloud_graph
@@ -349,7 +360,7 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
         energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
         edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
         energy_max = energy_per_edges[edge_to_delete]
-    #QG.rebuild(G=G)
+    # QG.rebuild(G=G)
     if export is True:
         export_some_graph_attributes_on_point_cloud(pcd_g=QG.point_cloud_graph,
                                                     graph_attribute='quotient_graph_node',
@@ -359,7 +370,8 @@ def merge_similar_class_QG_nodes(QG, attribute='viterbi_class', export=True):
                                                      data=True, attributekmeans4clusters=False)
     return QG
 
-def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
+
+def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass=[1]):
     """Merge nodes of a quotient graph (QG) based on a specified attribute and classes.
 
     This function processes a quotient graph and modifies it by merging nodes of the same
@@ -370,7 +382,7 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
 
     Parameters
     ----------
-    QG : networkx.Graph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph that contains nodes and edges to be processed. The graph must
         already include the attributes necessary for merging, such as intra-class node
         numbers and node classes.
@@ -383,7 +395,7 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
 
     Returns
     -------
-    networkx.Graph
+    spectral_clustering.quotientgraph.QuotientGraph
         The updated quotient graph after merging nodes of the specified class.
     """
     G = QG.point_cloud_graph
@@ -391,7 +403,7 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
     for e in QG.edges():
         v1 = QG.nodes[e[0]][attribute]
         v2 = QG.nodes[e[1]][attribute]
-        if v1 == v2 and v1 in viterbiclass :
+        if v1 == v2 and v1 in viterbiclass:
             QG.edges[e]['similarity_class'] = 1
         else:
             QG.edges[e]['similarity_class'] = 0
@@ -423,7 +435,7 @@ def merge_one_class_QG_nodes(QG, attribute='viterbi_class', viterbiclass = [1]):
         energy_per_edges = nx.get_edge_attributes(QG, 'similarity_class')
         edge_to_delete = max(energy_per_edges.items(), key=operator.itemgetter(1))[0]
         energy_max = energy_per_edges[edge_to_delete]
-     # QG.rebuild(G=G)
+    # QG.rebuild(G=G)
 
     return QG
 
@@ -438,7 +450,7 @@ def quotient_graph_compute_direction_mean(quotient_graph):
 
     Parameters
     ----------
-    quotient_graph : QuotientGraph
+    quotient_graph : spectral_clustering.quotientgraph.QuotientGraph
         The input quotient graph, which is expected to contain a property,
         `point_cloud_graph`. Each node in the `quotient_graph` corresponds to
         a set of nodes in the associated `point_cloud_graph`, and the function
@@ -464,7 +476,7 @@ def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='di
 
     Parameters
     ----------
-    quotient_graph : object
+    quotient_graph : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph object, which contains nodes and associated attributes. It
         includes a point cloud graph (point_cloud_graph) and information about the
         directional gradients of each node.
@@ -486,11 +498,12 @@ def quotient_graph_compute_direction_standard_deviation(quotient_graph, mean='di
         for n in list_of_nodes_in_qnode:
             v1 = quotient_graph.nodes[l][mean]
             v2 = G.nodes[n]['direction_gradient']
-            quotient_graph.nodes[l]['dir_gradient_stdv'] += np.power(quotient_graph.nodes[l]['dir_gradient_angle_mean'] - G.nodes[n]['dir_gradient_angle'], 2)
+            quotient_graph.nodes[l]['dir_gradient_stdv'] += np.power(
+                quotient_graph.nodes[l]['dir_gradient_angle_mean'] - G.nodes[n]['dir_gradient_angle'], 2)
         quotient_graph.nodes[l]['dir_gradient_stdv'] /= len(list_of_nodes_in_qnode)
 
 
-def transfer_quotientgraph_infos_on_riemanian_graph(QG,info='viterbi_class'):
+def transfer_quotientgraph_infos_on_riemanian_graph(QG, info='viterbi_class'):
     """Transfers information from a quotient graph to a Riemannian graph based on a specified attribute.
 
     The function replicates a specified attribute from the nodes of the quotient graph to the nodes
@@ -500,7 +513,7 @@ def transfer_quotientgraph_infos_on_riemanian_graph(QG,info='viterbi_class'):
 
     Parameters
     ----------
-    QG : QuotientGraph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph containing the original information that will be transferred.
     info : str, optional
         The attribute key in the quotient graph's nodes whose values are to be transferred to
@@ -537,7 +550,7 @@ def calculate_leaf_quotients(QG, list_leaves, list_of_linear, root_point_riemani
 
     Parameters
     ----------
-    QG : networkx.Graph
+    QG : spectral_clustering.quotientgraph.QuotientGraph
         The quotient graph represented as a NetworkX graph object. It contains nodes and edges with
         specific attributes that are updated during the computation.
     list_leaves : list
@@ -560,10 +573,12 @@ def calculate_leaf_quotients(QG, list_leaves, list_of_linear, root_point_riemani
         print(leaf)
         sub_qg = nx.subgraph(QG, list_of_linear + [leaf] + [G.nodes[root_point_riemanian]["quotient_graph_node"]])
         if nx.has_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"]):
-            path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+            path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
+                                    weight='distance_centroides')
         else:
             print('else')
-            path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"], weight='distance_centroides')
+            path = nx.dijkstra_path(QG, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
+                                    weight='distance_centroides')
             print(path)
         for n in path:
             QG.nodes[n]['leaf_quotient_n'] += 1
@@ -571,5 +586,3 @@ def calculate_leaf_quotients(QG, list_leaves, list_of_linear, root_point_riemani
             e = (path[i], path[i + 1])
             QG.edges[e]['leaf_quotient_e'] += 1
             QG.edges[e]['useful_path'] = 0
-
-

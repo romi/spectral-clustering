@@ -10,7 +10,7 @@ For clarity, this example demonstrates how to create a clone of the `master` bra
 2. If not done yet, clone the original GitLab repository.
 3. Add a remote named `romi` pointing to the new empty GitHub repository:
    ```shell
-   git remote add romi https://github.com/romi/spectral_clustering.git
+   git remote add romi https://github.com/romi/spectral-clustering.git
    ```
 
 ### Updating the `master` Branch from the Original Repository

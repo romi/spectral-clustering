@@ -69,6 +69,16 @@ Traditional approaches rely on detecting plant organs based on local geometry bu
 
 ---
 
+## Usage Example
+
+For now the functionalities are limited to a single CLI usage to perform semantic segmentation of an input point cloud (PLY format):
+
+```shell
+python script/Main_workflow.py Data/my_plant.ply
+```
+
+---
+
 ## Bibliography
 
 This package is closely related to the following thesis:

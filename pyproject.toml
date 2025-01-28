@@ -16,6 +16,7 @@ maintainers = [
 ]
 requires-python = ">=3.8"
 dependencies = [
+    "click",
     "matplotlib",
     "networkx",
     "numpy",
@@ -24,6 +25,7 @@ dependencies = [
     "ortools",
     "scikit-learn",
     "scipy",
+    "yellowbrick",
 ]
 
 [project.urls]

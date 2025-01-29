@@ -1,0 +1,13 @@
+name: spectral_clustering
+channels:
+  - defaults
+  - conda-forge
+  - mosaic
+dependencies:
+  - python=3.10
+  - ipython
+  # - Packages from the Mosaic channel
+  - cellcomplex
+  - treex
+  - visu_core
+  # Other dependencies are defined in `pyproject.toml` file!

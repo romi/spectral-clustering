@@ -1,0 +1,42 @@
+{% set pyproject = load_file_data('pyproject.toml', "toml") %}
+{% set project = pyproject.get('project') %}
+
+package:
+  name: {{ project.get('name') }}
+  version: {{ project.get('version') }}
+
+source:
+  path: ../../
+
+build:
+  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  preserve_egg_dir: True
+  noarch: python
+
+requirements:
+  build:
+    - setuptools
+    - python  {{ python }}
+  run:
+    - python  {{ python }}
+    - matplotlib
+    - networkx
+    - numpy
+    - pandas
+    - open3d
+    - ortools
+    - scikit-learn
+    - scipy
+    - cellcomplex
+    - treex
+    - visu_core
+
+test:
+  imports:
+    - spectral_clustering  # test the import of timagetk
+
+about:
+  summary: {{ project.get('description') }}
+  license: "cecill-c"
+  license_file: LICENSE
+  dev_url: https://gitlab.inria.fr/mosaic/work-in-progress/spectral_clustering

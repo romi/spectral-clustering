@@ -1,4 +1,39 @@
-"""Generate the code reference pages and navigation."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Code Reference Pages Generator
+
+This script automates the generation of code reference pages (API documentation) and their corresponding
+navigation structure for use with the `mkdocs-material` documentation system.
+
+Key Features
+------------
+- Automatically discovers and processes Python files in the specified source directory.
+- Supports recursive navigation through directories to build hierarchical documentation.
+- Generates Markdown documentation stubs using the `mkdocs-material` `:::` directive.
+- Handles special files such as `__init__.py` (treated as an index) and excludes unnecessary files like `__main__.py`.
+- Builds a full navigation tree and writes a summary file (`SUMMARY.md`) for quick reference.
+
+Test Usage
+----------
+Here’s an example of how to test this script, assuming it is located in `docs/assets/scripts`:
+
+```bash
+python docs/assets/scripts/gen_ref_pages.py
+```
+
+The generated documentation will be ready in the `docs/reference` directory.
+You should get a `docs/reference/SUMMARY.md` file with the navigation structure,
+and a `docs/reference/spectral_clustering.py.md` file with the documentation stub.
+
+Notes
+-----
+- This script is designed to work with the `mkdocs-material` documentation system.
+  It may not work as expected with other documentation systems.
+- Changing the location of the script (from `docs/assets/scripts`) requires to update the `src` variable.
+"""
+
 
 from pathlib import Path
 

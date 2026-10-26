@@ -19,9 +19,16 @@ via `git lfs pull`.
 
 ### Tomato (tomato / semantic-path pipeline)
 - IPB Pheno4D: <https://www.ipb.uni-bonn.de/data/pheno4d/>
-- Registration required; download and place files under `data/tomato/`.
 - Code path: `script/script_seg_tomato.py`
-- Article: Mirande et al. 2022, §3.1.3 — Pheno4D real tomato data set.
+- Article: Mirande et al. 2022, §3.1.3 — Pheno4D real tomato data set, "2 plants
+  at 7 stages of development" (14 clouds), seedlings excluded.
+- Files: `tomato/T01_0313_a.ply` … `T02_0325_a.ply` (14 clouds).
+- Selection: plants **Tomato01** + **Tomato02**, last seven labeled stages
+  (`0313, 0315, 0317, 0319, 0321, 0324, 0325`), soil removed, voxel-downsampled
+  to ≤500k points. Regenerate any cloud with `tomato/downsample_tomato.py`
+  (needs the Pheno4D zip: `python downsample_tomato.py --source /path/to/Pheno4D.zip`).
+- Labels in each `.ply`: `1` = stem, `2+` = individual leaf-blade instances
+  (semantic GT = `1` stem vs `>=2` leaf).
 
 ## Adding / updating data
 
@@ -36,4 +43,4 @@ git commit -m "chore(data): add reference dataset samples"
 | File | Pipeline | Script | Article § |
 |---|---|---|---|
 | `chenos/cheno_1.ply` … `cheno_5.ply` | Chenopodium | `Main_workflow.py` | §2 + §3.1.1 |
-| `tomato/<plant>_<stage>.ply` | Tomato | `script_seg_tomato.py` | §3.1.3 |
+| `tomato/T0{1,2}_{0313,0315,0317,0319,0321,0324,0325}_a.ply` | Tomato | `script_seg_tomato.py` | §3.1.3 |

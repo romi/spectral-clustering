@@ -87,6 +87,11 @@ This package is closely related to the following thesis:
 > The work explores graph-based methods at point and organ scales for plant phenotyping.
 > Full text can be accessed [here](http://www.theses.fr/2022STRAD020/document).
 
+The associated article is available on these two platforms:
+
+- **Frontiers in Plant Science**: [_A graph-based approach for simultaneous semantic and instance segmentation of plant 3D point clouds_](https://www.frontiersin.org/journals/plant-science/articles/10.3389/fpls.2022.1012669/full) — DOI: [10.3389/fpls.2022.1012669](https://doi.org/10.3389/fpls.2022.1012669)
+- **HAL (Inria)**: [_A graph-based approach for simultaneous semantic and instance segmentation of plant 3D point clouds_](https://inria.hal.science/hal-03746572v2) — HAL: [hal-03746572v2](https://inria.hal.science/hal-03746572v2)
+
 ---
 
 ## Contribution & License

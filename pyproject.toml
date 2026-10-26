@@ -51,3 +51,12 @@ doc = [
     "mkdocs-literate-nav",
     "mkdocs-section-index",
 ]
+test = [
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+

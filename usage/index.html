@@ -442,6 +442,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#worked-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1249,6 +1260,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#worked-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked examples
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#options" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1346,6 +1368,25 @@ section of the README):</p>
 <p>Validated end-to-end on <code>data/tomato/T01_0313_a.ply</code> (≈500 k points). Note
   that single-cluster degenerate cases were made robust in
   <code>select_minimum_centroid_class</code> (use <code>np.argmin</code> instead of <code>np.where</code>).</p>
+<h2 id="worked-examples">Worked examples<a class="headerlink" href="#worked-examples" title="Permanent link">Link</a></h2>
+<p>These commands were run end-to-end as part of validation and are the quickest
+way to confirm the package works on your machine.</p>
+<p><strong>Chenopodium</strong> — segment one of the shipped clouds (root auto-detected, since
+the default index only matches the original <code>cheno_A</code> cloud):</p>
+<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>python<span style="color: #BBB"> </span>script/Main_workflow.py<span style="color: #BBB"> </span>--root-auto<span style="color: #BBB"> </span>data/chenos/cheno_3.ply
+</code></pre></div>
+<p>Completes in roughly 8 minutes on a modern laptop and writes, next to the
+input cloud, the graph exports <code>pcd_vp2.txt</code>, <code>pcd_attribute.txt</code>,
+<code>reseg_linear.txt</code> and the quotient-graph figures
+<code>quotient_graph_matplotlib_*.png</code>.</p>
+<p><strong>Tomato</strong> — segment a Pheno4D cloud (root auto-detected):</p>
+<div class="language-shell highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>python<span style="color: #BBB"> </span>script/Main_workflow.py<span style="color: #BBB"> </span>--pipeline<span style="color: #BBB"> </span>tomato<span style="color: #BBB"> </span>data/tomato/T01_0313_a.ply
+</code></pre></div>
+<p>Takes longer (≈45 minutes for the ≈500 k-point cloud) and writes
+<code>pcd_attribute.txt</code>, <code>reseg_linear.txt</code>, <code>pcd_seg_norm.txt</code> and the instance
+exports <code>instance_1.txt</code>, <code>instance_final.txt</code>.</p>
+<p>Both pipelines complete without error on the shipped reference data; runtimes
+scale with the cloud size.</p>
 <h2 id="options">Options<a class="headerlink" href="#options" title="Permanent link">Link</a></h2>
 <table>
 <thead>

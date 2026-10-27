@@ -13,6 +13,9 @@ from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import rand_score
 
 from spectral_clustering.split_and_merge import create_subgraphs_to_work
+from spectral_clustering.point_cloud_graph import PointCloudGraph
+from spectral_clustering.quotient_graph import QuotientGraph
+from spectral_clustering.similarity_graph import create_connected_riemannian_graph
 
 
 # Evaluations functions
@@ -712,3 +715,95 @@ def compute_recall_precision_IoU_real_plants(file_semantic_results="script/pcd_v
     cm = metrics.confusion_matrix(label_gt_end, labelsc)
     np.savetxt(name_model + 'scikit_cm', cm, fmt='%.4e')
     np.savetxt(name_model + 'eval.txt', mres, fmt='%.4e')
+
+
+def merge_to_fit_other_classes(qg, class_limb=1, class_mainstem=3, class_branch=6, class_apex=4):
+    """Merges predicted semantic classes to align with ground-truth classes.
+
+    Predicted segmentations typically use more classes than the ground truth
+    (e.g. branches and apices are refined sub-classes of the main stem and the
+    limb). This function relabels the predicted classes in place so that the
+    quotient graph can be compared with a ground-truth quotient graph.
+
+    Parameters
+    ----------
+    qg : spectral_clustering.quotient_graph.QuotientGraph
+        The predicted quotient graph whose nodes carry a ``'viterbi_class'``
+        attribute to be relabelled in place.
+    class_limb : int, optional
+        Ground-truth class of the limbs. Predicted apices are merged into it.
+        Defaults to ``1``.
+    class_mainstem : int, optional
+        Ground-truth class of the main stem. Predicted branches are merged into
+        it. Defaults to ``3``.
+    class_branch : int, optional
+        Predicted class of the branches. Defaults to ``6``.
+    class_apex : int, optional
+        Predicted class of the apices. Defaults to ``4``.
+    """
+    for u in qg.nodes:
+        if qg.nodes[u]['viterbi_class'] == class_branch:
+            qg.nodes[u]['viterbi_class'] = class_mainstem
+        elif qg.nodes[u]['viterbi_class'] == class_apex:
+            qg.nodes[u]['viterbi_class'] = class_limb
+
+
+def create_quotient_graph_from_groundtruth(model_filename, file_ground_truth_labels, r=18, method='knn'):
+    """Builds a quotient graph directly from ground-truth point labels.
+
+    Bypasses the whole segmentation pipeline: the ground-truth semantic label of
+    each point is used as the "cluster" label in ``build_from_pointcloudgraph``,
+    so the resulting quotient graph reflects the true anatomy of the plant. It
+    can then be compared with a predicted quotient graph.
+
+    Parameters
+    ----------
+    model_filename : str
+        Path to the PLY point cloud the ground-truth labels refer to.
+    file_ground_truth_labels : str
+        Path to a text file giving one ground-truth semantic label per point.
+    r : int, optional
+        Number of nearest neighbours used to build the Riemannian graph.
+        Defaults to ``18``.
+    method : str, optional
+        Neighbour search method, passed to ``create_connected_riemannian_graph``.
+        Defaults to ``'knn'``.
+
+    Returns
+    -------
+    spectral_clustering.quotient_graph.QuotientGraph
+        The ground-truth quotient graph.
+    """
+    labelst = np.loadtxt(fname=file_ground_truth_labels, delimiter=',', unpack=True)
+    pcd_gt = o3d.io.read_point_cloud(model_filename, format='ply')
+    simg, pcdfinal = create_connected_riemannian_graph(point_cloud=pcd_gt, method=method, nearest_neighbors=r)
+    g_gt = PointCloudGraph(simg)
+    g_gt.pcd = pcdfinal
+    qg_gt = QuotientGraph()
+    qg_gt.build_from_pointcloudgraph(g_gt, labelst[:, np.newaxis])
+    return qg_gt
+
+
+def graph_edit_distance_between_quotient_graphs(qg_pred, qg_gt):
+    """Returns the graph edit distance between a predicted and a ground-truth quotient graph.
+
+    Before comparing, the predicted classes are merged with
+    :func:`merge_to_fit_other_classes` so that both graphs share the same set of
+    semantic classes. The returned scalar measures the structural (topological)
+    discrepancy between the two quotient graphs: how many node/edge insertions,
+    deletions and substitutions separate them.
+
+    Parameters
+    ----------
+    qg_pred : spectral_clustering.quotient_graph.QuotientGraph
+        The predicted quotient graph (its nodes are relabelled in place).
+    qg_gt : spectral_clustering.quotient_graph.QuotientGraph
+        The ground-truth quotient graph.
+
+    Returns
+    -------
+    int
+        The graph edit distance between the two quotient graphs.
+    """
+    merge_to_fit_other_classes(qg_pred)
+    return nx.graph_edit_distance(qg_gt, qg_pred)

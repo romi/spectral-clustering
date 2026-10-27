@@ -757,6 +757,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_eigenvector_mst" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        display_eigenvector_mst
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.display_and_export.display_gradient_vector_field" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -783,6 +794,17 @@
     <span class="md-ellipsis">
       
         draw_quotientgraph_matplotlib_3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.eigenvector_mst_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eigenvector_mst_edges
       
     </span>
   </a>
@@ -1349,6 +1371,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.display_eigenvector_mst" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        display_eigenvector_mst
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.display_and_export.display_gradient_vector_field" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1375,6 +1408,17 @@
     <span class="md-ellipsis">
       
         draw_quotientgraph_matplotlib_3D
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.display_and_export.eigenvector_mst_edges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eigenvector_mst_edges
       
     </span>
   </a>
@@ -1547,15 +1591,7 @@
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">127</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">128</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
@@ -1573,7 +1609,15 @@
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">144</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">145</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">146</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">147</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"fiedler_vector.png"</span>, sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">147</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">148</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">149</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">150</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">151</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">152</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">153</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">154</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">155</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"fiedler_vector.png"</span>, sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Displays and exports a plot of the Fiedler vector.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -1667,15 +1711,7 @@
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">150</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">151</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">152</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">153</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">154</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">155</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">156</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">157</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">160</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">161</span>
@@ -1701,7 +1737,15 @@
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">181</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">182</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">183</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">184</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_gradient_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"Gradient_of_fiedler_vector.png"</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">184</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">185</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">186</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">187</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">188</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">189</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">190</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">191</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">192</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_graph_of_gradient_of_fiedler_vector</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"Gradient_of_fiedler_vector.png"</span>,
                                                            sorted_by_fiedler_vector<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, sorted_by_gradient<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Displays and exports a plot of the gradient of the Fiedler vector.</span>
 
@@ -1848,15 +1892,7 @@ related coloring, by default <code>False</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">187</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">188</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">189</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">190</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">191</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">192</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">193</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">194</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">195</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">195</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">196</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">197</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">198</span>
@@ -1932,7 +1968,15 @@ related coloring, by default <code>False</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">268</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">269</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">270</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_quotient_graph_matplotlib</span>(qg, node_sizes<span style="color: #666">=20</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_matplotlib'</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">271</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">272</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">273</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_and_export_quotient_graph_matplotlib</span>(qg, node_sizes<span style="color: #666">=20</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_matplotlib'</span>,
                                                  data_on_nodes<span style="color: #666">=</span><span style="color: #BA2121">'intra_class_node_number'</span>, data<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>,
                                                  attributekmeans4clusters<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, <span style="color: #008000">round</span><span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>,
                                                  directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
@@ -2026,6 +2070,95 @@ related coloring, by default <code>False</code>.</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="spectral_clustering.display_and_export.display_eigenvector_mst" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">display_eigenvector_mst</span>
+
+
+<a href="#spectral_clustering.display_and_export.display_eigenvector_mst" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>display_eigenvector_mst(pcd, mst_edges, eigenvector_index<span style="color: #666">=1</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Displays the MST of one eigenvector as an Open3D line set.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>pcd</code></b>
+              (<code><span title="open3d.geometry.PointCloud">PointCloud</span></code>)
+          –
+          <div class="doc-md-description">
+            <p>The point cloud to display.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>mst_edges</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Output of :func:<code>eigenvector_mst_edges</code> mapping eigenvector index to a
+list of edges.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>eigenvector_index</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Which eigenvector's MST to display. Defaults to <code>1</code> (the Fiedler vector).</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">510</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">511</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">512</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">513</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">514</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">515</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">516</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">517</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">518</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">519</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">520</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">521</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">522</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">523</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">524</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">525</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">526</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_eigenvector_mst</span>(pcd, mst_edges, eigenvector_index<span style="color: #666">=1</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Displays the MST of one eigenvector as an Open3D line set.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    pcd : open3d.geometry.PointCloud</span>
+<span style="color: #BA2121; font-style: italic">        The point cloud to display.</span>
+<span style="color: #BA2121; font-style: italic">    mst_edges : dict</span>
+<span style="color: #BA2121; font-style: italic">        Output of :func:`eigenvector_mst_edges` mapping eigenvector index to a</span>
+<span style="color: #BA2121; font-style: italic">        list of edges.</span>
+<span style="color: #BA2121; font-style: italic">    eigenvector_index : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Which eigenvector's MST to display. Defaults to ``1`` (the Fiedler vector).</span>
+<span style="color: #BA2121; font-style: italic">    """</span>
+    line_set <span style="color: #666">=</span> o3d<span style="color: #666">.</span>geometry<span style="color: #666">.</span>LineSet()
+    line_set<span style="color: #666">.</span>points <span style="color: #666">=</span> pcd<span style="color: #666">.</span>points
+    line_set<span style="color: #666">.</span>lines <span style="color: #666">=</span> o3d<span style="color: #666">.</span>utility<span style="color: #666">.</span>Vector2iVector(<span style="color: #008000">list</span>(mst_edges[eigenvector_index]))
+    o3d<span style="color: #666">.</span>visualization<span style="color: #666">.</span>draw_geometries([line_set])
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="spectral_clustering.display_and_export.display_gradient_vector_field" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">display_gradient_vector_field</span>
 
@@ -2092,15 +2225,7 @@ Defaults to <code>'gradient_vectorfield_3d.png'</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">274</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">275</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">276</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">277</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">283</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span>
@@ -2141,7 +2266,15 @@ Defaults to <code>'gradient_vectorfield_3d.png'</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">320</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">321</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">322</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">323</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_gradient_vector_field</span>(pcd_g, normalized<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, scale<span style="color: #666">=1.</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">"gradient_vectorfield_3d.png"</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">323</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">324</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">325</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">327</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">display_gradient_vector_field</span>(pcd_g, normalized<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, scale<span style="color: #666">=1.</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">"gradient_vectorfield_3d.png"</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Display the gradient vector field of a 3D topology.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function visualizes the gradient vector field of a provided topology using</span>
@@ -2274,15 +2407,7 @@ screenshot. Defaults to <code>'graph_and_quotientgraph_3d.png'</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">326</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">327</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">328</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">329</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">330</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">331</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">332</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">333</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">334</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">335</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">336</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">337</span>
@@ -2354,7 +2479,15 @@ screenshot. Defaults to <code>'graph_and_quotientgraph_3d.png'</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">403</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">404</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">405</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_cellcomplex</span>(pcd, qg, pcd_g, color_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">406</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">407</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_cellcomplex</span>(pcd, qg, pcd_g, color_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
                                    filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_and_quotientgraph_3d.png'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Draws and visualizes a cell complex derived from a quotient graph in 3D visualization.</span>
 
@@ -2491,15 +2624,7 @@ derived from the <code>QG</code> graph structure.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">419</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">420</span>
@@ -2532,7 +2657,15 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">447</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">449</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_matplotlib_3D</span>(nodes_coords_moy, qg):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">451</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">452</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">453</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">454</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">455</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">456</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">457</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">458</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">draw_quotientgraph_matplotlib_3D</span>(nodes_coords_moy, qg):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Draws a 3D visualization of a quotient graph using Matplotlib.</span>
 
 <span style="color: #BA2121; font-style: italic">    The function takes in the 3D coordinates of nodes and a quotient graph object, and visualizes the</span>
@@ -2583,12 +2716,185 @@ derived from the <code>QG</code> graph structure.</p>
 <div class="doc doc-object doc-function">
 
 
+<h2 id="spectral_clustering.display_and_export.eigenvector_mst_edges" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">eigenvector_mst_edges</span>
+
+
+<a href="#spectral_clustering.display_and_export.eigenvector_mst_edges" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>eigenvector_mst_edges(keigenvec, point_cloud_graph, k<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the MST edge lists representing the eigenvectors as 3D line sets.</p>
+<p>For each eigenvector, the points where the eigenvector has a non-zero component
+are connected using the edges of the point-cloud graph, weighted by the 3D
+Euclidean distance between the points. The minimum spanning tree (MST) of this
+weighted subgraph draws the eigenvector as a tree of segments in 3D space,
+revealing the spatial structure encoded by the eigenvector (e.g. the Fiedler
+vector splits the plant along its main axis).</p>
+<p>The archived draft built a <em>complete</em> graph over the non-zero points, which is
+O(n^2) and infeasible at plant scale (tens of thousands of points). Using the
+graph's own edges gives the same "skeleton" intent while staying O(E log V).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>keigenvec</code></b>
+              (<code><a class="autorefs autorefs-external" title="numpy.ndarray" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Array of shape <code>(n_points, n_vectors)</code> holding the graph eigenvectors,
+one column per eigenvector.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>point_cloud_graph</code></b>
+              (<code><a class="autorefs autorefs-internal" title="PointCloudGraph (spectral_clustering.point_cloud_graph.PointCloudGraph)" href="../point_cloud_graph/#spectral_clustering.point_cloud_graph.PointCloudGraph">PointCloudGraph</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The point-cloud graph the eigenvectors were computed on; provides both the
+point coordinates and the graph connectivity.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>k</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>None</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of eigenvectors to process (<code>min(k, keigenvec.shape[1])</code>).
+Defaults to <code>keigenvec.shape[1]</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></code>
+          –
+          <div class="doc-md-description">
+            <p>Mapping <code>{eigenvector_index: list_of_edges}</code> where each edge is a pair
+of point indices belonging to the eigenvector's MST.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">461</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">462</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">463</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">464</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">465</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">467</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">469</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">470</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">471</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">472</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">473</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">474</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">475</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">476</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">477</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">479</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">480</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">481</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">482</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">483</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">484</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">485</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">486</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">487</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">488</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">489</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">490</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">491</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">492</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">493</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">494</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">495</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">497</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">498</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">505</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">506</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">507</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">eigenvector_mst_edges</span>(keigenvec, point_cloud_graph, k<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Returns the MST edge lists representing the eigenvectors as 3D line sets.</span>
+
+<span style="color: #BA2121; font-style: italic">    For each eigenvector, the points where the eigenvector has a non-zero component</span>
+<span style="color: #BA2121; font-style: italic">    are connected using the edges of the point-cloud graph, weighted by the 3D</span>
+<span style="color: #BA2121; font-style: italic">    Euclidean distance between the points. The minimum spanning tree (MST) of this</span>
+<span style="color: #BA2121; font-style: italic">    weighted subgraph draws the eigenvector as a tree of segments in 3D space,</span>
+<span style="color: #BA2121; font-style: italic">    revealing the spatial structure encoded by the eigenvector (e.g. the Fiedler</span>
+<span style="color: #BA2121; font-style: italic">    vector splits the plant along its main axis).</span>
+
+<span style="color: #BA2121; font-style: italic">    The archived draft built a *complete* graph over the non-zero points, which is</span>
+<span style="color: #BA2121; font-style: italic">    O(n^2) and infeasible at plant scale (tens of thousands of points). Using the</span>
+<span style="color: #BA2121; font-style: italic">    graph's own edges gives the same "skeleton" intent while staying O(E log V).</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    keigenvec : numpy.ndarray</span>
+<span style="color: #BA2121; font-style: italic">        Array of shape ``(n_points, n_vectors)`` holding the graph eigenvectors,</span>
+<span style="color: #BA2121; font-style: italic">        one column per eigenvector.</span>
+<span style="color: #BA2121; font-style: italic">    point_cloud_graph : spectral_clustering.point_cloud_graph.PointCloudGraph</span>
+<span style="color: #BA2121; font-style: italic">        The point-cloud graph the eigenvectors were computed on; provides both the</span>
+<span style="color: #BA2121; font-style: italic">        point coordinates and the graph connectivity.</span>
+<span style="color: #BA2121; font-style: italic">    k : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Number of eigenvectors to process (``min(k, keigenvec.shape[1])``).</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``keigenvec.shape[1]``.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    dict</span>
+<span style="color: #BA2121; font-style: italic">        Mapping ``{eigenvector_index: list_of_edges}`` where each edge is a pair</span>
+<span style="color: #BA2121; font-style: italic">        of point indices belonging to the eigenvector's MST.</span>
+<span style="color: #BA2121; font-style: italic">    """</span>
+    <span style="color: #008000; font-weight: bold">if</span> k <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">None</span>:
+        k <span style="color: #666">=</span> keigenvec<span style="color: #666">.</span>shape[<span style="color: #666">1</span>]
+    points <span style="color: #666">=</span> np<span style="color: #666">.</span>asarray(point_cloud_graph<span style="color: #666">.</span>nodes_coords)
+    adjacency <span style="color: #666">=</span> nx<span style="color: #666">.</span>to_dict_of_lists(point_cloud_graph)
+
+    mst_edges <span style="color: #666">=</span> {}
+    <span style="color: #008000; font-weight: bold">for</span> j <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">range</span>(<span style="color: #008000">min</span>(k, keigenvec<span style="color: #666">.</span>shape[<span style="color: #666">1</span>])):
+        active <span style="color: #666">=</span> {i <span style="color: #008000; font-weight: bold">for</span> i <span style="color: #A2F; font-weight: bold">in</span> <span style="color: #008000">range</span>(keigenvec<span style="color: #666">.</span>shape[<span style="color: #666">0</span>]) <span style="color: #008000; font-weight: bold">if</span> keigenvec[i, j] <span style="color: #666">!=</span> <span style="color: #666">0.0</span>}
+        subgraph <span style="color: #666">=</span> nx<span style="color: #666">.</span>Graph()
+        <span style="color: #008000; font-weight: bold">for</span> u <span style="color: #A2F; font-weight: bold">in</span> active:
+            <span style="color: #008000; font-weight: bold">for</span> v <span style="color: #A2F; font-weight: bold">in</span> adjacency[u]:
+                <span style="color: #008000; font-weight: bold">if</span> v <span style="color: #A2F; font-weight: bold">in</span> active:
+                    subgraph<span style="color: #666">.</span>add_edge(u, v, weight<span style="color: #666">=</span>np<span style="color: #666">.</span>linalg<span style="color: #666">.</span>norm(points[u] <span style="color: #666">-</span> points[v]))
+        mst_edges[j] <span style="color: #666">=</span> <span style="color: #008000">list</span>(nx<span style="color: #666">.</span>minimum_spanning_edges(subgraph, weight<span style="color: #666">=</span><span style="color: #BA2121">'weight'</span>, data<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>))
+    <span style="color: #008000; font-weight: bold">return</span> mst_edges
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="spectral_clustering.display_and_export.export_anything_on_point_cloud" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">export_anything_on_point_cloud</span>
 
 
 <a href="#spectral_clustering.display_and_export.export_anything_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_anything_on_point_cloud(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_attribute.txt'</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_anything_on_point_cloud(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_attribute.txt'</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2624,6 +2930,16 @@ derived from the <code>QG</code> graph structure.</p>
             <p>The name of the output file.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -2645,7 +2961,9 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">65</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">66</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">67</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">68</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_anything_on_point_cloud</span>(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_attribute.txt"</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">68</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">69</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">70</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_anything_on_point_cloud</span>(pcd_g, attribute, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_attribute.txt"</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Exports a specified attribute to the point cloud.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2656,11 +2974,13 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: #BA2121; font-style: italic">        An array representing the attribute values to export.</span>
 <span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
 <span style="color: #BA2121; font-style: italic">        The name of the output file.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
     <span style="color: #008000; font-weight: bold">if</span> attribute<span style="color: #666">.</span>ndim <span style="color: #666">==</span> <span style="color: #666">1</span>:
         attribute <span style="color: #666">=</span> attribute[:, np<span style="color: #666">.</span>newaxis]
     pcd_attribute <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, attribute], axis<span style="color: #666">=1</span>)
-    np<span style="color: #666">.</span>savetxt(filename, pcd_attribute, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
+    np<span style="color: #666">.</span>savetxt(Path(directory) <span style="color: #666">/</span> filename, pcd_attribute, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
     <span style="color: #008000">print</span>(<span style="color: #BA2121">"Export du nuage avec les attributs demandés"</span>)
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2748,7 +3068,7 @@ derived from the <code>QG</code> graph structure.</p>
 
 
 <a href="#spectral_clustering.display_and_export.export_fiedler_vector_on_pointcloud" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_fiedler_vector_on_pointcloud(G, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_vp2.txt'</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_fiedler_vector_on_pointcloud(G, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_vp2.txt'</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2776,25 +3096,37 @@ derived from the <code>QG</code> graph structure.</p>
             <p>The file name for the output.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
     </ul>
 
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">86</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">87</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">88</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">89</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">90</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">91</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">92</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">93</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">94</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">95</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">96</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">97</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">98</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">99</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_fiedler_vector_on_pointcloud</span>(G, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_vp2.txt"</span>):
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 90</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 91</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 92</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 93</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 94</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 95</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 96</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 97</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 98</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 99</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">100</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">101</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_fiedler_vector_on_pointcloud</span>(G, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_vp2.txt"</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Exports the Fiedler vector to a point cloud.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2803,10 +3135,12 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates and Fiedler vector data.</span>
 <span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
 <span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
     vp2 <span style="color: #666">=</span> G<span style="color: #666">.</span>keigenvec[:, <span style="color: #666">1</span>]
     pcd_vp2 <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([G<span style="color: #666">.</span>nodes_coords, vp2[:, np<span style="color: #666">.</span>newaxis]], axis<span style="color: #666">=1</span>)
-    np<span style="color: #666">.</span>savetxt(filename, pcd_vp2, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
+    np<span style="color: #666">.</span>savetxt(Path(directory) <span style="color: #666">/</span> filename, pcd_vp2, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
     <span style="color: #008000">print</span>(<span style="color: #BA2121">"Export du nuage avec le vecteur propre 2"</span>)
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2822,7 +3156,7 @@ derived from the <code>QG</code> graph structure.</p>
 
 
 <a href="#spectral_clustering.display_and_export.export_gradient_of_fiedler_vector_on_pointcloud" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_vp2_grad.txt'</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">'pcd_vp2_grad.txt'</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2850,14 +3184,22 @@ derived from the <code>QG</code> graph structure.</p>
             <p>The file name for the output.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
     </ul>
 
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">71</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">72</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">73</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">73</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">74</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">75</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">76</span>
@@ -2867,7 +3209,11 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">80</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">81</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">82</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">83</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_gradient_of_fiedler_vector_on_pointcloud</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_vp2_grad.txt"</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">83</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">84</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">85</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">86</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">87</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_gradient_of_fiedler_vector_on_pointcloud</span>(pcd_g, filename<span style="color: #666">=</span><span style="color: #BA2121">"pcd_vp2_grad.txt"</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Exports the gradient of the Fiedler vector to a point cloud.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -2876,9 +3222,11 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: #BA2121; font-style: italic">        The graph containing nodes coordinates and fiedler gradient data.</span>
 <span style="color: #BA2121; font-style: italic">    filename : str, optional</span>
 <span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
     pcd_vp2_grad <span style="color: #666">=</span> np<span style="color: #666">.</span>concatenate([pcd_g<span style="color: #666">.</span>nodes_coords, pcd_g<span style="color: #666">.</span>gradient_on_fiedler], axis<span style="color: #666">=1</span>)
-    np<span style="color: #666">.</span>savetxt(filename, pcd_vp2_grad, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
+    np<span style="color: #666">.</span>savetxt(Path(directory) <span style="color: #666">/</span> filename, pcd_vp2_grad, delimiter<span style="color: #666">=</span><span style="color: #BA2121">","</span>)
     <span style="color: #008000">print</span>(<span style="color: #BA2121">"Export du nuage avec gradient du vecteur propre 2"</span>)
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3006,7 +3354,7 @@ derived from the <code>QG</code> graph structure.</p>
 
 
 <a href="#spectral_clustering.display_and_export.export_some_graph_attributes_on_point_cloud" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute.txt'</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>, filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute.txt'</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3044,18 +3392,22 @@ derived from the <code>QG</code> graph structure.</p>
             <p>The file name for the output.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
     </ul>
 
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/display_and_export.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">102</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">103</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">104</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">105</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">106</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">107</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">109</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">110</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span>
@@ -3065,8 +3417,16 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_some_graph_attributes_on_point_cloud</span>(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
-                                                filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute.txt'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">119</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_some_graph_attributes_on_point_cloud</span>(pcd_g, graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
+                                                filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute.txt'</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Exports specific graph attributes to a point cloud.</span>
 
 <span style="color: #BA2121; font-style: italic">    Parameters</span>
@@ -3077,11 +3437,13 @@ derived from the <code>QG</code> graph structure.</p>
 <span style="color: #BA2121; font-style: italic">        The name of the graph attribute to export.</span>
 <span style="color: #BA2121; font-style: italic">    filename : str or pathlib.Path, optional</span>
 <span style="color: #BA2121; font-style: italic">        The file name for the output.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
     G <span style="color: #666">=</span> pcd_g
     new_classif <span style="color: #666">=</span> np<span style="color: #666">.</span>asarray(<span style="color: #008000">list</span>((<span style="color: #008000">dict</span>(G<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span>graph_attribute))<span style="color: #666">.</span>values())))
     new_classif <span style="color: #666">=</span> new_classif[:, np<span style="color: #666">.</span>newaxis]
-    export_anything_on_point_cloud(G, attribute<span style="color: #666">=</span>new_classif, filename<span style="color: #666">=</span>filename)
+    export_anything_on_point_cloud(G, attribute<span style="color: #666">=</span>new_classif, filename<span style="color: #666">=</span>filename, directory<span style="color: #666">=</span>directory)
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

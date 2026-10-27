@@ -796,6 +796,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.create_quotient_graph_from_groundtruth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        create_quotient_graph_from_groundtruth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.evaluation.downsample_pcd" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -818,10 +829,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.graph_edit_distance_between_quotient_graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        graph_edit_distance_between_quotient_graphs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.evaluation.length_main_stem" class="md-nav__link">
     <span class="md-ellipsis">
       
         length_main_stem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.merge_to_fit_other_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        merge_to_fit_other_classes
       
     </span>
   </a>
@@ -1316,6 +1349,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.create_quotient_graph_from_groundtruth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        create_quotient_graph_from_groundtruth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.evaluation.downsample_pcd" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1338,10 +1382,32 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.graph_edit_distance_between_quotient_graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        graph_edit_distance_between_quotient_graphs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spectral_clustering.evaluation.length_main_stem" class="md-nav__link">
     <span class="md-ellipsis">
       
         length_main_stem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spectral_clustering.evaluation.merge_to_fit_other_classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        merge_to_fit_other_classes
       
     </span>
   </a>
@@ -1506,10 +1572,7 @@ comma-separated values with four columns: x-coordinates, y-coordinates, z-coordi
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">435</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">436</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">437</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">438</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">439</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">441</span>
@@ -1549,7 +1612,10 @@ comma-separated values with four columns: x-coordinates, y-coordinates, z-coordi
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">475</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">476</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">477</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">change_labels</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">478</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">479</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">480</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">481</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">change_labels</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
                   name_model<span style="color: #666">=</span><span style="color: #BA2121">'name_model'</span>,
                   class_limb<span style="color: #666">=1</span>, class_mainstem<span style="color: #666">=3</span>, class_petiol<span style="color: #666">=5</span>, class_branch<span style="color: #666">=6</span>, class_apex<span style="color: #666">=4</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
@@ -1794,10 +1860,7 @@ coordinates and predicted labels.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">248</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">249</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">250</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">251</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">251</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">252</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">253</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">254</span>
@@ -1978,7 +2041,10 @@ coordinates and predicted labels.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">429</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">430</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">431</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">432</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">compute_recall_precision_IoU</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">432</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">433</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">434</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">435</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">compute_recall_precision_IoU</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
                                  file_ground_truth_coord<span style="color: #666">=</span><span style="color: #BA2121">"script/cheno_virtuel_coordinates.txt"</span>,
                                  file_ground_truth_labels<span style="color: #666">=</span><span style="color: #BA2121">"script/cheno_virtuel_labels.txt"</span>,
                                  name_model<span style="color: #666">=</span><span style="color: #BA2121">'name_model'</span>,
@@ -2333,10 +2399,7 @@ Defaults to "name".</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">506</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">507</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">508</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">509</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">509</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">510</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">511</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">512</span>
@@ -2541,7 +2604,10 @@ Defaults to "name".</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">711</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">712</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">713</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">714</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">compute_recall_precision_IoU_real_plants</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">714</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">715</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">716</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">717</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">compute_recall_precision_IoU_real_plants</span>(file_semantic_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
                                              file_instance_results<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
                                              file_ground_truth<span style="color: #666">=</span><span style="color: #BA2121">"script/cheno_virtuel_coordinates.txt"</span>,
                                              name_model<span style="color: #666">=</span><span style="color: #BA2121">"name"</span>,
@@ -2839,10 +2905,7 @@ nodes as 'apex' or 'limb'. Defaults to 'viterbi_class'.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">20</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">21</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">22</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">23</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">23</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">24</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">25</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">26</span>
@@ -2873,7 +2936,10 @@ nodes as 'apex' or 'limb'. Defaults to 'viterbi_class'.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">51</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">52</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">53</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">54</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">count_number_limbs_apex_etc</span>(qg, class_apex<span style="color: #666">=4</span>, class_limb<span style="color: #666">=1</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">54</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">55</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">56</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">57</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">count_number_limbs_apex_etc</span>(qg, class_apex<span style="color: #666">=4</span>, class_limb<span style="color: #666">=1</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Counts the number of nodes classified as 'limb' and 'apex' based on a given attribute</span>
 <span style="color: #BA2121; font-style: italic">    in a graph structure.</span>
@@ -2908,6 +2974,156 @@ nodes as 'apex' or 'limb'. Defaults to 'viterbi_class'.</p>
     list_of_apex <span style="color: #666">=</span> [x <span style="color: #008000; font-weight: bold">for</span> x, y <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes(data<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>) <span style="color: #008000; font-weight: bold">if</span> y[attribute] <span style="color: #666">==</span> class_apex]
 
     <span style="color: #008000; font-weight: bold">return</span> (<span style="color: #008000">len</span>(list_of_apex, <span style="color: #008000">len</span>(list_of_limb)))
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.evaluation.create_quotient_graph_from_groundtruth" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">create_quotient_graph_from_groundtruth</span>
+
+
+<a href="#spectral_clustering.evaluation.create_quotient_graph_from_groundtruth" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>create_quotient_graph_from_groundtruth(model_filename, file_ground_truth_labels, r<span style="color: #666">=18</span>, method<span style="color: #666">=</span><span style="color: #BA2121">'knn'</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Builds a quotient graph directly from ground-truth point labels.</p>
+<p>Bypasses the whole segmentation pipeline: the ground-truth semantic label of
+each point is used as the "cluster" label in <code>build_from_pointcloudgraph</code>,
+so the resulting quotient graph reflects the true anatomy of the plant. It
+can then be compared with a predicted quotient graph.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>model_filename</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Path to the PLY point cloud the ground-truth labels refer to.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>file_ground_truth_labels</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>Path to a text file giving one ground-truth semantic label per point.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>r</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>18</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Number of nearest neighbours used to build the Riemannian graph.
+Defaults to <code>18</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>method</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>, default:
+                  <code>&#39;knn&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Neighbour search method, passed to <code>create_connected_riemannian_graph</code>.
+Defaults to <code>'knn'</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-internal" title="QuotientGraph (spectral_clustering.quotient_graph.QuotientGraph)" href="../quotient_graph/#spectral_clustering.quotient_graph.QuotientGraph">QuotientGraph</a></code>
+          –
+          <div class="doc-md-description">
+            <p>The ground-truth quotient graph.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">751</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">752</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">753</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">754</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">755</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">756</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">757</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">758</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">759</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">760</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">761</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">762</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">763</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">764</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">765</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">766</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">767</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">768</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">769</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">770</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">771</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">772</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">773</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">774</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">775</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">776</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">777</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">778</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">779</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">780</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">781</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">782</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">783</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">784</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_quotient_graph_from_groundtruth</span>(model_filename, file_ground_truth_labels, r<span style="color: #666">=18</span>, method<span style="color: #666">=</span><span style="color: #BA2121">'knn'</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Builds a quotient graph directly from ground-truth point labels.</span>
+
+<span style="color: #BA2121; font-style: italic">    Bypasses the whole segmentation pipeline: the ground-truth semantic label of</span>
+<span style="color: #BA2121; font-style: italic">    each point is used as the "cluster" label in ``build_from_pointcloudgraph``,</span>
+<span style="color: #BA2121; font-style: italic">    so the resulting quotient graph reflects the true anatomy of the plant. It</span>
+<span style="color: #BA2121; font-style: italic">    can then be compared with a predicted quotient graph.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    model_filename : str</span>
+<span style="color: #BA2121; font-style: italic">        Path to the PLY point cloud the ground-truth labels refer to.</span>
+<span style="color: #BA2121; font-style: italic">    file_ground_truth_labels : str</span>
+<span style="color: #BA2121; font-style: italic">        Path to a text file giving one ground-truth semantic label per point.</span>
+<span style="color: #BA2121; font-style: italic">    r : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Number of nearest neighbours used to build the Riemannian graph.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``18``.</span>
+<span style="color: #BA2121; font-style: italic">    method : str, optional</span>
+<span style="color: #BA2121; font-style: italic">        Neighbour search method, passed to ``create_connected_riemannian_graph``.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``'knn'``.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    spectral_clustering.quotient_graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The ground-truth quotient graph.</span>
+<span style="color: #BA2121; font-style: italic">    """</span>
+    labelst <span style="color: #666">=</span> np<span style="color: #666">.</span>loadtxt(fname<span style="color: #666">=</span>file_ground_truth_labels, delimiter<span style="color: #666">=</span><span style="color: #BA2121">','</span>, unpack<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>)
+    pcd_gt <span style="color: #666">=</span> o3d<span style="color: #666">.</span>io<span style="color: #666">.</span>read_point_cloud(model_filename, <span style="color: #008000">format</span><span style="color: #666">=</span><span style="color: #BA2121">'ply'</span>)
+    simg, pcdfinal <span style="color: #666">=</span> create_connected_riemannian_graph(point_cloud<span style="color: #666">=</span>pcd_gt, method<span style="color: #666">=</span>method, nearest_neighbors<span style="color: #666">=</span>r)
+    g_gt <span style="color: #666">=</span> PointCloudGraph(simg)
+    g_gt<span style="color: #666">.</span>pcd <span style="color: #666">=</span> pcdfinal
+    qg_gt <span style="color: #666">=</span> QuotientGraph()
+    qg_gt<span style="color: #666">.</span>build_from_pointcloudgraph(g_gt, labelst[:, np<span style="color: #666">.</span>newaxis])
+    <span style="color: #008000; font-weight: bold">return</span> qg_gt
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2964,10 +3180,7 @@ file will have the name "<name_model>down_sample.ply".</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">481</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">482</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">483</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">484</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">484</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">485</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">486</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">487</span>
@@ -2986,7 +3199,10 @@ file will have the name "<name_model>down_sample.ply".</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">downsample_pcd</span>(file_pcd<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">505</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">506</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">downsample_pcd</span>(file_pcd<span style="color: #666">=</span><span style="color: #BA2121">"script/pcd_viterbi_classsemantic_final.txt"</span>,
                    name_model<span style="color: #666">=</span><span style="color: #BA2121">'name_model'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Reduces the resolution of a point cloud by voxel down-sampling and saves the</span>
@@ -3080,10 +3296,7 @@ for filtering. Defaults to <code>'viterbi_class'</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">127</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">128</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">129</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">130</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">131</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">132</span>
@@ -3110,7 +3323,10 @@ for filtering. Defaults to <code>'viterbi_class'</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">153</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">154</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">155</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">156</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_each_element_point_cloud</span>(qg, class_to_export<span style="color: #666">=1</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'limb_piece'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">156</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">157</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">158</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">export_each_element_point_cloud</span>(qg, class_to_export<span style="color: #666">=1</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'limb_piece'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Exports elements of a point cloud graph based on a specified class and attribute. For each matching element,</span>
 <span style="color: #BA2121; font-style: italic">    the method identifies corresponding nodes, creates a subgraph, and saves positional data</span>
@@ -3141,6 +3357,113 @@ for filtering. Defaults to <code>'viterbi_class'</code>.</p>
                 labels_from_qg[i, <span style="color: #666">0</span>:<span style="color: #666">3</span>] <span style="color: #666">=</span> G<span style="color: #666">.</span>nodes[n][<span style="color: #BA2121">'pos'</span>]
                 i <span style="color: #666">+=</span> <span style="color: #666">1</span>
             np<span style="color: #666">.</span>savetxt(<span style="color: #BA2121">'pcd_'</span> <span style="color: #666">+</span> name <span style="color: #666">+</span> <span style="color: #008000">str</span>(n) <span style="color: #666">+</span> <span style="color: #BA2121">'_'</span> <span style="color: #666">+</span> <span style="color: #008000">str</span>(i) <span style="color: #666">+</span> <span style="color: #BA2121">'.txt'</span>, labels_from_qg, delimiter<span style="color: #666">=</span><span style="color: #BA2121">" "</span>)
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.evaluation.graph_edit_distance_between_quotient_graphs" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">graph_edit_distance_between_quotient_graphs</span>
+
+
+<a href="#spectral_clustering.evaluation.graph_edit_distance_between_quotient_graphs" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>graph_edit_distance_between_quotient_graphs(qg_pred, qg_gt)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the graph edit distance between a predicted and a ground-truth quotient graph.</p>
+<p>Before comparing, the predicted classes are merged with
+:func:<code>merge_to_fit_other_classes</code> so that both graphs share the same set of
+semantic classes. The returned scalar measures the structural (topological)
+discrepancy between the two quotient graphs: how many node/edge insertions,
+deletions and substitutions separate them.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>qg_pred</code></b>
+              (<code><a class="autorefs autorefs-internal" title="QuotientGraph (spectral_clustering.quotient_graph.QuotientGraph)" href="../quotient_graph/#spectral_clustering.quotient_graph.QuotientGraph">QuotientGraph</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The predicted quotient graph (its nodes are relabelled in place).</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>qg_gt</code></b>
+              (<code><a class="autorefs autorefs-internal" title="QuotientGraph (spectral_clustering.quotient_graph.QuotientGraph)" href="../quotient_graph/#spectral_clustering.quotient_graph.QuotientGraph">QuotientGraph</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The ground-truth quotient graph.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>
+          –
+          <div class="doc-md-description">
+            <p>The graph edit distance between the two quotient graphs.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">787</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">788</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">789</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">790</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">791</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">792</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">793</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">794</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">795</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">796</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">797</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">798</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">799</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">800</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">801</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">802</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">803</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">804</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">805</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">806</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">807</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">808</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">809</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">graph_edit_distance_between_quotient_graphs</span>(qg_pred, qg_gt):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Returns the graph edit distance between a predicted and a ground-truth quotient graph.</span>
+
+<span style="color: #BA2121; font-style: italic">    Before comparing, the predicted classes are merged with</span>
+<span style="color: #BA2121; font-style: italic">    :func:`merge_to_fit_other_classes` so that both graphs share the same set of</span>
+<span style="color: #BA2121; font-style: italic">    semantic classes. The returned scalar measures the structural (topological)</span>
+<span style="color: #BA2121; font-style: italic">    discrepancy between the two quotient graphs: how many node/edge insertions,</span>
+<span style="color: #BA2121; font-style: italic">    deletions and substitutions separate them.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    qg_pred : spectral_clustering.quotient_graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The predicted quotient graph (its nodes are relabelled in place).</span>
+<span style="color: #BA2121; font-style: italic">    qg_gt : spectral_clustering.quotient_graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The ground-truth quotient graph.</span>
+
+<span style="color: #BA2121; font-style: italic">    Returns</span>
+<span style="color: #BA2121; font-style: italic">    -------</span>
+<span style="color: #BA2121; font-style: italic">    int</span>
+<span style="color: #BA2121; font-style: italic">        The graph edit distance between the two quotient graphs.</span>
+<span style="color: #BA2121; font-style: italic">    """</span>
+    merge_to_fit_other_classes(qg_pred)
+    <span style="color: #008000; font-weight: bold">return</span> nx<span style="color: #666">.</span>graph_edit_distance(qg_gt, qg_pred)
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3219,10 +3542,7 @@ the longest of shortest paths in the subgraph.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 57</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 58</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 59</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 60</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 60</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 61</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 62</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 63</span>
@@ -3285,7 +3605,10 @@ the longest of shortest paths in the subgraph.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">122</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">length_main_stem</span>(qg, class_main_stem<span style="color: #666">=3</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">123</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">124</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">125</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">126</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">length_main_stem</span>(qg, class_main_stem<span style="color: #666">=3</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Computes the length of the main stem in a graph.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function identifies the main stem of a given graph by analyzing node</span>
@@ -3352,6 +3675,147 @@ the longest of shortest paths in the subgraph.</p>
         l <span style="color: #666">+=</span> G<span style="color: #666">.</span>edges[segmsource[i], segmsource[i <span style="color: #666">+</span> <span style="color: #666">1</span>]][<span style="color: #BA2121">"distance"</span>]
 
     <span style="color: #008000; font-weight: bold">return</span> l
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="spectral_clustering.evaluation.merge_to_fit_other_classes" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">merge_to_fit_other_classes</span>
+
+
+<a href="#spectral_clustering.evaluation.merge_to_fit_other_classes" class="headerlink" title="Permanent link">Link</a></h2>
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>merge_to_fit_other_classes(qg, class_limb<span style="color: #666">=1</span>, class_mainstem<span style="color: #666">=3</span>, class_branch<span style="color: #666">=6</span>, class_apex<span style="color: #666">=4</span>)
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Merges predicted semantic classes to align with ground-truth classes.</p>
+<p>Predicted segmentations typically use more classes than the ground truth
+(e.g. branches and apices are refined sub-classes of the main stem and the
+limb). This function relabels the predicted classes in place so that the
+quotient graph can be compared with a ground-truth quotient graph.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>qg</code></b>
+              (<code><a class="autorefs autorefs-internal" title="QuotientGraph (spectral_clustering.quotient_graph.QuotientGraph)" href="../quotient_graph/#spectral_clustering.quotient_graph.QuotientGraph">QuotientGraph</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The predicted quotient graph whose nodes carry a <code>'viterbi_class'</code>
+attribute to be relabelled in place.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>class_limb</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>1</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Ground-truth class of the limbs. Predicted apices are merged into it.
+Defaults to <code>1</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>class_mainstem</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>3</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Ground-truth class of the main stem. Predicted branches are merged into
+it. Defaults to <code>3</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>class_branch</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>6</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Predicted class of the branches. Defaults to <code>6</code>.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>class_apex</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#int">int</a></code>, default:
+                  <code>4</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Predicted class of the apices. Defaults to <code>4</code>.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="quote">
+              <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">720</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">721</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">722</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">723</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">724</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">725</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">726</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">727</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">728</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">729</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">730</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">731</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">732</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">733</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">734</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">735</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">736</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">737</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">738</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">739</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">740</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">741</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">742</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">743</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">744</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">745</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">746</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">747</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">748</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">merge_to_fit_other_classes</span>(qg, class_limb<span style="color: #666">=1</span>, class_mainstem<span style="color: #666">=3</span>, class_branch<span style="color: #666">=6</span>, class_apex<span style="color: #666">=4</span>):
+<span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Merges predicted semantic classes to align with ground-truth classes.</span>
+
+<span style="color: #BA2121; font-style: italic">    Predicted segmentations typically use more classes than the ground truth</span>
+<span style="color: #BA2121; font-style: italic">    (e.g. branches and apices are refined sub-classes of the main stem and the</span>
+<span style="color: #BA2121; font-style: italic">    limb). This function relabels the predicted classes in place so that the</span>
+<span style="color: #BA2121; font-style: italic">    quotient graph can be compared with a ground-truth quotient graph.</span>
+
+<span style="color: #BA2121; font-style: italic">    Parameters</span>
+<span style="color: #BA2121; font-style: italic">    ----------</span>
+<span style="color: #BA2121; font-style: italic">    qg : spectral_clustering.quotient_graph.QuotientGraph</span>
+<span style="color: #BA2121; font-style: italic">        The predicted quotient graph whose nodes carry a ``'viterbi_class'``</span>
+<span style="color: #BA2121; font-style: italic">        attribute to be relabelled in place.</span>
+<span style="color: #BA2121; font-style: italic">    class_limb : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Ground-truth class of the limbs. Predicted apices are merged into it.</span>
+<span style="color: #BA2121; font-style: italic">        Defaults to ``1``.</span>
+<span style="color: #BA2121; font-style: italic">    class_mainstem : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Ground-truth class of the main stem. Predicted branches are merged into</span>
+<span style="color: #BA2121; font-style: italic">        it. Defaults to ``3``.</span>
+<span style="color: #BA2121; font-style: italic">    class_branch : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Predicted class of the branches. Defaults to ``6``.</span>
+<span style="color: #BA2121; font-style: italic">    class_apex : int, optional</span>
+<span style="color: #BA2121; font-style: italic">        Predicted class of the apices. Defaults to ``4``.</span>
+<span style="color: #BA2121; font-style: italic">    """</span>
+    <span style="color: #008000; font-weight: bold">for</span> u <span style="color: #A2F; font-weight: bold">in</span> qg<span style="color: #666">.</span>nodes:
+        <span style="color: #008000; font-weight: bold">if</span> qg<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">'viterbi_class'</span>] <span style="color: #666">==</span> class_branch:
+            qg<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">'viterbi_class'</span>] <span style="color: #666">=</span> class_mainstem
+        <span style="color: #008000; font-weight: bold">elif</span> qg<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">'viterbi_class'</span>] <span style="color: #666">==</span> class_apex:
+            qg<span style="color: #666">.</span>nodes[u][<span style="color: #BA2121">'viterbi_class'</span>] <span style="color: #666">=</span> class_limb
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3453,10 +3917,7 @@ Default is <code>30</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/evaluation.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">159</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">160</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">161</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">162</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">162</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">163</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">164</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">165</span>
@@ -3534,7 +3995,10 @@ Default is <code>30</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">237</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">238</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">239</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_apex_for_eval_and_export</span>(qg, class_apex<span style="color: #666">=4</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'apex_piece'</span>, lim<span style="color: #666">=30</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">240</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">241</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">242</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">243</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_apex_for_eval_and_export</span>(qg, class_apex<span style="color: #666">=4</span>, attribute<span style="color: #666">=</span><span style="color: #BA2121">'viterbi_class'</span>, name<span style="color: #666">=</span><span style="color: #BA2121">'apex_piece'</span>, lim<span style="color: #666">=30</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Resegments specific nodes in a quotient graph for evaluation and export purposes.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function operates on a quotient graph (QG) to identify specific nodes</span>

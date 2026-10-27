@@ -2549,7 +2549,7 @@ vector representing a node.</p>
 
 
 <a href="#spectral_clustering.point_cloud_graph.PointCloudGraph.clustering_by_kmeans_using_gradient_norm" class="headerlink" title="Permanent link">Link</a></h3>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, number_of_clusters<span style="color: #666">=4</span>)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>clustering_by_kmeans_using_gradient_norm(export_in_labeled_point_cloud<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, number_of_clusters<span style="color: #666">=4</span>, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2583,6 +2583,17 @@ file named 'kmeans_clusters.txt'. Defaults to False.</p>
           –
           <div class="doc-md-description">
             <p>The number of clusters to create using K-means. Defaults to 4.</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory used when exporting the labeled
+point cloud. Defaults to the current working directory.</p>
           </div>
         </li>
     </ul>
@@ -2638,7 +2649,12 @@ file named 'kmeans_clusters.txt'. Defaults to False.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">594</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">595</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">596</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">597</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">clustering_by_kmeans_using_gradient_norm</span>(<span style="color: #008000">self</span>, export_in_labeled_point_cloud<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, number_of_clusters<span style="color: #666">=4</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">597</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">598</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">599</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">600</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">601</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">clustering_by_kmeans_using_gradient_norm</span>(<span style="color: #008000">self</span>, export_in_labeled_point_cloud<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, number_of_clusters<span style="color: #666">=4</span>,
+                                             directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Performs K-means clustering on the gradient norm of the graph's Fiedler vector.</span>
 
 <span style="color: #BA2121; font-style: italic">    This method applies the K-means clustering algorithm to nodes of a graph,</span>
@@ -2654,6 +2670,9 @@ file named 'kmeans_clusters.txt'. Defaults to False.</p>
 <span style="color: #BA2121; font-style: italic">        file named 'kmeans_clusters.txt'. Defaults to False.</span>
 <span style="color: #BA2121; font-style: italic">    number_of_clusters : int, optional</span>
 <span style="color: #BA2121; font-style: italic">        The number of clusters to create using K-means. Defaults to 4.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory used when exporting the labeled</span>
+<span style="color: #BA2121; font-style: italic">        point cloud. Defaults to the current working directory.</span>
 
 <span style="color: #BA2121; font-style: italic">    Returns</span>
 <span style="color: #BA2121; font-style: italic">    -------</span>
@@ -2665,7 +2684,7 @@ file named 'kmeans_clusters.txt'. Defaults to False.</p>
 
     <span style="color: #008000; font-weight: bold">if</span> export_in_labeled_point_cloud <span style="color: #A2F; font-weight: bold">is</span> <span style="color: #008000; font-weight: bold">True</span>:
         export_anything_on_point_cloud(<span style="color: #008000">self</span>, attribute<span style="color: #666">=</span>kmeans<span style="color: #666">.</span>labels_[:, np<span style="color: #666">.</span>newaxis],
-                                       filename<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_clusters.txt'</span>)
+                                       filename<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_clusters.txt'</span>, directory<span style="color: #666">=</span>directory)
 
     kmeans_labels <span style="color: #666">=</span> kmeans<span style="color: #666">.</span>labels_[:, np<span style="color: #666">.</span>newaxis]
     <span style="color: #008000">self</span><span style="color: #666">.</span>kmeans_labels_gradient <span style="color: #666">=</span> kmeans_labels
@@ -3538,11 +3557,7 @@ status (1 if it is a local extremum, 0 otherwise).</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">624</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">625</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">626</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">627</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">628</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">628</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">629</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">630</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">631</span>
@@ -3572,7 +3587,11 @@ status (1 if it is a local extremum, 0 otherwise).</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">655</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">656</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">657</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">658</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">find_local_extremum_of_Fiedler</span>(<span style="color: #008000">self</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">658</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">659</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">660</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">661</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">662</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">find_local_extremum_of_Fiedler</span>(<span style="color: #008000">self</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Identifies the nodes in the graph that are local extrema based on the second-smallest eigenvector</span>
 <span style="color: #BA2121; font-style: italic">    (Fiedler vector) of the graph's Laplacian matrix.</span>
 
@@ -3643,11 +3662,7 @@ attribute upon execution, which stores the identified local minima indices.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">599</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">600</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">601</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">602</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">603</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">603</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">604</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">605</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">606</span>
@@ -3666,7 +3681,11 @@ attribute upon execution, which stores the identified local minima indices.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">619</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">620</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">621</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">622</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">find_local_minimum_of_gradient_norm</span>(<span style="color: #008000">self</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">622</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">623</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">624</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">625</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">626</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">find_local_minimum_of_gradient_norm</span>(<span style="color: #008000">self</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Find and store local minima of the gradient norm in the provided field.</span>
 
 <span style="color: #BA2121; font-style: italic">    This method identifies the elements where the calculated gradient norm</span>
@@ -3773,11 +3792,7 @@ node pairs, with the dimensionality matching the input point cloud coordinates.<
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">763</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">764</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">765</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">766</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">767</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">767</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">768</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">769</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">770</span>
@@ -3804,7 +3819,11 @@ node pairs, with the dimensionality matching the input point cloud coordinates.<
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">791</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">792</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">793</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">794</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_normalized_vector_field</span>(list_of_max_nodes, list_of_min_nodes, pcd_coordinates):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">794</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">795</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">796</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">797</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">798</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_normalized_vector_field</span>(list_of_max_nodes, list_of_min_nodes, pcd_coordinates):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Creates a normalized vector field based on input node indices and point cloud coordinates.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function computes vectors between corresponding nodes specified in the list of maximum</span>
@@ -3906,11 +3925,7 @@ If 'simple_normalized' is passed, the simple normalized Laplacian matrix is retu
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">661</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">662</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">663</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">664</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">665</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">665</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">666</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">667</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">668</span>
@@ -3943,7 +3958,11 @@ If 'simple_normalized' is passed, the simple normalized Laplacian matrix is retu
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">695</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">696</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">697</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">698</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">graph_laplacian</span>(G, laplacian_type<span style="color: #666">=</span><span style="color: #BA2121">'classical'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">698</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">699</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">700</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">701</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">702</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">graph_laplacian</span>(G, laplacian_type<span style="color: #666">=</span><span style="color: #BA2121">'classical'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Compute the graph Laplacian matrix of a given graph.</span>
 
@@ -4093,11 +4112,7 @@ the graph <code>G</code>. If None, the Laplacian will be computed based on <code
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">701</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">702</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">703</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">704</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">705</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">705</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">706</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">707</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">708</span>
@@ -4152,7 +4167,11 @@ the graph <code>G</code>. If None, the Laplacian will be computed based on <code
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">757</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">758</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">759</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">760</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">graph_spectrum</span>(G, sparse<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, k<span style="color: #666">=50</span>, smallest_first<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, laplacian_type<span style="color: #666">=</span><span style="color: #BA2121">'classical'</span>, laplacian<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">760</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">761</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">762</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">763</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">764</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">graph_spectrum</span>(G, sparse<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, k<span style="color: #666">=50</span>, smallest_first<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, laplacian_type<span style="color: #666">=</span><span style="color: #BA2121">'classical'</span>, laplacian<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">None</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Compute the spectrum of a graph using its Laplacian matrix.</span>
 
 <span style="color: #BA2121; font-style: italic">    The function computes eigenvalues and eigenvectors of the graph's Laplacian</span>
@@ -4241,11 +4260,7 @@ Additionally, it retrieves the corresponding weights of these connections.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/point_cloud_graph.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">797</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">798</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">799</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">800</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">801</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">801</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">802</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">803</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">804</span>
@@ -4280,7 +4295,11 @@ Additionally, it retrieves the corresponding weights of these connections.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">833</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">834</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">835</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">836</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">simple_graph_to_test_methods</span>():
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">836</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">837</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">838</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">839</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">840</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">simple_graph_to_test_methods</span>():
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Generate a test graph and perform spectral graph analysis</span>
 
 <span style="color: #BA2121; font-style: italic">    This function creates a simple undirected weighted graph, computes its Laplacian</span>

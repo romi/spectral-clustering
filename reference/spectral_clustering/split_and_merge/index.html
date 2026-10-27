@@ -1625,9 +1625,7 @@ with the given list of quotient graph nodes.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">413</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">414</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">415</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">416</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">417</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">418</span>
@@ -1655,7 +1653,9 @@ with the given list of quotient graph nodes.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">440</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">441</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">442</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_subgraphs_to_work</span>(quotientgraph, list_quotient_node_to_work<span style="color: #666">=</span>[]):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">443</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">444</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">445</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_subgraphs_to_work</span>(quotientgraph, list_quotient_node_to_work<span style="color: #666">=</span>[]):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Creates subgraphs from the given quotient graph by focusing on specific nodes to work with.</span>
 <span style="color: #BA2121; font-style: italic">    This function builds a Riemannian subgraph using the original graph stored in the given</span>
@@ -1700,7 +1700,7 @@ with the given list of quotient graph nodes.</p>
 
 
 <a href="#spectral_clustering.split_and_merge.opti_energy_dot_product" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop<span style="color: #666">=30</span>, export_iter<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, list_leaves<span style="color: #666">=</span>[])
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop<span style="color: #666">=30</span>, export_iter<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, list_leaves<span style="color: #666">=</span>[], directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1887,8 +1887,10 @@ These nodes may affect energy calculations during optimization.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">289</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">290</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">291</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">opti_energy_dot_product</span>(quotientgraph, subgraph_riemannian, angle_to_stop<span style="color: #666">=30</span>,
-                            export_iter<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, list_leaves<span style="color: #666">=</span>[]):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">292</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">293</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">294</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">opti_energy_dot_product</span>(quotientgraph, subgraph_riemannian, angle_to_stop<span style="color: #666">=30</span>,
+                            export_iter<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, list_leaves<span style="color: #666">=</span>[], directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Optimize graph energy by iteratively merging nodes based on dot product energy.</span>
 
@@ -1992,7 +1994,8 @@ These nodes may affect energy calculations during optimization.</p>
         <span style="color: #008000; font-weight: bold">if</span> export_iter:
             export_some_graph_attributes_on_point_cloud(pcd_g<span style="color: #666">=</span>quotientgraph<span style="color: #666">.</span>point_cloud_graph,
                                                         graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
-                                                        filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute_quotient_graph_'</span> <span style="color: #666">+</span> <span style="color: #008000">str</span>(i) <span style="color: #666">+</span> <span style="color: #BA2121">'.txt'</span>)
+                                                        filename<span style="color: #666">=</span><span style="color: #BA2121">'graph_attribute_quotient_graph_'</span> <span style="color: #666">+</span> <span style="color: #008000">str</span>(i) <span style="color: #666">+</span> <span style="color: #BA2121">'.txt'</span>,
+                                                        directory<span style="color: #666">=</span>directory)
             <span style="color: #3D7B7B; font-style: italic"># display_and_export_quotient_graph_matplotlib(quotient_graph=quotientgraph, node_sizes=20,</span>
             <span style="color: #3D7B7B; font-style: italic"># filename="quotient_graph_matplotlib_QG_intra_class_number_" + str(</span>
             <span style="color: #3D7B7B; font-style: italic">#    i),</span>
@@ -2002,7 +2005,8 @@ These nodes may affect energy calculations during optimization.</p>
     quotientgraph<span style="color: #666">.</span>rebuild(G<span style="color: #666">=</span>quotientgraph<span style="color: #666">.</span>point_cloud_graph)
     export_some_graph_attributes_on_point_cloud(pcd_g<span style="color: #666">=</span>quotientgraph<span style="color: #666">.</span>point_cloud_graph,
                                                 graph_attribute<span style="color: #666">=</span><span style="color: #BA2121">'quotient_graph_node'</span>,
-                                                filename<span style="color: #666">=</span><span style="color: #BA2121">'final_opti_energy_dot_product.txt'</span>)
+                                                filename<span style="color: #666">=</span><span style="color: #BA2121">'final_opti_energy_dot_product.txt'</span>,
+                                                directory<span style="color: #666">=</span>directory)
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2403,9 +2407,7 @@ allow 300 iterations per run with specified tolerance.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">353</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">354</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">355</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">356</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">357</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">358</span>
@@ -2460,7 +2462,9 @@ allow 300 iterations per run with specified tolerance.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">407</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">408</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">409</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">oversegment_part</span>(quotientgraph, subgraph_riemannian, average_size_cluster<span style="color: #666">=20</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">410</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">411</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">412</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">oversegment_part</span>(quotientgraph, subgraph_riemannian, average_size_cluster<span style="color: #666">=20</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Segments an input subgraph using clustering and updates the corresponding quotient graph.</span>
 
@@ -2594,9 +2598,7 @@ that were processed and are available for subsequent operations.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">295</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">296</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">297</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">298</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">299</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">300</span>
@@ -2649,7 +2651,9 @@ that were processed and are available for subsequent operations.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">347</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">348</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">349</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">oversegment_part_return_list</span>(quotientgraph, list_quotient_node_to_work<span style="color: #666">=</span>[], average_size_cluster<span style="color: #666">=20</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">350</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">351</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">352</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">oversegment_part_return_list</span>(quotientgraph, list_quotient_node_to_work<span style="color: #666">=</span>[], average_size_cluster<span style="color: #666">=20</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Clusters points in a point cloud graph and updates the quotient graph nodes.</span>
 
@@ -2857,9 +2861,7 @@ Defaults to <code>False</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
@@ -2960,7 +2962,9 @@ Defaults to <code>False</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">599</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">600</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">601</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">602</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_nodes_with_elbow_method</span>(QG, QG_nodes_to_rework<span style="color: #666">=</span>[], number_of_cluster_tested<span style="color: #666">=10</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">602</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">603</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">604</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_nodes_with_elbow_method</span>(QG, QG_nodes_to_rework<span style="color: #666">=</span>[], number_of_cluster_tested<span style="color: #666">=10</span>,
                                       attribute<span style="color: #666">=</span><span style="color: #BA2121">'norm_gradient'</span>, number_attribute<span style="color: #666">=1</span>, standardization<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, numer<span style="color: #666">=1</span>,
                                       G_mod<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, export_div<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, ret<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Resegments the nodes of a given quotient graph using the elbow method to find the optimal number of clusters.</span>
@@ -3142,9 +3146,7 @@ clustering labels and a specified attribute.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">469</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">470</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">470</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">471</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">472</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">473</span>
@@ -3170,7 +3172,9 @@ clustering labels and a specified attribute.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">493</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">494</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">495</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_all_quotientgraph_nodes_from_pointcloudgraph_cluster</span>(G, QG, labelpointcloudgraph, attribute<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_labels'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">497</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">498</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_all_quotientgraph_nodes_from_pointcloudgraph_cluster</span>(G, QG, labelpointcloudgraph, attribute<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_labels'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Select all quotient graph nodes corresponding to a specific point cloud graph cluster.</span>
 
@@ -3251,9 +3255,7 @@ the corresponding cluster label.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">448</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">449</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">450</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">451</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">452</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">453</span>
@@ -3269,7 +3271,9 @@ the corresponding cluster label.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">463</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">464</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">465</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_minimum_centroid_class</span>(clusters_centers):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">467</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_minimum_centroid_class</span>(clusters_centers):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Selects the label of the cluster with the minimum centroid value.</span>
 

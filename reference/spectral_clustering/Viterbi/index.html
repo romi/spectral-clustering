@@ -1443,11 +1443,7 @@ the attributes 'planarity', 'linearity', and 'scattering' are copied.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">114</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">116</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">117</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">118</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">119</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">120</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">121</span>
@@ -1468,7 +1464,11 @@ the attributes 'planarity', 'linearity', and 'scattering' are copied.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">136</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">137</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">138</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">139</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">add_attributes_to_spanning_tree</span>(st_tree, t, list_att<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>]):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">139</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">140</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">141</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">142</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">143</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">add_attributes_to_spanning_tree</span>(st_tree, t, list_att<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>]):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""    Adds specific attributes to a spanning tree structure from a graph.</span>
 
 <span style="color: #BA2121; font-style: italic">    The function updates attributes of nodes in the spanning tree using attribute</span>
@@ -1569,11 +1569,7 @@ attribute to its nodes.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">142</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">143</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">144</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">145</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">146</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">146</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">147</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">148</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">149</span>
@@ -1598,7 +1594,11 @@ attribute to its nodes.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">168</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">169</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">170</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">171</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">add_viterbi_results_to_quotient_graph</span>(quotientgraph, t, list_semantics<span style="color: #666">=</span>[<span style="color: #BA2121">'leaf'</span>, <span style="color: #BA2121">'stem'</span>, <span style="color: #BA2121">'NSP'</span>]):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">171</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">172</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">173</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">174</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">175</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">add_viterbi_results_to_quotient_graph</span>(quotientgraph, t, list_semantics<span style="color: #666">=</span>[<span style="color: #BA2121">'leaf'</span>, <span style="color: #BA2121">'stem'</span>, <span style="color: #BA2121">'NSP'</span>]):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Adds Viterbi classification results to the nodes of a quotient graph.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function processes the Viterbi classification results stored in a tree-like</span>
@@ -1703,11 +1703,7 @@ additional attributes from <code>list_att</code> added to each node.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 78</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 79</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 80</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 81</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 82</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 82</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 83</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 84</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;"> 85</span>
@@ -1736,7 +1732,11 @@ additional attributes from <code>list_att</code> added to each node.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">108</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">109</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">110</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">build_spanning_tree</span>(st_tree, root_label, list_att<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>]):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">111</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">112</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">113</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">114</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">115</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">build_spanning_tree</span>(st_tree, root_label, list_att<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>]):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Builds a spanning tree from the given graph structure and initializes it with specific attributes for the root node.</span>
 
 <span style="color: #BA2121; font-style: italic">    The spanning tree is constructed iteratively, starting from the root label and adding its connected nodes while</span>
@@ -1834,11 +1834,7 @@ specified.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">174</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">175</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">176</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">177</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">178</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">178</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">179</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">180</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">181</span>
@@ -1860,7 +1856,11 @@ specified.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">197</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">198</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">199</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">200</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_observation_list</span>(t, list_obs<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>], name<span style="color: #666">=</span><span style="color: #BA2121">'observations'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">200</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">201</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">202</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">203</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">204</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">create_observation_list</span>(t, list_obs<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'scattering'</span>], name<span style="color: #666">=</span><span style="color: #BA2121">'observations'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Creates a new attribute in the given tree structure, which contains a list of specific observation</span>
 <span style="color: #BA2121; font-style: italic">    values from a predefined list of attributes for each node.</span>
@@ -1962,11 +1962,7 @@ graph <code>st_tree</code> to the new spanning tree <code>t</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">44</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">45</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">46</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">47</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">48</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">48</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">49</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">50</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">51</span>
@@ -1993,7 +1989,11 @@ graph <code>st_tree</code> to the new spanning tree <code>t</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">72</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">73</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">74</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">75</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">increment_spanning_tree</span>(st_tree, root, t, list_of_nodes, list_att):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">75</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">76</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">77</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">78</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">79</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">increment_spanning_tree</span>(st_tree, root, t, list_of_nodes, list_att):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Recursively increments a spanning tree by traversing and adding nodes from a given root node in a graph.</span>
 
 <span style="color: #BA2121; font-style: italic">    The function processes the graph `st_tree`, traverses neighbors of the `root` node, and adds their</span>
@@ -2039,7 +2039,7 @@ graph <code>st_tree</code> to the new spanning tree <code>t</code>.</p>
 
 
 <a href="#spectral_clustering.Viterbi.read_pointcloudgraph_into_treex" class="headerlink" title="Permanent link">Link</a></h2>
-<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>read_pointcloudgraph_into_treex(pointcloudgraph)
+<div class="language-python doc-signature highlight" style="background: #f8f8f8"><pre style="line-height: 125%;"><span></span><code>read_pointcloudgraph_into_treex(pointcloudgraph, directory<span style="color: #666">=</span><span style="color: #BA2121">'.'</span>)
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2064,6 +2064,16 @@ hold sufficient attributes required for further processing into a
 spanning tree format.</p>
           </div>
         </li>
+        <li class="doc-section-item field-body">
+            <b><code>directory</code></b>
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> or <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></code>, default:
+                  <code>&#39;.&#39;</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>A path to the output directory. Defaults to the current working directory.</p>
+          </div>
+        </li>
     </ul>
 
 
@@ -2082,8 +2092,7 @@ includes the processed attributes stored during the serialization step.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">16</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">17</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">17</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">18</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">19</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">20</span>
@@ -2107,7 +2116,11 @@ includes the processed attributes stored during the serialization step.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">38</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">39</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">40</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">41</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">read_pointcloudgraph_into_treex</span>(pointcloudgraph):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">41</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">42</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">43</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">44</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">45</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">read_pointcloudgraph_into_treex</span>(pointcloudgraph, directory<span style="color: #666">=</span><span style="color: #BA2121">"."</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Reads a point cloud graph object and processes it into a tree diagram before saving and re-loading it.</span>
 
 <span style="color: #BA2121; font-style: italic">    This function performs the following operations:</span>
@@ -2122,6 +2135,8 @@ includes the processed attributes stored during the serialization step.</p>
 <span style="color: #BA2121; font-style: italic">        The input graph object representing a point cloud. This input should</span>
 <span style="color: #BA2121; font-style: italic">        hold sufficient attributes required for further processing into a</span>
 <span style="color: #BA2121; font-style: italic">        spanning tree format.</span>
+<span style="color: #BA2121; font-style: italic">    directory : str or pathlib.Path, optional</span>
+<span style="color: #BA2121; font-style: italic">        A path to the output directory. Defaults to the current working directory.</span>
 
 <span style="color: #BA2121; font-style: italic">    Returns</span>
 <span style="color: #BA2121; font-style: italic">    -------</span>
@@ -2130,8 +2145,9 @@ includes the processed attributes stored during the serialization step.</p>
 <span style="color: #BA2121; font-style: italic">        includes the processed attributes stored during the serialization step.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
     mst <span style="color: #666">=</span> pointcloudgraph
-    save_object(mst, <span style="color: #BA2121">'test_spanning_tree_attributes.p'</span>)
-    st_tree <span style="color: #666">=</span> read_object(<span style="color: #BA2121">'test_spanning_tree_attributes.p'</span>)
+    fname <span style="color: #666">=</span> <span style="color: #008000">str</span>(Path(directory) <span style="color: #666">/</span> <span style="color: #BA2121">'test_spanning_tree_attributes.p'</span>)
+    save_object(mst, fname)
+    st_tree <span style="color: #666">=</span> read_object(fname)
     <span style="color: #008000; font-weight: bold">return</span> st_tree
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2237,11 +2253,7 @@ default is [[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]].</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/Viterbi.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">203</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">204</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">205</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">206</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">207</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">207</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">208</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">209</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">210</span>
@@ -2315,7 +2327,11 @@ default is [[[0.4, 0.4], [0.8, 0.2]], [[0.8, 0.3], [0.4, 0.2]]].</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">278</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">279</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">280</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">viterbi_workflow</span>(minimum_spanning_tree,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">281</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">282</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">283</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">284</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">285</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">viterbi_workflow</span>(minimum_spanning_tree,
                      quotient_graph,
                      root<span style="color: #666">=8</span>,
                      observation_list_import<span style="color: #666">=</span>[<span style="color: #BA2121">'planarity2'</span>, <span style="color: #BA2121">'linearity'</span>, <span style="color: #BA2121">'intra_class_node_number'</span>],

@@ -73,6 +73,36 @@ section of the README):
   that single-cluster degenerate cases were made robust in
   `select_minimum_centroid_class` (use `np.argmin` instead of `np.where`).
 
+## Worked examples
+
+These commands were run end-to-end as part of validation and are the quickest
+way to confirm the package works on your machine.
+
+**Chenopodium** — segment one of the shipped clouds (root auto-detected, since
+the default index only matches the original `cheno_A` cloud):
+
+```shell
+python script/Main_workflow.py --root-auto data/chenos/cheno_3.ply
+```
+
+Completes in roughly 8 minutes on a modern laptop and writes, next to the
+input cloud, the graph exports `pcd_vp2.txt`, `pcd_attribute.txt`,
+`reseg_linear.txt` and the quotient-graph figures
+`quotient_graph_matplotlib_*.png`.
+
+**Tomato** — segment a Pheno4D cloud (root auto-detected):
+
+```shell
+python script/Main_workflow.py --pipeline tomato data/tomato/T01_0313_a.ply
+```
+
+Takes longer (≈45 minutes for the ≈500 k-point cloud) and writes
+`pcd_attribute.txt`, `reseg_linear.txt`, `pcd_seg_norm.txt` and the instance
+exports `instance_1.txt`, `instance_final.txt`.
+
+Both pipelines complete without error on the shipped reference data; runtimes
+scale with the cloud size.
+
 ## Options
 
 | Option | Type | Default | Pipeline | Description |

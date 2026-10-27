@@ -1,0 +1,17 @@
+stages:
+  - test
+
+unit-tests:
+  stage: test
+  image: python:3.10
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends git-lfs libgl1 libglib2.0-0 libgomp1
+    - git lfs install
+    - git lfs pull
+    - pip install --upgrade pip
+    - pip install -e ".[test]"
+  script:
+    - python -m pytest
+  # Reference clouds are tracked with git-lfs; the runner must allow it.
+  variables:
+    GIT_LFS_SKIP_SMUDGE: "0"

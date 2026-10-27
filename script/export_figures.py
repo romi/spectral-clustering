@@ -6,7 +6,7 @@ Renders three figures, one subplot per cloud, from the reference data in
 
 - ``chenopodium.png``   — all 5 Chenopodium plants.
 - ``tomato01.png``      — the 7 Tomato01 time-points.
-- ``tomato02.png``      — the 7 Tomato02 time-points.
+- ``tomato03.png``      — the 7 Tomato03 time-points.
 
 Tomato clouds carry an integer ``label`` (stem ``1``, leaf ``>=2``) and are
 coloured by it; Chenopodium clouds have no label and are coloured by height.
@@ -39,7 +39,7 @@ SEED = 0
 
 CHENO = ["cheno_1.ply", "cheno_2.ply", "cheno_3.ply", "cheno_4.ply", "cheno_5.ply"]
 TOMATO01 = [f"T01_{stage}_a.ply" for stage in ("0313", "0315", "0317", "0319", "0321", "0324", "0325")]
-TOMATO02 = [f"T02_{stage}_a.ply" for stage in ("0313", "0315", "0317", "0319", "0321", "0324", "0325")]
+TOMATO03 = [f"T03_{stage}_a.ply" for stage in ("0313", "0315", "0317", "0319", "0321", "0324", "0325")]
 
 
 def load_cloud(*parts):
@@ -107,7 +107,7 @@ def export_one(name, clouds, titles, with_label):
 def main():
     export_one("chenopodium", [("chenos", c) for c in CHENO], CHENO, with_label=False)
     export_one("tomato01", [("tomato", c) for c in TOMATO01], TOMATO01, with_label=True)
-    export_one("tomato02", [("tomato", c) for c in TOMATO02], TOMATO02, with_label=True)
+    export_one("tomato03", [("tomato", c) for c in TOMATO03], TOMATO03, with_label=True)
 
 
 if __name__ == "__main__":

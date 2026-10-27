@@ -19,7 +19,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 
-DEFAULT_PLANTS = ["Tomato01", "Tomato02"]
+DEFAULT_PLANTS = ["Tomato01", "Tomato03"]
 DEFAULT_DATES = ["0313", "0315", "0317", "0319", "0321", "0324", "0325"]
 
 

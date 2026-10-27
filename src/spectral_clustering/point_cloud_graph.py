@@ -558,7 +558,8 @@ class PointCloudGraph(nx.Graph):
             self.nodes[i][name_attribute] = clustering_labels[i]
         self.clustering_labels
 
-    def clustering_by_kmeans_using_gradient_norm(self, export_in_labeled_point_cloud=False, number_of_clusters=4):
+    def clustering_by_kmeans_using_gradient_norm(self, export_in_labeled_point_cloud=False, number_of_clusters=4,
+                                                 directory="."):
         """Performs K-means clustering on the gradient norm of the graph's Fiedler vector.
 
         This method applies the K-means clustering algorithm to nodes of a graph,
@@ -574,6 +575,9 @@ class PointCloudGraph(nx.Graph):
             file named 'kmeans_clusters.txt'. Defaults to False.
         number_of_clusters : int, optional
             The number of clusters to create using K-means. Defaults to 4.
+        directory : str or pathlib.Path, optional
+            A path to the output directory used when exporting the labeled
+            point cloud. Defaults to the current working directory.
 
         Returns
         -------
@@ -585,7 +589,7 @@ class PointCloudGraph(nx.Graph):
 
         if export_in_labeled_point_cloud is True:
             export_anything_on_point_cloud(self, attribute=kmeans.labels_[:, np.newaxis],
-                                           filename='kmeans_clusters.txt')
+                                           filename='kmeans_clusters.txt', directory=directory)
 
         kmeans_labels = kmeans.labels_[:, np.newaxis]
         self.kmeans_labels_gradient = kmeans_labels

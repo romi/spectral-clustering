@@ -175,7 +175,7 @@ def create_a_subgraph_copy(G, list_of_nodes=[]):
 
 
 def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30,
-                            export_iter=True, list_leaves=[]):
+                            export_iter=True, list_leaves=[], directory="."):
     """
     Optimize graph energy by iteratively merging nodes based on dot product energy.
 
@@ -279,7 +279,8 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30
         if export_iter:
             export_some_graph_attributes_on_point_cloud(pcd_g=quotientgraph.point_cloud_graph,
                                                         graph_attribute='quotient_graph_node',
-                                                        filename='graph_attribute_quotient_graph_' + str(i) + '.txt')
+                                                        filename='graph_attribute_quotient_graph_' + str(i) + '.txt',
+                                                        directory=directory)
             # display_and_export_quotient_graph_matplotlib(quotient_graph=quotientgraph, node_sizes=20,
             # filename="quotient_graph_matplotlib_QG_intra_class_number_" + str(
             #    i),
@@ -289,7 +290,8 @@ def opti_energy_dot_product(quotientgraph, subgraph_riemannian, angle_to_stop=30
     quotientgraph.rebuild(G=quotientgraph.point_cloud_graph)
     export_some_graph_attributes_on_point_cloud(pcd_g=quotientgraph.point_cloud_graph,
                                                 graph_attribute='quotient_graph_node',
-                                                filename='final_opti_energy_dot_product.txt')
+                                                filename='final_opti_energy_dot_product.txt',
+                                                directory=directory)
 
 
 def oversegment_part_return_list(quotientgraph, list_quotient_node_to_work=[], average_size_cluster=20):

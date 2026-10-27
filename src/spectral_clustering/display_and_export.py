@@ -49,7 +49,7 @@ def export_clustering_labels_on_point_cloud(pcd_g, filename="pcd_clustered.txt")
     print("Export du nuage avec les labels de cluster")
 
 
-def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt"):
+def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt", directory="."):
     """Exports a specified attribute to the point cloud.
 
     Parameters
@@ -60,15 +60,17 @@ def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt
         An array representing the attribute values to export.
     filename : str or pathlib.Path, optional
         The name of the output file.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     if attribute.ndim == 1:
         attribute = attribute[:, np.newaxis]
     pcd_attribute = np.concatenate([pcd_g.nodes_coords, attribute], axis=1)
-    np.savetxt(filename, pcd_attribute, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_attribute, delimiter=",")
     print("Export du nuage avec les attributs demandés")
 
 
-def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_grad.txt"):
+def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_grad.txt", directory="."):
     """Exports the gradient of the Fiedler vector to a point cloud.
 
     Parameters
@@ -77,13 +79,15 @@ def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_gra
         The graph containing nodes coordinates and fiedler gradient data.
     filename : str, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     pcd_vp2_grad = np.concatenate([pcd_g.nodes_coords, pcd_g.gradient_on_fiedler], axis=1)
-    np.savetxt(filename, pcd_vp2_grad, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_vp2_grad, delimiter=",")
     print("Export du nuage avec gradient du vecteur propre 2")
 
 
-def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
+def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt", directory="."):
     """Exports the Fiedler vector to a point cloud.
 
     Parameters
@@ -92,15 +96,17 @@ def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
         The graph containing nodes coordinates and Fiedler vector data.
     filename : str or pathlib.Path, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     vp2 = G.keigenvec[:, 1]
     pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    np.savetxt(filename, pcd_vp2, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_vp2, delimiter=",")
     print("Export du nuage avec le vecteur propre 2")
 
 
 def export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute='quotient_graph_node',
-                                                filename='graph_attribute.txt'):
+                                                filename='graph_attribute.txt', directory="."):
     """Exports specific graph attributes to a point cloud.
 
     Parameters
@@ -111,11 +117,13 @@ def export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute='quotient
         The name of the graph attribute to export.
     filename : str or pathlib.Path, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     G = pcd_g
     new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
     new_classif = new_classif[:, np.newaxis]
-    export_anything_on_point_cloud(G, attribute=new_classif, filename=filename)
+    export_anything_on_point_cloud(G, attribute=new_classif, filename=filename, directory=directory)
 
 
 def display_and_export_graph_of_fiedler_vector(pcd_g, filename="fiedler_vector.png", sorted_by_fiedler_vector=True):

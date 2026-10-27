@@ -419,7 +419,7 @@ def determination_main_stem_shortest_paths_improved(QG, ptsource, list_of_linear
 
 
 def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_linear, root_point_riemanian,
-                                       new_class_stem=3):
+                                       new_class_stem=3, directory="."):
     """
     Detects and classifies the main stem of a graph based on leaf quotients and other metrics.
 
@@ -472,7 +472,7 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
         display_and_export_quotient_graph_matplotlib(qg=sub_qg, node_sizes=20,
                                                      name="sub_graphsclass_feuilles_sur_noeuds" + str(leaf),
                                                      data_on_nodes='viterbi_class', data=True,
-                                                     attributekmeans4clusters=False)
+                                                     attributekmeans4clusters=False, directory=directory)
 
         if nx.has_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"]):
             path = nx.dijkstra_path(sub_qg, leaf, G.nodes[root_point_riemanian]["quotient_graph_node"],
@@ -515,7 +515,8 @@ def stem_detection_with_quotite_leaves(QG, list_leaves3, list_apex, list_of_line
         # if n not in list_leaves3:
         QG.nodes[n]["viterbi_class"] = new_class_stem
 
-    export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_')
+    export_quotient_graph_attribute_on_point_cloud(QG, attribute='viterbi_class', name='semantic_',
+                                                   directory=directory)
     return list_stem
 
 

@@ -93,7 +93,7 @@ show the point clouds each pipeline segments:
 - **Tomato** (`tomato` pipeline) — 14 real Pheno4D tomato clouds (2 plants × 7
   stages), colored by label: brown = stem, green = leaves.
   ![Tomato plant 1 reference clouds](data/figures/tomato01.png)
-  ![Tomato plant 2 reference clouds](data/figures/tomato02.png)
+  ![Tomato plant 3 reference clouds](data/figures/tomato03.png)
 
 Regenerate any figure with:
 

@@ -19,16 +19,17 @@ python -m pip install -e .
 
 ## Quick start
 
-Run the **chenopodium** pipeline (default) on a cloud:
+Run the **chenopodium** pipeline (default) on one of the shipped reference
+clouds:
 
 ```shell
-python script/Main_workflow.py path/to/cheno_1.ply
+python script/Main_workflow.py --root-auto data/chenos/cheno_3.ply
 ```
 
-Run the **tomato** pipeline:
+Run the **tomato** pipeline (the root is auto-detected):
 
 ```shell
-python script/Main_workflow.py --pipeline tomato path/to/T01_0313_a.ply
+python script/Main_workflow.py --pipeline tomato data/tomato/T01_0313_a.ply
 ```
 
 Both commands print progress and write their exports (labelled point clouds,
@@ -57,10 +58,20 @@ section of the README):
   (`--observations`, `--initial-distribution`, `--transition-matrix`,
   `--emission-params`).
 
+  The default root index `34586` only matches the authors' original
+  `cheno_A_2021_04_19.ply`, which is not part of this package. The shipped
+  `data/chenos/cheno_N.ply` clouds are the same real data set but with a
+  different point ordering, so **use `--root-auto`** (lowest-`Z` node) when
+  segmenting them. The pipeline was validated on `cheno_3` with `--root-auto`.
+
 - **Tomato** (`--pipeline tomato`) — semantic and instance segmentation of
   tomato plants (Pheno4D). The root (stem base) is auto-detected as the
   lowest-`Z` node unless `-p/--root-point` is given. Knobs: `-r/--radius`,
   `-p/--root-point`, `--n-clusters`, `--elbow-max`, `--angle-merge`.
+
+  Validated end-to-end on `data/tomato/T01_0313_a.ply` (≈500 k points). Note
+  that single-cluster degenerate cases were made robust in
+  `select_minimum_centroid_class` (use `np.argmin` instead of `np.where`).
 
 ## Options
 

@@ -448,3 +448,71 @@ def draw_quotientgraph_matplotlib_3D(nodes_coords_moy, qg):
         ax.view_init(elev=30)
         ax.set_axis_off()
         plt.show()
+
+
+def eigenvector_mst_edges(keigenvec, point_cloud_graph, k=None):
+    """Returns the MST edge lists representing the eigenvectors as 3D line sets.
+
+    For each eigenvector, the points where the eigenvector has a non-zero component
+    are connected using the edges of the point-cloud graph, weighted by the 3D
+    Euclidean distance between the points. The minimum spanning tree (MST) of this
+    weighted subgraph draws the eigenvector as a tree of segments in 3D space,
+    revealing the spatial structure encoded by the eigenvector (e.g. the Fiedler
+    vector splits the plant along its main axis).
+
+    The archived draft built a *complete* graph over the non-zero points, which is
+    O(n^2) and infeasible at plant scale (tens of thousands of points). Using the
+    graph's own edges gives the same "skeleton" intent while staying O(E log V).
+
+    Parameters
+    ----------
+    keigenvec : numpy.ndarray
+        Array of shape ``(n_points, n_vectors)`` holding the graph eigenvectors,
+        one column per eigenvector.
+    point_cloud_graph : spectral_clustering.point_cloud_graph.PointCloudGraph
+        The point-cloud graph the eigenvectors were computed on; provides both the
+        point coordinates and the graph connectivity.
+    k : int, optional
+        Number of eigenvectors to process (``min(k, keigenvec.shape[1])``).
+        Defaults to ``keigenvec.shape[1]``.
+
+    Returns
+    -------
+    dict
+        Mapping ``{eigenvector_index: list_of_edges}`` where each edge is a pair
+        of point indices belonging to the eigenvector's MST.
+    """
+    if k is None:
+        k = keigenvec.shape[1]
+    points = np.asarray(point_cloud_graph.nodes_coords)
+    adjacency = nx.to_dict_of_lists(point_cloud_graph)
+
+    mst_edges = {}
+    for j in range(min(k, keigenvec.shape[1])):
+        active = {i for i in range(keigenvec.shape[0]) if keigenvec[i, j] != 0.0}
+        subgraph = nx.Graph()
+        for u in active:
+            for v in adjacency[u]:
+                if v in active:
+                    subgraph.add_edge(u, v, weight=np.linalg.norm(points[u] - points[v]))
+        mst_edges[j] = list(nx.minimum_spanning_edges(subgraph, weight='weight', data=False))
+    return mst_edges
+
+
+def display_eigenvector_mst(pcd, mst_edges, eigenvector_index=1):
+    """Displays the MST of one eigenvector as an Open3D line set.
+
+    Parameters
+    ----------
+    pcd : open3d.geometry.PointCloud
+        The point cloud to display.
+    mst_edges : dict
+        Output of :func:`eigenvector_mst_edges` mapping eigenvector index to a
+        list of edges.
+    eigenvector_index : int, optional
+        Which eigenvector's MST to display. Defaults to ``1`` (the Fiedler vector).
+    """
+    line_set = o3d.geometry.LineSet()
+    line_set.points = pcd.points
+    line_set.lines = o3d.utility.Vector2iVector(list(mst_edges[eigenvector_index]))
+    o3d.visualization.draw_geometries([line_set])

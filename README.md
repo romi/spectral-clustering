@@ -9,8 +9,9 @@ A Python package designed to perform both semantic and instance segmentation of 
 1. [Overview](#overview)
 2. [Getting Started](#getting-started)
 3. [Context](#context)
-4. [Bibliography](#bibliography)
-5. [Contribution & License](#contribution--license)
+4. [Available Data](#available-data)
+5. [Bibliography](#bibliography)
+6. [Contribution & License](#contribution--license)
 
 ---
 
@@ -75,6 +76,29 @@ For now the functionalities are limited to a single CLI usage to perform semanti
 
 ```shell
 python script/Main_workflow.py Data/my_plant.ply
+```
+
+---
+
+## Available Data
+
+The package ships real reference datasets in the `data/` folder (tracked with
+git-lfs; see `data/README.md` for sources and provenance). The figures below
+show the point clouds each pipeline segments:
+
+- **Chenopodium** (`chenopodium` pipeline) — 5 real _Chenopodium album_ plants,
+  colored here by height:
+  ![Chenopodium album reference clouds](data/figures/chenopodium.png)
+
+- **Tomato** (`tomato` pipeline) — 14 real Pheno4D tomato clouds (2 plants × 7
+  stages), colored by label: brown = stem, green = leaves.
+  ![Tomato plant 1 reference clouds](data/figures/tomato01.png)
+  ![Tomato plant 2 reference clouds](data/figures/tomato02.png)
+
+Regenerate any figure with:
+
+```shell
+python script/export_figures.py
 ```
 
 ---

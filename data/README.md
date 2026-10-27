@@ -44,3 +44,7 @@ git commit -m "chore(data): add reference dataset samples"
 |---|---|---|---|
 | `chenos/cheno_1.ply` … `cheno_5.ply` | Chenopodium | `Main_workflow.py` | §2 + §3.1.1 |
 | `tomato/T0{1,2}_{0313,0315,0317,0319,0321,0324,0325}_a.ply` | Tomato | `script_seg_tomato.py` | §3.1.3 |
+| `figures/chenopodium.png`, `tomato01.png`, `tomato02.png` | both | `export_figures.py` | reference previews |
+
+The `figures/*.png` are preview renders of the above clouds, shown in the
+project README; regenerate with `python script/export_figures.py`.

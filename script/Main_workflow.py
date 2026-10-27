@@ -453,7 +453,20 @@ def _obtain_tree_with_botanical(QG, root_point_riemanian, list_leaves3):
 def main(pcd_path, pipeline, radius, root_point, root_auto, n_clusters, elbow_max, angle_merge,
          angle_stem, energy_iterations, formulae, observations, initial_distribution, transition_matrix,
          emission_params):
-    """Perform semantic and instance segmentation of a 3D plant point cloud."""
+    """Perform semantic and instance segmentation of a 3D plant point cloud.
+
+    Selects the workflow with --pipeline:
+
+    - chenopodium (default): graph-based semantic + instance segmentation of
+      Chenopodium album plants. Root defaults to index 34586 unless --root-auto
+      or -p/--root-point is given. See docs/usage.md for the Viterbi knobs.
+    - tomato: semantic + instance segmentation of tomato plants. The root
+      (stem base) is auto-detected as the lowest-Z node unless -p/--root-point
+      is given.
+
+    Outputs (labelled point clouds, graph attributes, figures) are written to
+    the directory containing the input cloud.
+    """
     if pipeline == "tomato":
         pipeline_tomato(pcd_path=pcd_path, radius=radius, root_point_riemanian=root_point,
                         n_clusters=n_clusters, elbow_max=elbow_max, angle_merge=angle_merge)

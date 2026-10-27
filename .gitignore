@@ -17,3 +17,7 @@ Merge_leaves_after_viterbi.txt
 graph_attribute_quotient_graph_*.txt
 *.png
 *.webp
+
+# ...except the committed reference figures (git-lfs tracked, shown in README).
+!data/figures/
+!data/figures/*.png

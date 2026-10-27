@@ -49,7 +49,7 @@ def export_clustering_labels_on_point_cloud(pcd_g, filename="pcd_clustered.txt")
     print("Export du nuage avec les labels de cluster")
 
 
-def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt"):
+def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt", directory="."):
     """Exports a specified attribute to the point cloud.
 
     Parameters
@@ -60,15 +60,17 @@ def export_anything_on_point_cloud(pcd_g, attribute, filename="pcd_attribute.txt
         An array representing the attribute values to export.
     filename : str or pathlib.Path, optional
         The name of the output file.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     if attribute.ndim == 1:
         attribute = attribute[:, np.newaxis]
     pcd_attribute = np.concatenate([pcd_g.nodes_coords, attribute], axis=1)
-    np.savetxt(filename, pcd_attribute, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_attribute, delimiter=",")
     print("Export du nuage avec les attributs demandés")
 
 
-def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_grad.txt"):
+def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_grad.txt", directory="."):
     """Exports the gradient of the Fiedler vector to a point cloud.
 
     Parameters
@@ -77,13 +79,15 @@ def export_gradient_of_fiedler_vector_on_pointcloud(pcd_g, filename="pcd_vp2_gra
         The graph containing nodes coordinates and fiedler gradient data.
     filename : str, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     pcd_vp2_grad = np.concatenate([pcd_g.nodes_coords, pcd_g.gradient_on_fiedler], axis=1)
-    np.savetxt(filename, pcd_vp2_grad, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_vp2_grad, delimiter=",")
     print("Export du nuage avec gradient du vecteur propre 2")
 
 
-def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
+def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt", directory="."):
     """Exports the Fiedler vector to a point cloud.
 
     Parameters
@@ -92,15 +96,17 @@ def export_fiedler_vector_on_pointcloud(G, filename="pcd_vp2.txt"):
         The graph containing nodes coordinates and Fiedler vector data.
     filename : str or pathlib.Path, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     vp2 = G.keigenvec[:, 1]
     pcd_vp2 = np.concatenate([G.nodes_coords, vp2[:, np.newaxis]], axis=1)
-    np.savetxt(filename, pcd_vp2, delimiter=",")
+    np.savetxt(Path(directory) / filename, pcd_vp2, delimiter=",")
     print("Export du nuage avec le vecteur propre 2")
 
 
 def export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute='quotient_graph_node',
-                                                filename='graph_attribute.txt'):
+                                                filename='graph_attribute.txt', directory="."):
     """Exports specific graph attributes to a point cloud.
 
     Parameters
@@ -111,11 +117,13 @@ def export_some_graph_attributes_on_point_cloud(pcd_g, graph_attribute='quotient
         The name of the graph attribute to export.
     filename : str or pathlib.Path, optional
         The file name for the output.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
     """
     G = pcd_g
     new_classif = np.asarray(list((dict(G.nodes(data=graph_attribute)).values())))
     new_classif = new_classif[:, np.newaxis]
-    export_anything_on_point_cloud(G, attribute=new_classif, filename=filename)
+    export_anything_on_point_cloud(G, attribute=new_classif, filename=filename, directory=directory)
 
 
 def display_and_export_graph_of_fiedler_vector(pcd_g, filename="fiedler_vector.png", sorted_by_fiedler_vector=True):
@@ -448,3 +456,71 @@ def draw_quotientgraph_matplotlib_3D(nodes_coords_moy, qg):
         ax.view_init(elev=30)
         ax.set_axis_off()
         plt.show()
+
+
+def eigenvector_mst_edges(keigenvec, point_cloud_graph, k=None):
+    """Returns the MST edge lists representing the eigenvectors as 3D line sets.
+
+    For each eigenvector, the points where the eigenvector has a non-zero component
+    are connected using the edges of the point-cloud graph, weighted by the 3D
+    Euclidean distance between the points. The minimum spanning tree (MST) of this
+    weighted subgraph draws the eigenvector as a tree of segments in 3D space,
+    revealing the spatial structure encoded by the eigenvector (e.g. the Fiedler
+    vector splits the plant along its main axis).
+
+    The archived draft built a *complete* graph over the non-zero points, which is
+    O(n^2) and infeasible at plant scale (tens of thousands of points). Using the
+    graph's own edges gives the same "skeleton" intent while staying O(E log V).
+
+    Parameters
+    ----------
+    keigenvec : numpy.ndarray
+        Array of shape ``(n_points, n_vectors)`` holding the graph eigenvectors,
+        one column per eigenvector.
+    point_cloud_graph : spectral_clustering.point_cloud_graph.PointCloudGraph
+        The point-cloud graph the eigenvectors were computed on; provides both the
+        point coordinates and the graph connectivity.
+    k : int, optional
+        Number of eigenvectors to process (``min(k, keigenvec.shape[1])``).
+        Defaults to ``keigenvec.shape[1]``.
+
+    Returns
+    -------
+    dict
+        Mapping ``{eigenvector_index: list_of_edges}`` where each edge is a pair
+        of point indices belonging to the eigenvector's MST.
+    """
+    if k is None:
+        k = keigenvec.shape[1]
+    points = np.asarray(point_cloud_graph.nodes_coords)
+    adjacency = nx.to_dict_of_lists(point_cloud_graph)
+
+    mst_edges = {}
+    for j in range(min(k, keigenvec.shape[1])):
+        active = {i for i in range(keigenvec.shape[0]) if keigenvec[i, j] != 0.0}
+        subgraph = nx.Graph()
+        for u in active:
+            for v in adjacency[u]:
+                if v in active:
+                    subgraph.add_edge(u, v, weight=np.linalg.norm(points[u] - points[v]))
+        mst_edges[j] = list(nx.minimum_spanning_edges(subgraph, weight='weight', data=False))
+    return mst_edges
+
+
+def display_eigenvector_mst(pcd, mst_edges, eigenvector_index=1):
+    """Displays the MST of one eigenvector as an Open3D line set.
+
+    Parameters
+    ----------
+    pcd : open3d.geometry.PointCloud
+        The point cloud to display.
+    mst_edges : dict
+        Output of :func:`eigenvector_mst_edges` mapping eigenvector index to a
+        list of edges.
+    eigenvector_index : int, optional
+        Which eigenvector's MST to display. Defaults to ``1`` (the Fiedler vector).
+    """
+    line_set = o3d.geometry.LineSet()
+    line_set.points = pcd.points
+    line_set.lines = o3d.utility.Vector2iVector(list(mst_edges[eigenvector_index]))
+    o3d.visualization.draw_geometries([line_set])

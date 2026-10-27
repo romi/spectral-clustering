@@ -21,3 +21,10 @@ graph_attribute_quotient_graph_*.txt
 # ...except the committed reference figures (git-lfs tracked, shown in README).
 !data/figures/
 !data/figures/*.png
+
+# Notebook runtime outputs (figures + .txt exports) land here.
+notebooks/outputs/
+
+# Jupyter runtime artifacts.
+.ipynb_checkpoints/
+.jupyter/

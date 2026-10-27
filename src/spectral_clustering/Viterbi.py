@@ -3,6 +3,7 @@
 
 import math
 import random
+from pathlib import Path
 
 import networkx as nx
 from spectral_clustering.display_and_export import display_and_export_quotient_graph_matplotlib
@@ -13,7 +14,7 @@ from treex.simulation import read_object
 from treex.simulation import save_object
 
 
-def read_pointcloudgraph_into_treex(pointcloudgraph):
+def read_pointcloudgraph_into_treex(pointcloudgraph, directory="."):
     """Reads a point cloud graph object and processes it into a tree diagram before saving and re-loading it.
 
     This function performs the following operations:
@@ -28,6 +29,8 @@ def read_pointcloudgraph_into_treex(pointcloudgraph):
         The input graph object representing a point cloud. This input should
         hold sufficient attributes required for further processing into a
         spanning tree format.
+    directory : str or pathlib.Path, optional
+        A path to the output directory. Defaults to the current working directory.
 
     Returns
     -------
@@ -36,8 +39,9 @@ def read_pointcloudgraph_into_treex(pointcloudgraph):
         includes the processed attributes stored during the serialization step.
     """
     mst = pointcloudgraph
-    save_object(mst, 'test_spanning_tree_attributes.p')
-    st_tree = read_object('test_spanning_tree_attributes.p')
+    fname = str(Path(directory) / 'test_spanning_tree_attributes.p')
+    save_object(mst, fname)
+    st_tree = read_object(fname)
     return st_tree
 
 

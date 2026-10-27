@@ -463,10 +463,7 @@ def select_minimum_centroid_class(clusters_centers):
     int
         The label of the cluster with the smallest centroid value.
     """
-    mincluster = np.where(clusters_centers == np.amin(clusters_centers))
-    labelmincluster = mincluster[0][0]
-    return labelmincluster
-
+    return int(np.argmin(clusters_centers))
 
 def select_all_quotientgraph_nodes_from_pointcloudgraph_cluster(G, QG, labelpointcloudgraph, attribute='kmeans_labels'):
     """

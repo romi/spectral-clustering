@@ -2857,7 +2857,10 @@ Defaults to <code>False</code>.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">500</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">501</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">502</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">503</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">504</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">505</span>
@@ -2957,10 +2960,7 @@ Defaults to <code>False</code>.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">599</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">600</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">601</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">602</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">603</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">604</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">605</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_nodes_with_elbow_method</span>(QG, QG_nodes_to_rework<span style="color: #666">=</span>[], number_of_cluster_tested<span style="color: #666">=10</span>,
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">602</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">resegment_nodes_with_elbow_method</span>(QG, QG_nodes_to_rework<span style="color: #666">=</span>[], number_of_cluster_tested<span style="color: #666">=10</span>,
                                       attribute<span style="color: #666">=</span><span style="color: #BA2121">'norm_gradient'</span>, number_attribute<span style="color: #666">=1</span>, standardization<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, numer<span style="color: #666">=1</span>,
                                       G_mod<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">True</span>, export_div<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>, ret<span style="color: #666">=</span><span style="color: #008000; font-weight: bold">False</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""Resegments the nodes of a given quotient graph using the elbow method to find the optimal number of clusters.</span>
@@ -3142,7 +3142,10 @@ clustering labels and a specified attribute.</p>
 
             <details class="quote">
               <summary>Source code in <code>spectral_clustering/split_and_merge.py</code></summary>
-              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">471</span>
+              <div class="language-python highlight" style="background: #f8f8f8"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">469</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">470</span>
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">471</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">472</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">473</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">474</span>
@@ -3167,10 +3170,7 @@ clustering labels and a specified attribute.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">493</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">494</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">495</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">497</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">498</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">499</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_all_quotientgraph_nodes_from_pointcloudgraph_cluster</span>(G, QG, labelpointcloudgraph, attribute<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_labels'</span>):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">496</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_all_quotientgraph_nodes_from_pointcloudgraph_cluster</span>(G, QG, labelpointcloudgraph, attribute<span style="color: #666">=</span><span style="color: #BA2121">'kmeans_labels'</span>):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Select all quotient graph nodes corresponding to a specific point cloud graph cluster.</span>
 
@@ -3269,9 +3269,7 @@ the corresponding cluster label.</p>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">463</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">464</span>
 <span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">465</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">467</span>
-<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">468</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_minimum_centroid_class</span>(clusters_centers):
+<span style="color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px;">466</span></pre></div></td><td class="code"><div><pre style="line-height: 125%;"><span></span><code><span style="color: #008000; font-weight: bold">def</span><span style="color: #BBB"> </span><span style="color: #00F">select_minimum_centroid_class</span>(clusters_centers):
 <span style="color: #BBB">    </span><span style="color: #BA2121; font-style: italic">"""</span>
 <span style="color: #BA2121; font-style: italic">    Selects the label of the cluster with the minimum centroid value.</span>
 
@@ -3289,9 +3287,7 @@ the corresponding cluster label.</p>
 <span style="color: #BA2121; font-style: italic">    int</span>
 <span style="color: #BA2121; font-style: italic">        The label of the cluster with the smallest centroid value.</span>
 <span style="color: #BA2121; font-style: italic">    """</span>
-    mincluster <span style="color: #666">=</span> np<span style="color: #666">.</span>where(clusters_centers <span style="color: #666">==</span> np<span style="color: #666">.</span>amin(clusters_centers))
-    labelmincluster <span style="color: #666">=</span> mincluster[<span style="color: #666">0</span>][<span style="color: #666">0</span>]
-    <span style="color: #008000; font-weight: bold">return</span> labelmincluster
+    <span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">int</span>(np<span style="color: #666">.</span>argmin(clusters_centers))
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
